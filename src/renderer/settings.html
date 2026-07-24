@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vozza — Configurações</title>
+  <style>
+    :root {
+      --bg: #0B1A17; --surface: #10221E; --line: #1F332D; --ink: #ECEFEA;
+      --muted: #97A79F; --brand: #38C79A; --accent: #F5B646; --danger: #FB7C5F;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #F5F2EC; --surface: #FDFBF6; --line: #E2DBCD; --ink: #17211E;
+        --muted: #57655F; --brand: #0E6E5C; --accent: #E0951C; --danger: #E15B3D;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg); color: var(--ink); padding: 26px; line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .brand { display: flex; align-items: center; gap: 9px; font-weight: 750; font-size: 18px; letter-spacing: -0.02em; }
+    .brand svg rect:nth-child(1) { fill: var(--brand); }
+    .brand svg rect:nth-child(2) { fill: var(--accent); }
+    .brand svg rect:nth-child(3) { fill: var(--brand); }
+    .brand svg rect:nth-child(4) { fill: var(--danger); }
+    h1 { font-size: 15px; margin: 24px 0 6px; }
+    p.hint { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+    .status { display: flex; align-items: center; gap: 8px; font-size: 13.5px; padding: 11px 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); margin-bottom: 20px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--danger); flex: none; }
+    .dot.ok { background: var(--brand); }
+    label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin-bottom: 7px; }
+    input {
+      width: 100%; font: inherit; font-size: 14px; padding: 11px 13px; border-radius: 10px;
+      border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    input:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+    .row { display: flex; gap: 10px; margin-top: 14px; }
+    button {
+      font: inherit; font-weight: 650; font-size: 14px; padding: 11px 18px; border-radius: 999px;
+      border: none; cursor: pointer; background: var(--brand); color: var(--bg); transition: filter .15s ease;
+    }
+    button:hover { filter: brightness(1.08); }
+    button.secondary { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+    a { color: var(--brand); }
+    .ok-msg { margin-top: 14px; font-size: 13px; color: var(--brand); min-height: 18px; }
+    .steps { font-size: 12.5px; color: var(--muted); margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .steps ol { margin: 8px 0 0; padding-left: 18px; }
+    .steps li { margin-bottom: 5px; }
+  </style>
+</head>
+<body>
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 26 26" aria-hidden="true">
+      <rect x="1" y="9" width="3.4" height="8" rx="1.7"></rect>
+      <rect x="7" y="4" width="3.4" height="18" rx="1.7"></rect>
+      <rect x="13" y="10" width="3.4" height="6" rx="1.7"></rect>
+      <rect x="19" y="6" width="3.4" height="14" rx="1.7"></rect>
+    </svg>
+    Vozza
+  </div>
+
+  <div class="status" id="status">
+    <span class="dot" id="dot"></span>
+    <span id="statusText">Verificando…</span>
+  </div>
+
+  <h1>Chave da API OpenAI</h1>
+  <p class="hint">Cole sua chave (começa com <code>sk-</code>). Ela fica salva só no seu computador.</p>
+  <label for="key">Sua chave</label>
+  <input id="key" type="password" placeholder="sk-..." autocomplete="off" spellcheck="false" />
+  <div class="row">
+    <button id="save">Salvar</button>
+    <button class="secondary" id="toggle" type="button">Mostrar</button>
+  </div>
+  <div class="ok-msg" id="okMsg" role="status" aria-live="polite"></div>
+
+  <div class="steps">
+    Não tem uma chave ainda?
+    <ol>
+      <li>Acesse <a href="https://platform.openai.com/api-keys">platform.openai.com/api-keys</a></li>
+      <li>Clique em "Create new secret key" e copie</li>
+      <li>É preciso ter crédito/cartão na conta da API (cobrança separada do ChatGPT)</li>
+    </ol>
+  </div>
+
+  <script>
+    const api = window.vozzaSettings;
+    const dot = document.getElementById('dot');
+    const statusText = document.getElementById('statusText');
+    const keyInput = document.getElementById('key');
+    const okMsg = document.getElementById('okMsg');
+
+    function render(cfg) {
+      if (cfg.hasKey) {
+        dot.classList.add('ok');
+        statusText.textContent = `Chave configurada (${cfg.keyMasked})`;
+      } else {
+        dot.classList.remove('ok');
+        statusText.textContent = 'Nenhuma chave configurada ainda';
+      }
+    }
+
+    api.getConfig().then(render);
+
+    document.getElementById('save').addEventListener('click', async () => {
+      const key = keyInput.value.trim();
+      if (!key.startsWith('sk-')) {
+        okMsg.style.color = 'var(--danger)';
+        okMsg.textContent = 'A chave costuma começar com "sk-". Confere se colou certo.';
+        return;
+      }
+      const cfg = await api.saveKey(key);
+      render(cfg);
+      keyInput.value = '';
+      okMsg.style.color = 'var(--brand)';
+      okMsg.textContent = 'Chave salva ✓ Já pode ditar com Cmd+Shift+Espaço.';
+    });
+
+    document.getElementById('toggle').addEventListener('click', () => {
+      const showing = keyInput.type === 'text';
+      keyInput.type = showing ? 'password' : 'text';
+      document.getElementById('toggle').textContent = showing ? 'Mostrar' : 'Ocultar';
+    });
+  </script>
+</body>
+</html>

@@ -1,12 +1,11 @@
-export async function transcribeAudio(audioBase64: string): Promise<string> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error('OPENAI_API_KEY não configurada. Edite o arquivo .env.');
+export async function transcribeAudio(audioBase64: string, apiKey: string, language = 'pt'): Promise<string> {
+  if (!apiKey) throw new Error('Chave da OpenAI não configurada. Abra Configurações e cole sua chave.');
 
   const audioBuffer = Buffer.from(audioBase64, 'base64');
   const form = new FormData();
   form.append('file', new Blob([audioBuffer], { type: 'audio/webm' }), 'audio.webm');
   form.append('model', 'whisper-1');
-  form.append('language', 'pt');
+  form.append('language', language);
 
   const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
     method: 'POST',

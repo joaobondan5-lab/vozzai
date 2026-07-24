@@ -12,17 +12,21 @@ let mediaRecorder: MediaRecorder | null = null;
 let chunks: Blob[] = [];
 
 async function startRecording(): Promise<void> {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  chunks = [];
-  mediaRecorder = new MediaRecorder(stream);
-  mediaRecorder.ondataavailable = (e: BlobEvent) => chunks.push(e.data);
-  mediaRecorder.onstop = async () => {
-    const blob = new Blob(chunks, { type: 'audio/webm' });
-    const buffer = await blob.arrayBuffer();
-    (window as any).vozza.sendAudio(arrayBufferToBase64(buffer));
-    stream.getTracks().forEach((t) => t.stop());
-  };
-  mediaRecorder.start();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    chunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = (e: BlobEvent) => chunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(chunks, { type: 'audio/webm' });
+      const buffer = await blob.arrayBuffer();
+      (window as any).vozza.sendAudio(arrayBufferToBase64(buffer));
+      stream.getTracks().forEach((t) => t.stop());
+    };
+    mediaRecorder.start();
+  } catch (err) {
+    (window as any).vozza.reportError(`Não consegui acessar o microfone: ${String(err)}`);
+  }
 }
 
 function stopRecording(): void {
