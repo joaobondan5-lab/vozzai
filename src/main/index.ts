@@ -1,9 +1,10 @@
-import { app, BrowserWindow, globalShortcut, ipcMain, clipboard, Notification, Tray, Menu, nativeImage } from 'electron';
+import { app, BrowserWindow, globalShortcut, ipcMain, Notification, Tray, Menu, nativeImage } from 'electron';
 import * as path from 'path';
 import { loadEnv } from './env';
 import { loadConfig, saveConfig, maskKey, VozzaConfig } from './config';
 import { transcribeAudio } from './transcription';
 import { cleanupText } from './cleanup';
+import { pasteAtCursor } from './paste';
 
 loadEnv();
 
@@ -121,8 +122,13 @@ app.whenReady().then(() => {
     try {
       const rawText = await transcribeAudio(audioBase64, config.openaiApiKey, config.language);
       const finalText = await cleanupText(rawText, config.openaiApiKey);
-      clipboard.writeText(finalText);
-      new Notification({ title: 'Vozza', body: 'Texto copiado ✅ (Cmd+V para colar)' }).show();
+      const result = await pasteAtCursor(finalText);
+      if (result === 'clipboard-only') {
+        new Notification({
+          title: 'Vozza',
+          body: 'Texto copiado — Cmd+V para colar. Libere a Acessibilidade para colar sozinho.',
+        }).show();
+      }
     } catch (err) {
       console.log(`[vozza] erro: ${String(err)}`);
       new Notification({ title: 'Vozza — erro', body: String(err) }).show();

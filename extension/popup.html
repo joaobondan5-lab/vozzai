@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      width: 280px; margin: 0; padding: 18px; background: #fff; color: #111319;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    h1 { font-size: 15.5px; margin: 0 0 14px; display: flex; align-items: center; gap: 8px; }
+    input {
+      width: 100%; box-sizing: border-box; padding: 9px 11px; margin-bottom: 8px;
+      border: 1px solid #DBD9D2; border-radius: 8px; font: inherit; font-size: 13.5px;
+    }
+    button {
+      width: 100%; padding: 10px; border: none; border-radius: 8px;
+      background: #1B34C4; color: #fff; font: inherit; font-weight: 650; font-size: 13.5px;
+      cursor: pointer;
+    }
+    button.ghost { background: transparent; color: #5B606B; margin-top: 8px; }
+    .msg { font-size: 12px; color: #D93A1D; margin-top: 8px; min-height: 14px; }
+    .status { font-size: 13.5px; }
+    .usage { font-size: 12px; color: #5B606B; margin-top: 6px; }
+    .hint { font-size: 11px; color: #8B909B; margin-top: 14px; border-top: 1px solid #eee; padding-top: 10px; }
+    .toggle { text-align: center; font-size: 12px; color: #1B34C4; cursor: pointer; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <h1>🎙️ Vozza</h1>
+
+  <div id="loggedOut">
+    <input id="email" type="email" placeholder="seu@email.com.br" autocomplete="username" />
+    <input id="password" type="password" placeholder="senha" autocomplete="current-password" />
+    <button id="submitBtn">Entrar</button>
+    <p class="toggle" id="toggleMode">Ainda não tem conta? Criar conta</p>
+    <p class="msg" id="msg"></p>
+  </div>
+
+  <div id="loggedIn" style="display:none">
+    <p class="status" id="status"></p>
+    <p class="usage" id="usage"></p>
+    <button class="ghost" id="logoutBtn">Sair</button>
+  </div>
+
+  <p class="hint">Atalho: Ctrl+Shift+Espaço (⌘+Shift+Espaço no Mac)</p>
+  <script src="popup.js"></script>
+</body>
+</html>
