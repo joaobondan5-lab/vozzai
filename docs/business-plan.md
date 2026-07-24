@@ -38,8 +38,9 @@ O custo por usuário depende diretamente do uso de APIs de terceiros
 
 ## Riscos
 
-- Dependência de provedores externos (OpenAI/Anthropic) — preço e
-  disponibilidade da API podem mudar
+- Dependência de um único provedor externo (OpenAI) — preço e
+  disponibilidade da API podem mudar; vale reavaliar multi-provedor se o custo
+  ou a confiabilidade virarem problema
 - Barreira de permissão do macOS/Windows para captura de microfone (primeira
   execução exige autorização manual do usuário)
 - Diferenciação real precisa vir de qualidade em PT-BR, não só de preço
