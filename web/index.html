@@ -281,6 +281,34 @@
     .ft-col a:hover { color: var(--ink); }
     .ft-bottom { margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; color: var(--faint); font-size: 13.5px; }
 
+    /* Apps strip */
+    .apps { border-block: 1px solid var(--line); }
+    .apps-inner { padding: 34px 0; text-align: center; }
+    .apps-inner .eyebrow { display: block; margin-bottom: 20px; }
+    .apps-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 14px; }
+    .app-chip { font-size: 14.5px; font-weight: 600; color: var(--muted); padding: 8px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+
+    /* Speed comparison */
+    .speed { display: grid; grid-template-columns: 1fr; gap: 18px; max-width: 640px; }
+    .speed-row { display: grid; grid-template-columns: 88px 1fr; align-items: center; gap: 18px; }
+    .speed-label { font-size: 14.5px; font-weight: 650; }
+    .speed-bar { height: 46px; border-radius: 12px; display: flex; align-items: center; padding: 0 16px; color: #fff; font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; transform-origin: left; }
+    .speed-bar.type { background: color-mix(in srgb, var(--muted) 55%, var(--line)); width: 27%; color: var(--ink); }
+    .speed-bar.talk { background: linear-gradient(90deg, var(--brand), var(--accent)); width: 100%; color: #10221E; }
+    .speed-note { color: var(--muted); font-size: 13.5px; margin-top: 4px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal.in .speed-bar { animation: grow .9s cubic-bezier(.2,.8,.2,1) both; }
+      @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    }
+
+    /* Use cases */
+    .cases { display: grid; grid-template-columns: 1fr; gap: 18px; }
+    @media (min-width: 640px) { .cases { grid-template-columns: 1fr 1fr; } }
+    .case { padding: 28px 26px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); transition: transform .18s ease, border-color .18s ease; }
+    .case:hover { transform: translateY(-3px); border-color: var(--brand); }
+    .case-role { font-size: 12.5px; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; color: var(--accent); margin-bottom: 11px; }
+    .case p { color: var(--muted); font-size: 15.5px; }
+
     /* Reveal */
     .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
     .reveal.in { opacity: 1; transform: none; }
@@ -359,6 +387,25 @@
       </div>
     </div>
 
+    <!-- APPS STRIP -->
+    <div class="apps">
+      <div class="wrap apps-inner reveal">
+        <span class="eyebrow">Funciona em todos os seus apps</span>
+        <div class="apps-row">
+          <span class="app-chip">Gmail</span>
+          <span class="app-chip">WhatsApp</span>
+          <span class="app-chip">Notion</span>
+          <span class="app-chip">Slack</span>
+          <span class="app-chip">Google Docs</span>
+          <span class="app-chip">VS Code</span>
+          <span class="app-chip">Instagram</span>
+          <span class="app-chip">ChatGPT</span>
+          <span class="app-chip">Word</span>
+          <span class="app-chip">e qualquer campo de texto</span>
+        </div>
+      </div>
+    </div>
+
     <!-- FEATURES -->
     <section id="recursos">
       <div class="wrap">
@@ -427,6 +474,56 @@
             <h3>O texto aparece</h3>
             <p>Pronto e revisado, exatamente onde o seu cursor estava. Sem copiar, sem colar, sem trocar de janela.</p>
             <div class="keys"><kbd>✓ Colado</kbd></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPEED -->
+    <section id="velocidade">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Velocidade</span>
+          <h2>Falar é mais rápido que digitar. Muito.</h2>
+          <p>A pessoa média digita perto de 40 palavras por minuto. Falando, passa de 150 — e com o Vozza isso vira texto pronto.</p>
+        </div>
+        <div class="speed reveal">
+          <div class="speed-row">
+            <span class="speed-label">Digitando</span>
+            <div class="speed-bar type">~40 ppm</div>
+          </div>
+          <div class="speed-row">
+            <span class="speed-label">Falando</span>
+            <div class="speed-bar talk">~150 ppm</div>
+          </div>
+        </div>
+        <p class="speed-note">ppm = palavras por minuto. Valores médios de referência, não uma medição do app.</p>
+      </div>
+    </section>
+
+    <!-- USE CASES -->
+    <section id="casos">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Casos de uso</span>
+          <h2>Pra quem o Vozza foi feito.</h2>
+        </div>
+        <div class="cases reveal">
+          <div class="case">
+            <div class="case-role">Advocacia</div>
+            <p>Peças, e-mails e despachos ditados com a terminologia jurídica certa, em vez de horas digitando.</p>
+          </div>
+          <div class="case">
+            <div class="case-role">Atendimento e vendas</div>
+            <p>Responder cliente na velocidade da fala, sem perder o tom nem travar na fila de mensagens.</p>
+          </div>
+          <div class="case">
+            <div class="case-role">Criadores de conteúdo</div>
+            <p>Roteiros, legendas e ideias capturados no exato momento em que surgem na cabeça.</p>
+          </div>
+          <div class="case">
+            <div class="case-role">Devs e produto</div>
+            <p>Documentação, descrições de PR e mensagens longas ditadas enquanto o raciocínio ainda está fresco.</p>
           </div>
         </div>
       </div>
