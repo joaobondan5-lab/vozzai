@@ -1,6 +1,5 @@
-export async function cleanupText(rawText: string): Promise<string> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return rawText;
+export async function cleanupText(rawText: string, apiKey: string): Promise<string> {
+  if (!apiKey || !rawText.trim()) return rawText;
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
