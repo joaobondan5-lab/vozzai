@@ -7,6 +7,21 @@ import { syncSubscription } from './mercadopago';
 const app = express();
 app.use(express.json({ limit: '25mb' }));
 
+// CORS: a landing page e a extensão de Chrome chamam esta API a partir do
+// navegador, de origens diferentes. Reflete a origem em vez de usar "*"
+// porque a rota usa Authorization, e navegadores não aceitam "*" nesse caso.
+app.use((req, res, next) => {
+  const origin = req.header('origin');
+  if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
+
 function bearer(req: express.Request): string | undefined {
   const header = req.header('authorization') || '';
   return header.startsWith('Bearer ') ? header.slice(7) : undefined;
