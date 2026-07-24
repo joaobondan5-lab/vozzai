@@ -16,7 +16,7 @@ e devolve o texto já formatado, pronto para colar em qualquer lugar.
 ```bash
 npm install
 cp .env.example .env
-# edite o .env e preencha DEEPGRAM_API_KEY e ANTHROPIC_API_KEY
+# edite o .env e preencha OPENAI_API_KEY
 npm start
 ```
 
