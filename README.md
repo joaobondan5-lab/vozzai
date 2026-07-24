@@ -21,7 +21,20 @@ npm start
 ```
 
 Na primeira execução, o macOS vai pedir permissão de microfone — autorize
-para o app funcionar.
+para o app funcionar. Você também pode colar a chave da OpenAI direto na janela
+de Configurações do app (acessível pelo ícone 🎙️ na barra de menu), sem editar
+o `.env` na mão.
+
+## Gerando o app (.app / .dmg)
+
+```bash
+npm run dist
+```
+
+Gera um `Vozza.app` que abre com duplo clique e um instalador `.dmg` em
+`release/` (não versionado). O build é para Mac Apple Silicon (arm64) e não é
+assinado — no primeiro uso, clique com o botão direito no app e escolha "Abrir"
+para passar pelo Gatekeeper.
 
 ## Estrutura
 
