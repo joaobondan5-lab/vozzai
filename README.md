@@ -28,6 +28,8 @@ para o app funcionar.
 - `src/main` — processo principal do Electron (atalho global, transcrição,
   limpeza de texto, clipboard)
 - `src/renderer` — janela oculta responsável por gravar o áudio do microfone
+- `web/index.html` — landing page (arquivo único, autocontido). Abra direto no
+  navegador para ver.
 - `docs/business-plan.md` e `docs/marketing-plan.md` — rascunhos iniciais de
   negócio e marketing
 
