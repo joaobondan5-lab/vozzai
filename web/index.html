@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vozza — ditado por voz com IA, feito pro Brasil</title>
+  <meta name="description" content="Você fala, o Vozza escreve. Ditado por voz com IA que já entrega o texto pronto — em qualquer app, com qualidade de verdade em português e preço em real." />
+  <style>
+    /* ---------- Tokens ---------- */
+    :root {
+      --bg: #F5F2EC;
+      --surface: #FDFBF6;
+      --surface-2: #EFEAE0;
+      --ink: #17211E;
+      --muted: #57655F;
+      --faint: #8A9791;
+      --line: #E2DBCD;
+      --brand: #0E6E5C;
+      --brand-strong: #0A5748;
+      --brand-ink: #FDFBF6;
+      --accent: #E0951C;
+      --accent-2: #E15B3D;
+      --focus: #0E6E5C;
+      --shadow: 24px 40px 80px -48px rgba(23, 33, 30, .45);
+      --wave-a: #0E6E5C;
+      --wave-b: #E0951C;
+      --wave-c: #E15B3D;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0B1A17;
+        --surface: #10221E;
+        --surface-2: #16302A;
+        --ink: #ECEFEA;
+        --muted: #97A79F;
+        --faint: #64766E;
+        --line: #1F332D;
+        --brand: #38C79A;
+        --brand-strong: #2FB489;
+        --brand-ink: #06110E;
+        --accent: #F5B646;
+        --accent-2: #FB7C5F;
+        --focus: #38C79A;
+        --shadow: 24px 40px 90px -50px rgba(0, 0, 0, .7);
+        --wave-a: #38C79A;
+        --wave-b: #F5B646;
+        --wave-c: #FB7C5F;
+      }
+    }
+    :root[data-theme="light"] {
+      --bg: #F5F2EC; --surface: #FDFBF6; --surface-2: #EFEAE0; --ink: #17211E;
+      --muted: #57655F; --faint: #8A9791; --line: #E2DBCD; --brand: #0E6E5C;
+      --brand-strong: #0A5748; --brand-ink: #FDFBF6; --accent: #E0951C; --accent-2: #E15B3D;
+      --focus: #0E6E5C; --shadow: 24px 40px 80px -48px rgba(23, 33, 30, .45);
+      --wave-a: #0E6E5C; --wave-b: #E0951C; --wave-c: #E15B3D;
+    }
+    :root[data-theme="dark"] {
+      --bg: #0B1A17; --surface: #10221E; --surface-2: #16302A; --ink: #ECEFEA;
+      --muted: #97A79F; --faint: #64766E; --line: #1F332D; --brand: #38C79A;
+      --brand-strong: #2FB489; --brand-ink: #06110E; --accent: #F5B646; --accent-2: #FB7C5F;
+      --focus: #38C79A; --shadow: 24px 40px 90px -50px rgba(0, 0, 0, .7);
+      --wave-a: #38C79A; --wave-b: #F5B646; --wave-c: #FB7C5F;
+    }
+
+    /* ---------- Base ---------- */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 84px; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+    h1, h2, h3 { text-wrap: balance; letter-spacing: -0.02em; line-height: 1.05; margin: 0; }
+    p { margin: 0; }
+    a { color: inherit; text-decoration: none; }
+    img, canvas { max-width: 100%; display: block; }
+    ::selection { background: var(--accent); color: #17211E; }
+    :focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
+
+    .wrap { width: min(1140px, 100% - 48px); margin-inline: auto; }
+    .voice { font-family: Georgia, "Times New Roman", serif; font-style: italic; letter-spacing: 0; }
+    .eyebrow {
+      font-size: 12.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--brand);
+    }
+    .grad-text {
+      background: linear-gradient(100deg, var(--brand), var(--accent) 70%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      font: inherit; font-weight: 650; font-size: 15.5px;
+      padding: 13px 22px; border-radius: 999px; border: 1.5px solid transparent;
+      cursor: pointer; transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--ink); color: var(--bg); }
+    .btn-primary:hover { background: var(--brand); color: var(--brand-ink); transform: translateY(-2px); }
+    .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+    .btn-ghost:hover { border-color: var(--brand); color: var(--brand); transform: translateY(-2px); }
+    .btn-accent { background: var(--accent); color: #17211E; }
+    .btn-accent:hover { transform: translateY(-2px); filter: brightness(1.05); }
+
+    /* ---------- Nav ---------- */
+    header.nav {
+      position: sticky; top: 0; z-index: 50;
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: saturate(1.4) blur(14px);
+      border-bottom: 1px solid transparent; transition: border-color .3s ease;
+    }
+    header.nav.scrolled { border-color: var(--line); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 750; font-size: 19px; letter-spacing: -0.03em; }
+    .brand .mark { width: 26px; height: 26px; }
+    .brand .mark rect { fill: var(--brand); }
+    .brand .mark rect:nth-child(2) { fill: var(--accent); }
+    .brand .mark rect:nth-child(4) { fill: var(--accent-2); }
+    .nav-links { display: flex; align-items: center; gap: 30px; }
+    .nav-links a { font-size: 15px; color: var(--muted); font-weight: 550; transition: color .16s ease; }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .icon-btn {
+      width: 40px; height: 40px; border-radius: 999px; border: 1.5px solid var(--line);
+      background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center;
+      transition: border-color .16s ease, color .16s ease;
+    }
+    .icon-btn:hover { border-color: var(--brand); color: var(--brand); }
+    .icon-btn svg { width: 18px; height: 18px; }
+    .sun { display: none; } :root[data-theme="dark"] .sun { display: block; } :root[data-theme="dark"] .moon { display: none; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sun { display: block; } :root:not([data-theme="light"]) .moon { display: none; } }
+    .nav-cta { display: none; }
+    @media (min-width: 720px) { .nav-cta { display: inline-flex; } }
+    .nav-links { display: none; }
+    @media (min-width: 900px) { .nav-links { display: flex; } }
+
+    /* ---------- Hero ---------- */
+    .hero { padding: clamp(48px, 8vw, 104px) 0 clamp(40px, 6vw, 72px); }
+    .hero-grid { display: grid; grid-template-columns: 1fr; gap: clamp(40px, 5vw, 64px); align-items: center; }
+    @media (min-width: 940px) { .hero-grid { grid-template-columns: 1.05fr 0.95fr; } }
+    .hero h1 { font-size: clamp(40px, 6.4vw, 72px); font-weight: 780; margin-top: 20px; }
+    .hero h1 .voice { font-weight: 500; }
+    .hero-sub { font-size: clamp(17px, 2.1vw, 20px); color: var(--muted); margin-top: 24px; max-width: 30ch; }
+    .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
+    .hero-note { margin-top: 18px; font-size: 14px; color: var(--faint); display: flex; align-items: center; gap: 8px; }
+    .hero-note svg { width: 16px; height: 16px; color: var(--brand); flex: none; }
+
+    /* Hero device card */
+    .device {
+      position: relative; background: var(--surface); border: 1px solid var(--line);
+      border-radius: 22px; box-shadow: var(--shadow); padding: 20px; overflow: hidden;
+    }
+    .device-bar { display: flex; align-items: center; gap: 7px; margin-bottom: 16px; }
+    .device-bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--line); display: block; }
+    .device-bar span { margin-left: auto; font-size: 12px; color: var(--faint); font-weight: 600; letter-spacing: .02em; }
+    .rec-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-2); box-shadow: 0 0 0 0 var(--accent-2); }
+    .rec-label { font-size: 13.5px; font-weight: 650; color: var(--muted); }
+    .kbd { margin-left: auto; font-size: 12px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); border-radius: 7px; padding: 3px 8px; font-weight: 600; }
+    canvas#wave { width: 100%; height: 96px; border-radius: 12px; background: var(--surface-2); }
+    .transcript { margin-top: 16px; border-top: 1px dashed var(--line); padding-top: 16px; }
+    .transcript .spoken { font-family: Georgia, serif; font-style: italic; color: var(--faint); font-size: 15px; }
+    .transcript .clean { margin-top: 8px; font-size: 16.5px; line-height: 1.55; color: var(--ink); font-weight: 480; }
+    .transcript .clean .cursor { display: inline-block; width: 2px; height: 1.05em; background: var(--brand); margin-left: 1px; vertical-align: -2px; animation: blink 1.05s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { .transcript .clean .cursor { animation: none; } }
+
+    /* ---------- Stat strip ---------- */
+    .stats { border-block: 1px solid var(--line); }
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 760px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+    .stat { padding: 30px 4px; text-align: left; border-left: 1px solid var(--line); padding-left: 22px; }
+    .stat:first-child { border-left: 0; padding-left: 4px; }
+    @media (max-width: 759px) { .stat:nth-child(odd) { border-left: 0; padding-left: 4px; } .stat { padding-block: 22px; } }
+    .stat .n { font-size: clamp(28px, 4vw, 38px); font-weight: 760; letter-spacing: -0.03em; color: var(--brand); font-variant-numeric: tabular-nums; }
+    .stat .l { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
+
+    /* ---------- Sections ---------- */
+    section { padding: clamp(64px, 9vw, 112px) 0; }
+    .sec-head { max-width: 40ch; margin-bottom: clamp(40px, 5vw, 60px); }
+    .sec-head h2 { font-size: clamp(30px, 4.6vw, 46px); font-weight: 740; margin-top: 14px; }
+    .sec-head p { color: var(--muted); margin-top: 18px; font-size: 18px; }
+
+    /* Features */
+    .feat-grid { display: grid; grid-template-columns: 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+    @media (min-width: 640px) { .feat-grid { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 940px) { .feat-grid { grid-template-columns: repeat(3, 1fr); } }
+    .feat { background: var(--surface); padding: 30px 28px; display: flex; flex-direction: column; gap: 14px; transition: background .18s ease; }
+    .feat:hover { background: var(--surface-2); }
+    .feat .ic { width: 40px; height: 40px; border-radius: 11px; background: color-mix(in srgb, var(--brand) 14%, transparent); color: var(--brand); display: grid; place-items: center; }
+    .feat .ic svg { width: 21px; height: 21px; }
+    .feat h3 { font-size: 19px; font-weight: 680; letter-spacing: -0.01em; }
+    .feat p { color: var(--muted); font-size: 15.5px; }
+
+    /* Steps */
+    .steps { display: grid; grid-template-columns: 1fr; gap: 24px; counter-reset: s; }
+    @media (min-width: 820px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+    .step { position: relative; padding: 30px 26px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; }
+    .step .num { font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+    .step h3 { font-size: 21px; font-weight: 700; margin-top: 12px; }
+    .step p { color: var(--muted); font-size: 15.5px; margin-top: 10px; }
+    .step .keys { margin-top: 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .step .keys kbd {
+      font: inherit; font-size: 13px; font-weight: 600; background: var(--surface-2);
+      border: 1px solid var(--line); border-bottom-width: 2.5px; border-radius: 8px; padding: 5px 10px; color: var(--ink);
+    }
+
+    /* Comparison */
+    .compare-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 18px; -webkit-overflow-scrolling: touch; }
+    table.compare { width: 100%; border-collapse: collapse; min-width: 560px; background: var(--surface); }
+    table.compare th, table.compare td { text-align: left; padding: 18px 22px; border-bottom: 1px solid var(--line); font-size: 15.5px; }
+    table.compare thead th { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 700; }
+    table.compare thead th.vz { color: var(--brand); }
+    table.compare td.vz { font-weight: 620; color: var(--ink); }
+    table.compare td.them { color: var(--muted); }
+    table.compare tbody tr:last-child td { border-bottom: 0; }
+    table.compare .yes { color: var(--brand); font-weight: 700; }
+    table.compare th.vz, table.compare td.vz { background: color-mix(in srgb, var(--brand) 8%, var(--surface)); }
+    table.compare tr td:first-child { font-weight: 600; }
+
+    /* Pricing */
+    .price-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
+    @media (min-width: 900px) { .price-grid { grid-template-columns: repeat(3, 1fr); align-items: stretch; } }
+    .plan { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 30px 28px; display: flex; flex-direction: column; }
+    .plan.feat-plan { border-color: var(--brand); box-shadow: var(--shadow); position: relative; }
+    .plan .tag { position: absolute; top: -13px; left: 28px; background: var(--brand); color: var(--brand-ink); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; }
+    .plan .pname { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+    .plan .pprice { margin-top: 16px; display: flex; align-items: baseline; gap: 4px; }
+    .plan .pprice .amt { font-size: 44px; font-weight: 780; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+    .plan .pprice .per { font-size: 15px; color: var(--muted); font-weight: 550; }
+    .plan .psub { color: var(--muted); font-size: 14.5px; margin-top: 8px; min-height: 40px; }
+    .plan ul { list-style: none; padding: 0; margin: 24px 0 28px; display: flex; flex-direction: column; gap: 12px; }
+    .plan li { display: flex; gap: 11px; font-size: 15px; color: var(--ink); align-items: flex-start; }
+    .plan li svg { width: 18px; height: 18px; color: var(--brand); flex: none; margin-top: 3px; }
+    .plan li.off { color: var(--faint); }
+    .plan li.off svg { color: var(--faint); }
+    .plan .btn { width: 100%; justify-content: center; margin-top: auto; }
+
+    /* FAQ */
+    .faq { display: grid; grid-template-columns: 1fr; gap: 0; border-top: 1px solid var(--line); }
+    details.qa { border-bottom: 1px solid var(--line); }
+    details.qa summary { list-style: none; cursor: pointer; padding: 24px 4px; display: flex; align-items: center; justify-content: space-between; gap: 20px; font-size: 18px; font-weight: 620; }
+    details.qa summary::-webkit-details-marker { display: none; }
+    details.qa summary .plus { width: 22px; height: 22px; flex: none; position: relative; transition: transform .25s ease; color: var(--brand); }
+    details.qa summary .plus::before, details.qa summary .plus::after { content: ""; position: absolute; background: currentColor; border-radius: 2px; }
+    details.qa summary .plus::before { top: 10px; left: 2px; right: 2px; height: 2.5px; }
+    details.qa summary .plus::after { left: 10px; top: 2px; bottom: 2px; width: 2.5px; transition: opacity .25s ease; }
+    details.qa[open] summary .plus::after { opacity: 0; }
+    details.qa .ans { padding: 0 4px 26px; color: var(--muted); font-size: 16px; max-width: 68ch; }
+
+    /* CTA */
+    .cta-band { background: var(--ink); color: var(--bg); border-radius: 26px; padding: clamp(40px, 6vw, 72px) clamp(28px, 5vw, 60px); text-align: center; position: relative; overflow: hidden; }
+    .cta-band h2 { font-size: clamp(30px, 4.6vw, 48px); font-weight: 760; color: var(--bg); }
+    .cta-band p { color: color-mix(in srgb, var(--bg) 74%, transparent); margin-top: 16px; font-size: 18px; }
+    .cta-band .glow { position: absolute; inset: auto -10% -60% -10%; height: 300px; background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 50%, transparent), transparent); filter: blur(20px); pointer-events: none; }
+    form.wait { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 30px; position: relative; z-index: 1; }
+    form.wait input {
+      font: inherit; font-size: 16px; padding: 14px 18px; border-radius: 999px; border: 1.5px solid transparent;
+      background: color-mix(in srgb, var(--bg) 16%, transparent); color: var(--bg); width: min(340px, 100%);
+    }
+    form.wait input::placeholder { color: color-mix(in srgb, var(--bg) 55%, transparent); }
+    form.wait input:focus-visible { outline-color: var(--accent); background: color-mix(in srgb, var(--bg) 24%, transparent); }
+    .wait-ok { margin-top: 18px; color: var(--accent); font-weight: 600; font-size: 15.5px; min-height: 22px; position: relative; z-index: 1; }
+
+    /* Footer */
+    footer.ft { border-top: 1px solid var(--line); padding: 56px 0 40px; }
+    .ft-grid { display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; align-items: flex-start; }
+    .ft-brand { max-width: 30ch; }
+    .ft-brand p { color: var(--muted); font-size: 14.5px; margin-top: 14px; }
+    .ft-cols { display: flex; gap: 56px; flex-wrap: wrap; }
+    .ft-col h4 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .12em; color: var(--faint); font-weight: 700; margin-bottom: 14px; }
+    .ft-col a { display: block; color: var(--muted); font-size: 15px; padding: 5px 0; transition: color .16s ease; }
+    .ft-col a:hover { color: var(--ink); }
+    .ft-bottom { margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; color: var(--faint); font-size: 13.5px; }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+  </style>
+</head>
+<body>
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top" aria-label="Vozza — início">
+        <svg class="mark" viewBox="0 0 26 26" aria-hidden="true">
+          <rect x="1"  y="9"  width="3.4" height="8"  rx="1.7"></rect>
+          <rect x="7"  y="4"  width="3.4" height="18" rx="1.7"></rect>
+          <rect x="13" y="10" width="3.4" height="6"  rx="1.7"></rect>
+          <rect x="19" y="6"  width="3.4" height="14" rx="1.7"></rect>
+        </svg>
+        Vozza
+      </a>
+      <nav class="nav-links" aria-label="Seções">
+        <a href="#recursos">Recursos</a>
+        <a href="#como">Como funciona</a>
+        <a href="#precos">Preços</a>
+        <a href="#perguntas">Perguntas</a>
+      </nav>
+      <div class="nav-right">
+        <button class="icon-btn" id="theme" aria-label="Alternar tema claro e escuro">
+          <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+        </button>
+        <a class="btn btn-primary nav-cta" href="#precos">Entrar na lista</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow">Ditado por voz com IA · feito no Brasil</span>
+          <h1>Você <span class="voice grad-text">fala</span>,<br>o Vozza escreve.</h1>
+          <p class="hero-sub">Aperte um atalho, fale naturalmente, e o texto já sai pronto — pontuado, formatado e sem "é… tipo…". Em qualquer aplicativo do seu Mac.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#precos">Entrar na lista de espera</a>
+            <a class="btn btn-ghost" href="#como">Ver como funciona</a>
+          </div>
+          <p class="hero-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+            14 dias de Pro grátis · sem cartão · cancela quando quiser
+          </p>
+        </div>
+
+        <div class="device reveal" aria-hidden="true">
+          <div class="device-bar"><i></i><i></i><i></i><span>Vozza</span></div>
+          <div class="rec-row">
+            <span class="rec-dot" id="recDot"></span>
+            <span class="rec-label" id="recLabel">Ouvindo…</span>
+            <span class="kbd">⌘ ⇧ Espaço</span>
+          </div>
+          <canvas id="wave" width="600" height="192"></canvas>
+          <div class="transcript">
+            <p class="spoken">"então assim ó preciso mandar o relatório pro cliente ainda hoje sem falta"</p>
+            <p class="clean"><span id="typed"></span><span class="cursor"></span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="wrap stats-grid">
+        <div class="stat"><div class="n">4×</div><div class="l">mais rápido que digitar</div></div>
+        <div class="stat"><div class="n">PT-BR</div><div class="l">nativo, não traduzido</div></div>
+        <div class="stat"><div class="n">∞</div><div class="l">funciona em qualquer app</div></div>
+        <div class="stat"><div class="n">R$</div><div class="l">preço em real, com Pix</div></div>
+      </div>
+    </div>
+
+    <!-- FEATURES -->
+    <section id="recursos">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Recursos</span>
+          <h2>Feito pra quem escreve o dia inteiro.</h2>
+          <p>Advogados, atendimento, criadores, devs — gente que perde horas digitando o que poderia simplesmente falar.</p>
+        </div>
+        <div class="feat-grid reveal">
+          <div class="feat">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+            <h3>Já sai pronto</h3>
+            <p>Pontuação, maiúsculas e parágrafos no lugar. A IA limpa as hesitações e devolve o texto do jeito que você mandaria.</p>
+          </div>
+          <div class="feat">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M3 9h18M9 21V9"></path></svg></div>
+            <h3>Em qualquer aplicativo</h3>
+            <p>Gmail, WhatsApp, Notion, VS Code, campo de busca — se dá pra digitar, dá pra falar. O texto aparece onde o cursor está.</p>
+          </div>
+          <div class="feat">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10a7 7 0 0 1-14 0M12 17v4"></path></svg></div>
+            <h3>Edite com a voz</h3>
+            <p>Selecione um trecho e diga "deixa mais formal" ou "vira tópicos". O modo comando reescreve sem você tocar no teclado.</p>
+          </div>
+          <div class="feat">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"></path></svg></div>
+            <h3>Entende o Brasil</h3>
+            <p>Gírias, sotaques regionais e termos técnicos em português. Nada de ferramenta gringa que tropeça no "uai" e no "massa".</p>
+          </div>
+          <div class="feat">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></div>
+            <h3>Dicionário pessoal</h3>
+            <p>Nomes de clientes, sua empresa, o jargão do seu trabalho — cadastre uma vez e o Vozza escreve sempre certo.</p>
+          </div>
+          <div class="feat">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+            <h3>Preço em real</h3>
+            <p>Assinatura em BRL, Pix e nota fiscal. Sem cobrança em dólar, sem IOF, sem surpresa na fatura do cartão.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW -->
+    <section id="como">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como funciona</span>
+          <h2>Três passos. Sem tirar as mãos do fluxo.</h2>
+        </div>
+        <div class="steps reveal">
+          <div class="step">
+            <div class="num">Passo 01</div>
+            <h3>Aperte o atalho</h3>
+            <p>Um atalho global que funciona esteja você onde estiver na tela. Segura, ou aperta pra ligar e desligar.</p>
+            <div class="keys"><kbd>⌘ Cmd</kbd><kbd>⇧ Shift</kbd><kbd>Espaço</kbd></div>
+          </div>
+          <div class="step">
+            <div class="num">Passo 02</div>
+            <h3>Fale naturalmente</h3>
+            <p>Do jeito que você falaria com um colega. Pode gaguejar, se corrigir, mudar de ideia no meio — a IA arruma.</p>
+            <div class="keys"><kbd>🎙️ Ouvindo…</kbd></div>
+          </div>
+          <div class="step">
+            <div class="num">Passo 03</div>
+            <h3>O texto aparece</h3>
+            <p>Pronto e revisado, exatamente onde o seu cursor estava. Sem copiar, sem colar, sem trocar de janela.</p>
+            <div class="keys"><kbd>✓ Colado</kbd></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARISON -->
+    <section id="comparar">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Vozza vs. apps gringos</span>
+          <h2>A mesma mágica, sem o pedágio internacional.</h2>
+          <p>Ferramentas como o Wispr Flow são ótimas — mas cobram em dólar e tratam o português como só mais um dos 100 idiomas.</p>
+        </div>
+        <div class="compare-scroll reveal">
+          <table class="compare">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="vz">Vozza</th>
+                <th>Apps gringos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Preço</td><td class="vz">A partir de R$ 29,90/mês</td><td class="them">US$ 15/mês (~R$ 85) + IOF</td></tr>
+              <tr><td>Pagamento</td><td class="vz">Pix, cartão nacional e nota fiscal</td><td class="them">Só cartão internacional</td></tr>
+              <tr><td>Português do Brasil</td><td class="vz">Foco total, gírias e sotaques</td><td class="them">1 entre 100+ idiomas</td></tr>
+              <tr><td>Suporte</td><td class="vz">Em português, fuso do Brasil</td><td class="them">Inglês, outro fuso</td></tr>
+              <tr><td>Texto já formatado</td><td class="vz"><span class="yes">Sim</span></td><td class="them">Sim</td></tr>
+              <tr><td>Edição por voz</td><td class="vz"><span class="yes">Sim</span></td><td class="them">Sim</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="precos">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Preços</span>
+          <h2>Comece de graça. Assine quando fizer sentido.</h2>
+          <p>Preços de lançamento, em real. Entre na lista de espera e garanta a condição de fundador.</p>
+        </div>
+        <div class="price-grid reveal">
+          <!-- Free -->
+          <div class="plan">
+            <div class="pname">Grátis</div>
+            <div class="pprice"><span class="amt">R$ 0</span></div>
+            <p class="psub">Pra experimentar o ditado no dia a dia, sem compromisso.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>2.000 palavras por semana</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Português do Brasil nativo</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Atalho global em qualquer app</li>
+              <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>Modo comando por voz</li>
+            </ul>
+            <a class="btn btn-ghost" href="#lista">Começar grátis</a>
+          </div>
+          <!-- Pro -->
+          <div class="plan feat-plan">
+            <span class="tag">Mais popular</span>
+            <div class="pname">Pro</div>
+            <div class="pprice"><span class="amt">R$ 29,90</span><span class="per">/mês</span></div>
+            <p class="psub">Ou R$ 24,90/mês no plano anual. Pra quem vive escrevendo.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Palavras <strong>ilimitadas</strong></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Modo comando por voz</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Dicionário pessoal ilimitado</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Suporte prioritário em PT-BR</li>
+            </ul>
+            <a class="btn btn-accent" href="#lista">Entrar na lista</a>
+          </div>
+          <!-- Team -->
+          <div class="plan">
+            <div class="pname">Times</div>
+            <div class="pprice"><span class="amt">Sob consulta</span></div>
+            <p class="psub">Pra escritórios e equipes que querem uma assinatura só.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Tudo do Pro, pra todo mundo</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Cobrança centralizada por NF</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Painel e dicionário da equipe</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Onboarding dedicado</li>
+            </ul>
+            <a class="btn btn-ghost" href="#lista">Falar com a gente</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="perguntas">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas</span>
+          <h2>O que costumam perguntar.</h2>
+        </div>
+        <div class="faq reveal">
+          <details class="qa" open>
+            <summary>Preciso de internet pra usar?<span class="plus"></span></summary>
+            <div class="ans">Sim. A transcrição roda na nuvem pra entregar qualidade e velocidade — é o que garante o texto saindo pronto em segundos. Uma versão com processamento no próprio computador está no roadmap.</div>
+          </details>
+          <details class="qa">
+            <summary>Funciona no Windows?<span class="plus"></span></summary>
+            <div class="ans">O primeiro lançamento é pra Mac. O app pra Windows está planejado — entre na lista de espera que a gente avisa você em primeira mão quando sair.</div>
+          </details>
+          <details class="qa">
+            <summary>Meus áudios ficam guardados? E a privacidade?<span class="plus"></span></summary>
+            <div class="ans">O áudio é usado só pra transcrever o que você falou e depois descartado. A gente não treina nenhuma IA com a sua voz nem vende seus dados. Você fala, vira texto, acabou.</div>
+          </details>
+          <details class="qa">
+            <summary>Como funciona a cobrança em real?<span class="plus"></span></summary>
+            <div class="ans">Assinatura mensal ou anual em BRL, com Pix e cartão nacional. Emitimos nota fiscal e você cancela quando quiser, direto no painel, sem ligar pra ninguém.</div>
+          </details>
+          <details class="qa">
+            <summary>Serve pra que tipo de trabalho?<span class="plus"></span></summary>
+            <div class="ans">Qualquer um que envolva escrever bastante: peças e e-mails jurídicos, atendimento ao cliente, roteiros e legendas, documentação de código, resumos de estudo. Se você digita muito, o Vozza economiza suas horas.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA / WAITLIST -->
+    <section id="lista">
+      <div class="wrap">
+        <div class="cta-band reveal">
+          <div class="glow"></div>
+          <h2>Pare de digitar o que você podia falar.</h2>
+          <p>Entre na lista de espera e seja um dos primeiros a testar o Vozza — com condição de fundador.</p>
+          <form class="wait" id="waitForm" novalidate>
+            <input type="email" id="waitEmail" placeholder="seu@email.com.br" aria-label="Seu e-mail" required />
+            <button class="btn btn-accent" type="submit">Quero ser avisado</button>
+          </form>
+          <p class="wait-ok" id="waitOk" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ft">
+    <div class="wrap">
+      <div class="ft-grid">
+        <div class="ft-brand">
+          <a class="brand" href="#top">
+            <svg class="mark" viewBox="0 0 26 26" aria-hidden="true">
+              <rect x="1"  y="9"  width="3.4" height="8"  rx="1.7"></rect>
+              <rect x="7"  y="4"  width="3.4" height="18" rx="1.7"></rect>
+              <rect x="13" y="10" width="3.4" height="6"  rx="1.7"></rect>
+              <rect x="19" y="6"  width="3.4" height="14" rx="1.7"></rect>
+            </svg>
+            Vozza
+          </a>
+          <p>Ditado por voz com IA, feito pro jeito brasileiro de falar. Você fala, o Vozza escreve.</p>
+        </div>
+        <div class="ft-cols">
+          <div class="ft-col">
+            <h4>Produto</h4>
+            <a href="#recursos">Recursos</a>
+            <a href="#como">Como funciona</a>
+            <a href="#precos">Preços</a>
+            <a href="#perguntas">Perguntas</a>
+          </div>
+          <div class="ft-col">
+            <h4>Empresa</h4>
+            <a href="#lista">Lista de espera</a>
+            <a href="#comparar">Comparar</a>
+            <a href="#lista">Contato</a>
+          </div>
+        </div>
+      </div>
+      <div class="ft-bottom">
+        <span>© 2026 Vozza · Feito no Brasil 🇧🇷</span>
+        <span>Preços e recursos de lançamento sujeitos a ajuste.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+      var root = document.documentElement;
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      /* Theme toggle */
+      var themeBtn = document.getElementById("theme");
+      function current() {
+        var set = root.getAttribute("data-theme");
+        if (set) return set;
+        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      themeBtn.addEventListener("click", function () {
+        root.setAttribute("data-theme", current() === "dark" ? "light" : "dark");
+      });
+
+      /* Nav border on scroll */
+      var nav = document.getElementById("nav");
+      function onScroll() { nav.classList.toggle("scrolled", window.scrollY > 8); }
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+
+      /* Reveal on view */
+      var items = document.querySelectorAll(".reveal");
+      if (reduce || !("IntersectionObserver" in window)) {
+        items.forEach(function (el) { el.classList.add("in"); });
+      } else {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+        }, { threshold: 0.14 });
+        items.forEach(function (el) { io.observe(el); });
+      }
+
+      /* Typewriter transcript */
+      var typed = document.getElementById("typed");
+      var full = "Preciso mandar o relatório pro cliente ainda hoje, sem falta.";
+      if (typed) {
+        if (reduce) {
+          typed.textContent = full;
+        } else {
+          var i = 0;
+          function tick() {
+            if (i <= full.length) { typed.textContent = full.slice(0, i); i++; setTimeout(tick, 34 + Math.random() * 40); }
+          }
+          setTimeout(tick, 900);
+        }
+      }
+
+      /* Waveform canvas */
+      var cv = document.getElementById("wave");
+      if (cv) {
+        var ctx = cv.getContext("2d");
+        var bars = 46;
+        function palette() {
+          var s = getComputedStyle(root);
+          return [s.getPropertyValue("--wave-a").trim(), s.getPropertyValue("--wave-b").trim(), s.getPropertyValue("--wave-c").trim()];
+        }
+        function sizeCanvas() {
+          var dpr = Math.min(window.devicePixelRatio || 1, 2);
+          var w = cv.clientWidth, h = cv.clientHeight;
+          cv.width = w * dpr; cv.height = h * dpr;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        sizeCanvas();
+        window.addEventListener("resize", sizeCanvas);
+
+        var t = 0;
+        function draw() {
+          var w = cv.clientWidth, h = cv.clientHeight;
+          ctx.clearRect(0, 0, w, h);
+          var cols = palette();
+          var gap = 4, bw = (w - gap * (bars - 1)) / bars;
+          var mid = h / 2;
+          for (var b = 0; b < bars; b++) {
+            var phase = t * 0.045 + b * 0.38;
+            var env = 0.35 + 0.65 * Math.abs(Math.sin(b / bars * Math.PI));
+            var amp = (Math.sin(phase) * 0.5 + 0.5) * env;
+            amp = amp * amp;
+            var bh = Math.max(3, amp * (h * 0.86));
+            var x = b * (bw + gap);
+            var col = cols[b % 3];
+            ctx.fillStyle = col;
+            ctx.globalAlpha = 0.55 + amp * 0.45;
+            var r = Math.min(bw / 2, 2.2);
+            roundRect(ctx, x, mid - bh / 2, bw, bh, r);
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+          t += 1;
+          if (!reduce) raf = requestAnimationFrame(draw);
+        }
+        function roundRect(c, x, y, w, h, r) {
+          c.beginPath();
+          c.moveTo(x + r, y);
+          c.arcTo(x + w, y, x + w, y + h, r);
+          c.arcTo(x + w, y + h, x, y + h, r);
+          c.arcTo(x, y + h, x, y, r);
+          c.arcTo(x, y, x + w, y, r);
+          c.closePath();
+        }
+        var raf;
+        if (reduce) { t = 12; draw(); } else { draw(); }
+      }
+
+      /* Waitlist (client-side preview only — not yet connected to a backend) */
+      var form = document.getElementById("waitForm");
+      var ok = document.getElementById("waitOk");
+      if (form) {
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var email = document.getElementById("waitEmail").value.trim();
+          var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+          if (!valid) { ok.textContent = "Confere o e-mail — parece que falta algo."; return; }
+          ok.textContent = "Você está na lista ✨ (prévia — o cadastro será conectado antes do lançamento)";
+          form.reset();
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
