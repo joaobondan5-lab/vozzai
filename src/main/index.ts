@@ -1,12 +1,8 @@
 import { app, BrowserWindow, globalShortcut, ipcMain, Notification, Tray, Menu, nativeImage } from 'electron';
 import * as path from 'path';
-import { loadEnv } from './env';
-import { loadConfig, saveConfig, maskKey, VozzaConfig } from './config';
-import { transcribeAudio } from './transcription';
-import { cleanupText } from './cleanup';
+import { loadConfig, saveConfig, clearAuth, VozzaConfig } from './config';
+import { login, signup, transcribeViaBackend } from './backend';
 import { pasteAtCursor } from './paste';
-
-loadEnv();
 
 let config: VozzaConfig;
 let recorderWindow: BrowserWindow | null = null;
@@ -51,9 +47,9 @@ function openSettings(): void {
 function updateTray(): void {
   if (!tray) return;
   tray.setTitle(isRecording ? '🔴 Vozza' : '🎙️ Vozza');
-  const hasKey = Boolean(config.openaiApiKey);
+  const loggedIn = Boolean(config.authToken);
   const menu = Menu.buildFromTemplate([
-    { label: hasKey ? 'Chave configurada ✓' : 'Sem chave — abra Configurações', enabled: false },
+    { label: loggedIn ? `Conectado como ${config.userEmail}` : 'Sem conta — abra Configurações', enabled: false },
     { type: 'separator' },
     { label: 'Configurações…', click: openSettings },
     { label: `Ditar (${config.shortcut})`, click: toggleRecording },
@@ -65,8 +61,8 @@ function updateTray(): void {
 
 function toggleRecording(): void {
   if (!recorderWindow) return;
-  if (!config.openaiApiKey) {
-    new Notification({ title: 'Vozza', body: 'Configure sua chave da OpenAI primeiro.' }).show();
+  if (!config.authToken) {
+    new Notification({ title: 'Vozza', body: 'Crie sua conta ou entre primeiro.' }).show();
     openSettings();
     return;
   }
@@ -84,7 +80,7 @@ function registerShortcut(): void {
 
 app.whenReady().then(() => {
   config = loadConfig();
-  console.log(`[vozza] chave presente: ${Boolean(config.openaiApiKey)}`);
+  console.log(`[vozza] conta conectada: ${Boolean(config.authToken)}`);
 
   createRecorderWindow();
 
@@ -94,18 +90,33 @@ app.whenReady().then(() => {
 
   registerShortcut();
 
-  if (!config.openaiApiKey) openSettings();
+  if (!config.authToken) openSettings();
 
   ipcMain.handle('get-config', () => ({
-    hasKey: Boolean(config.openaiApiKey),
-    keyMasked: maskKey(config.openaiApiKey),
-    shortcut: config.shortcut,
+    loggedIn: Boolean(config.authToken),
+    email: config.userEmail,
   }));
 
-  ipcMain.handle('save-key', (_event, key: string) => {
-    config = saveConfig({ openaiApiKey: key.trim() });
+  ipcMain.handle('signup', async (_event, email: string, password: string) => {
+    const result = await signup(email, password);
+    if (result.error) return { ok: false, error: result.error };
+    config = saveConfig({ authToken: result.token, userEmail: result.email || email });
     updateTray();
-    return { hasKey: Boolean(config.openaiApiKey), keyMasked: maskKey(config.openaiApiKey) };
+    return { ok: true, email: config.userEmail };
+  });
+
+  ipcMain.handle('login', async (_event, email: string, password: string) => {
+    const result = await login(email, password);
+    if (result.error) return { ok: false, error: result.error };
+    config = saveConfig({ authToken: result.token, userEmail: result.email || email });
+    updateTray();
+    return { ok: true, email: config.userEmail };
+  });
+
+  ipcMain.handle('logout', () => {
+    config = clearAuth();
+    updateTray();
+    return { ok: true };
   });
 
   ipcMain.on('recording-error', (_event, message: string) => {
@@ -120,10 +131,13 @@ app.whenReady().then(() => {
     isRecording = false;
     updateTray();
     try {
-      const rawText = await transcribeAudio(audioBase64, config.openaiApiKey, config.language);
-      const finalText = await cleanupText(rawText, config.openaiApiKey);
-      const result = await pasteAtCursor(finalText);
-      if (result === 'clipboard-only') {
+      const result = await transcribeViaBackend(config.authToken, audioBase64, config.language);
+      if (result.error) {
+        new Notification({ title: 'Vozza — erro', body: result.error }).show();
+        return;
+      }
+      const pasteResult = await pasteAtCursor(result.text || '');
+      if (pasteResult === 'clipboard-only') {
         new Notification({
           title: 'Vozza',
           body: 'Texto copiado — Cmd+V para colar. Libere a Acessibilidade para colar sozinho.',

@@ -5,25 +5,29 @@ e devolve o texto já formatado, pronto para colar em qualquer lugar.
 
 ## Como funciona (MVP)
 
-1. Pressione `Cmd+Shift+Space` para começar a gravar
-2. Fale normalmente
-3. Pressione `Cmd+Shift+Space` de novo para parar
-4. O texto transcrito e revisado é copiado automaticamente para a área de
-   transferência
+1. Crie uma conta ou entre (janela de Configurações, abre sozinha na primeira
+   vez) — sem chave de API nenhuma, é só e-mail e senha
+2. Pressione `Cmd+Shift+Space` para começar a gravar
+3. Fale normalmente
+4. Pressione `Cmd+Shift+Space` de novo para parar
+5. O texto transcrito e revisado é colado automaticamente onde o cursor
+   estiver
+
+A transcrição roda no [servidor](server/) — o app não fala mais direto com a
+OpenAI, então não existe chave para cada usuário configurar.
 
 ## Rodando localmente
 
 ```bash
 npm install
-cp .env.example .env
-# edite o .env e preencha OPENAI_API_KEY
 npm start
 ```
 
-Na primeira execução, o macOS vai pedir permissão de microfone — autorize
-para o app funcionar. Você também pode colar a chave da OpenAI direto na janela
-de Configurações do app (acessível pelo ícone 🎙️ na barra de menu), sem editar
-o `.env` na mão.
+Precisa do [servidor](server/) rodando em paralelo (por padrão em
+`http://localhost:4000` — ver `src/main/backend.ts` para trocar).
+
+Na primeira execução, o macOS vai pedir permissão de microfone e, depois,
+de Acessibilidade (para colar o texto sozinho) — autorize as duas.
 
 ## Gerando o app (.app / .dmg)
 
@@ -38,9 +42,12 @@ para passar pelo Gatekeeper.
 
 ## Estrutura
 
-- `src/main` — processo principal do Electron (atalho global, transcrição,
-  limpeza de texto, clipboard)
+- `src/main` — processo principal do Electron (atalho global, login, clipboard,
+  colar no cursor)
 - `src/renderer` — janela oculta responsável por gravar o áudio do microfone
+- `server/` — backend (contas, cota de uso, chama a OpenAI com a chave
+  centralizada)
+- `extension/` — extensão de Chrome (ditado dentro do navegador)
 - `web/index.html` — landing page (arquivo único, autocontido). Abra direto no
   navegador para ver.
 - `docs/business-plan.md` e `docs/marketing-plan.md` — rascunhos iniciais de

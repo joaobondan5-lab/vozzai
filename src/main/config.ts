@@ -3,13 +3,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export interface VozzaConfig {
-  openaiApiKey: string;
+  authToken: string;
+  userEmail: string;
   shortcut: string;
   language: string;
 }
 
 const DEFAULTS: VozzaConfig = {
-  openaiApiKey: '',
+  authToken: '',
+  userEmail: '',
   shortcut: 'CommandOrControl+Shift+Space',
   language: 'pt',
 };
@@ -26,14 +28,7 @@ export function loadConfig(): VozzaConfig {
   } catch {
     stored = {};
   }
-
-  const merged = { ...DEFAULTS, ...stored };
-  // Em desenvolvimento, uma chave no .env serve de fallback quando ainda não
-  // foi salva nenhuma no app.
-  if (!merged.openaiApiKey && process.env.OPENAI_API_KEY) {
-    merged.openaiApiKey = process.env.OPENAI_API_KEY;
-  }
-  return merged;
+  return { ...DEFAULTS, ...stored };
 }
 
 export function saveConfig(partial: Partial<VozzaConfig>): VozzaConfig {
@@ -43,8 +38,6 @@ export function saveConfig(partial: Partial<VozzaConfig>): VozzaConfig {
   return next;
 }
 
-export function maskKey(key: string): string {
-  if (!key) return '';
-  if (key.length <= 12) return '••••';
-  return `${key.slice(0, 7)}…${key.slice(-4)}`;
+export function clearAuth(): VozzaConfig {
+  return saveConfig({ authToken: '', userEmail: '' });
 }
