@@ -1,5 +1,5 @@
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
-import { db } from './db';
+import { pool } from './db';
 
 export interface User {
   id: number;
@@ -22,41 +22,45 @@ function verifyPassword(password: string, stored: string): boolean {
   return timingSafeEqual(candidate, expected);
 }
 
-export function createUser(email: string, password: string): User {
+export async function createUser(email: string, password: string): Promise<User> {
   const normalized = email.trim().toLowerCase();
-  const stmt = db.prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)');
-  const info = stmt.run(normalized, hashPassword(password));
-  return { id: Number(info.lastInsertRowid), email: normalized, plan: 'free' };
+  const result = await pool.query<{ id: number }>(
+    'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id',
+    [normalized, hashPassword(password)],
+  );
+  return { id: result.rows[0].id, email: normalized, plan: 'free' };
 }
 
-export function findUserByEmail(email: string): (User & { password_hash: string }) | null {
-  const row = db
-    .prepare('SELECT id, email, plan, password_hash FROM users WHERE email = ?')
-    .get(email.trim().toLowerCase()) as (User & { password_hash: string }) | undefined;
-  return row ?? null;
+export async function findUserByEmail(
+  email: string,
+): Promise<(User & { password_hash: string }) | null> {
+  const result = await pool.query<User & { password_hash: string }>(
+    'SELECT id, email, plan, password_hash FROM users WHERE email = $1',
+    [email.trim().toLowerCase()],
+  );
+  return result.rows[0] ?? null;
 }
 
-export function login(email: string, password: string): string | null {
-  const user = findUserByEmail(email);
+export async function login(email: string, password: string): Promise<string | null> {
+  const user = await findUserByEmail(email);
   if (!user || !verifyPassword(password, user.password_hash)) return null;
   return createSession(user.id);
 }
 
 /** Token opaco guardado no banco — mais simples de revogar que um JWT. */
-export function createSession(userId: number): string {
+export async function createSession(userId: number): Promise<string> {
   const token = randomBytes(32).toString('hex');
-  db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, userId);
+  await pool.query('INSERT INTO sessions (token, user_id) VALUES ($1, $2)', [token, userId]);
   return token;
 }
 
-export function userForToken(token: string | undefined): User | null {
+export async function userForToken(token: string | undefined): Promise<User | null> {
   if (!token) return null;
-  const row = db
-    .prepare(
-      `SELECT users.id, users.email, users.plan
-         FROM sessions JOIN users ON users.id = sessions.user_id
-        WHERE sessions.token = ?`,
-    )
-    .get(token) as User | undefined;
-  return row ?? null;
+  const result = await pool.query<User>(
+    `SELECT users.id, users.email, users.plan
+       FROM sessions JOIN users ON users.id = sessions.user_id
+      WHERE sessions.token = $1`,
+    [token],
+  );
+  return result.rows[0] ?? null;
 }

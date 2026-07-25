@@ -1,4 +1,4 @@
-import { db } from './db';
+import { pool } from './db';
 
 /**
  * Limites por plano, em palavras.
@@ -26,21 +26,26 @@ export interface UsageStatus {
   period: 'week' | 'month';
 }
 
-export function usageFor(userId: number, planName: string): UsageStatus {
+export async function usageFor(userId: number, planName: string): Promise<UsageStatus> {
   const plan = planOf(planName);
   const { words: limit, period } = PLANS[plan];
-  const since = period === 'week' ? "datetime('now', '-7 days')" : "datetime('now', 'start of month')";
+  const since = period === 'week' ? "now() - interval '7 days'" : "date_trunc('month', now())";
 
-  const row = db
-    .prepare(`SELECT COALESCE(SUM(words), 0) AS used FROM usage WHERE user_id = ? AND created_at >= ${since}`)
-    .get(userId) as { used: number };
+  const result = await pool.query<{ used: string }>(
+    `SELECT COALESCE(SUM(words), 0) AS used FROM usage WHERE user_id = $1 AND created_at >= ${since}`,
+    [userId],
+  );
 
-  const used = Number(row.used);
+  const used = Number(result.rows[0].used);
   return { plan, used, limit, remaining: Math.max(0, limit - used), period };
 }
 
-export function recordUsage(userId: number, seconds: number, words: number): void {
-  db.prepare('INSERT INTO usage (user_id, seconds, words) VALUES (?, ?, ?)').run(userId, seconds, words);
+export async function recordUsage(userId: number, seconds: number, words: number): Promise<void> {
+  await pool.query('INSERT INTO usage (user_id, seconds, words) VALUES ($1, $2, $3)', [
+    userId,
+    seconds,
+    words,
+  ]);
 }
 
 export function countWords(text: string): number {

@@ -1,4 +1,4 @@
-import { db } from './db';
+import { pool } from './db';
 
 /**
  * Integração com assinaturas (preapproval) do Mercado Pago.
@@ -47,9 +47,13 @@ export async function syncSubscription(notification: Notification): Promise<void
 
   // external_reference é onde guardamos o id do usuário ao criar a assinatura.
   const userId = Number(sub.external_reference);
-  const user = Number.isFinite(userId) && userId > 0
-    ? (db.prepare('SELECT id FROM users WHERE id = ?').get(userId) as { id: number } | undefined)
-    : (db.prepare('SELECT id FROM users WHERE email = ?').get(sub.payer_email ?? '') as { id: number } | undefined);
+  const byId = Number.isFinite(userId) && userId > 0;
+
+  const result = await pool.query<{ id: number }>(
+    byId ? 'SELECT id FROM users WHERE id = $1' : 'SELECT id FROM users WHERE email = $1',
+    [byId ? userId : (sub.payer_email ?? '')],
+  );
+  const user = result.rows[0];
 
   if (!user) {
     console.error(`[vozza] assinatura ${id} sem usuário correspondente`);
@@ -57,6 +61,10 @@ export async function syncSubscription(notification: Notification): Promise<void
   }
 
   const plan = sub.status === 'authorized' ? 'pro' : 'free';
-  db.prepare('UPDATE users SET plan = ?, mp_customer = ? WHERE id = ?').run(plan, sub.id, user.id);
+  await pool.query('UPDATE users SET plan = $1, mp_customer = $2 WHERE id = $3', [
+    plan,
+    sub.id,
+    user.id,
+  ]);
   console.log(`[vozza] usuário ${user.id} agora está no plano ${plan} (assinatura ${sub.status})`);
 }
