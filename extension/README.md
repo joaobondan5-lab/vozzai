@@ -11,7 +11,7 @@ em Windows, Linux e Chromebook também.
 2. Ative "Modo do desenvolvedor" (canto superior direito)
 3. Clique em "Carregar sem compactação" e selecione esta pasta (`extension/`)
 4. Antes de usar, rode o servidor (`../server`) e ajuste `API_BASE` em
-   `background.js` e `popup.js` se não for `http://localhost:3000`
+   `background.js` e `popup.js` se não for `http://localhost:4000`
 5. Clique no ícone da extensão para criar conta ou entrar
 6. Em qualquer página, aperte `Ctrl+Shift+Espaço` (`⌘+Shift+Espaço` no Mac),
    fale, aperte de novo para parar

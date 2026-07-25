@@ -1,5 +1,5 @@
 // TODO: trocar para o domínio de produção do servidor quando publicar
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'http://localhost:4000';
 
 const loggedOutEl = document.getElementById('loggedOut');
 const loggedInEl = document.getElementById('loggedIn');
