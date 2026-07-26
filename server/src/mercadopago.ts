@@ -1,13 +1,53 @@
 import { pool } from './db';
 
-/**
- * Integração com assinaturas (preapproval) do Mercado Pago.
- *
- * ATENÇÃO: este módulo ainda não foi testado contra a API real — falta a conta
- * do Mercado Pago configurada. O fluxo está escrito conforme a documentação de
- * preapproval, mas precisa ser validado em sandbox antes de cobrar alguém.
- */
+/** Integração com assinaturas (preapproval) do Mercado Pago. */
 const TOKEN = () => process.env.MP_ACCESS_TOKEN || '';
+const PRICE_BRL = 29.9;
+
+interface PreapprovalCreated {
+  id: string;
+  init_point?: string;
+  sandbox_init_point?: string;
+}
+
+/**
+ * Cria uma assinatura "pendente" e devolve o link de checkout do Mercado
+ * Pago pro usuário preencher o cartão. Nada é cobrado até ele confirmar lá.
+ */
+export async function createSubscription(userId: number, email: string): Promise<string> {
+  if (!TOKEN()) throw new Error('MP_ACCESS_TOKEN não configurado no servidor.');
+
+  const res = await fetch('https://api.mercadopago.com/preapproval', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${TOKEN()}`, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      reason: 'Vozza Pro — assinatura mensal',
+      external_reference: String(userId),
+      payer_email: email,
+      back_url: process.env.APP_URL || 'https://vozzai.vercel.app',
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: 'months',
+        transaction_amount: PRICE_BRL,
+        currency_id: 'BRL',
+      },
+      status: 'pending',
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Mercado Pago recusou criar a assinatura (${res.status}): ${await res.text()}`);
+  }
+
+  const sub = (await res.json()) as PreapprovalCreated;
+  // Com token de teste (TEST-...), o checkout de sandbox é o único que funciona de verdade.
+  const checkoutUrl = TOKEN().startsWith('TEST-')
+    ? sub.sandbox_init_point ?? sub.init_point
+    : sub.init_point;
+
+  if (!checkoutUrl) throw new Error('Mercado Pago não retornou um link de checkout.');
+  return checkoutUrl;
+}
 
 interface Notification {
   type?: string;

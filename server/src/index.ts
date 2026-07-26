@@ -10,7 +10,7 @@ import {
 } from './auth';
 import { usageFor, recordUsage, countWords, PLANS, planOf } from './quota';
 import { transcribe, cleanup } from './openai';
-import { syncSubscription } from './mercadopago';
+import { syncSubscription, createSubscription } from './mercadopago';
 import { initSchema, addToWaitlist } from './db';
 import { isRateLimited } from './rateLimit';
 
@@ -187,6 +187,23 @@ app.post(
     } catch (err) {
       console.error('[vozza] erro na transcrição:', err);
       res.status(502).json({ error: 'Não consegui transcrever agora. Tente de novo.' });
+    }
+  }),
+);
+
+/** Cria a assinatura Pro no Mercado Pago e devolve o link de checkout. */
+app.post(
+  '/billing/subscribe',
+  asyncRoute(async (req, res) => {
+    const user = await requireUser(req, res);
+    if (!user) return;
+
+    try {
+      const checkoutUrl = await createSubscription(user.id, user.email);
+      res.json({ checkoutUrl });
+    } catch (err) {
+      console.error('[vozza] erro ao criar assinatura:', err);
+      res.status(502).json({ error: 'Não consegui iniciar a assinatura agora. Tente de novo.' });
     }
   }),
 );
