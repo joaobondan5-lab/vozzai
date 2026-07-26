@@ -1,8 +1,8 @@
-# Vozza — plano de negócio (rascunho inicial)
+# VozzAI — plano de negócio (rascunho inicial)
 
 ## O que é
 
-Vozza é um app de desktop de ditado por voz com IA: você fala, o app transcreve
+VozzAI é um app de desktop de ditado por voz com IA: você fala, o app transcreve
 e já entrega o texto formatado e revisado, pronto para colar em qualquer lugar
 (e-mail, documento, chat, código). Conceito equivalente ao do Wispr Flow, mas
 pensado desde o início para o mercado brasileiro.

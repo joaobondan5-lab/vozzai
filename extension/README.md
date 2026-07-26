@@ -1,4 +1,4 @@
-# Vozza — extensão de Chrome
+# VozzAI — extensão de Chrome
 
 Ditado por voz dentro do navegador: funciona em Gmail, WhatsApp Web, Google
 Docs*, Slack web, Instagram e qualquer campo de texto de uma página. Não

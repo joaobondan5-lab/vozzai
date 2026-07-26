@@ -3,8 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vozza — fale, o texto aparece</title>
-  <meta name="description" content="Ditado por voz com IA para quem escreve em português. Você fala, o Vozza escreve — pontuado, formatado e pronto, em qualquer aplicativo." />
+  <title>VozzAI — Ditado por voz com IA em português do Brasil</title>
+  <meta name="description" content="Fale naturalmente e receba um texto limpo, pontuado e pronto para usar no WhatsApp, Gmail, Notion, Docs e outros aplicativos com o VozzAI." />
+  <link rel="canonical" href="https://www.vozzai.com.br/" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="VozzAI" />
+  <meta property="og:title" content="VozzAI — Ditado por voz com IA em português do Brasil" />
+  <meta property="og:description" content="Fale naturalmente e receba um texto limpo, pontuado e pronto para usar — direto no cursor, em praticamente qualquer app do seu Mac." />
+  <meta property="og:url" content="https://www.vozzai.com.br/" />
+  <meta property="og:image" content="https://www.vozzai.com.br/og.png" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="VozzAI — Ditado por voz com IA em português do Brasil" />
+  <meta name="twitter:description" content="Fale. O VozzAI escreve por você." />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Organization", "name": "VozzAI", "url": "https://www.vozzai.com.br/", "email": "joaobondan5@gmail.com" },
+      {
+        "@type": "SoftwareApplication",
+        "name": "VozzAI",
+        "operatingSystem": "macOS",
+        "applicationCategory": "ProductivityApplication",
+        "description": "Ditado por voz com IA em português do Brasil. Fale naturalmente e receba um texto limpo, pontuado e pronto para usar.",
+        "url": "https://www.vozzai.com.br/",
+        "offers": [
+          { "@type": "Offer", "price": "0", "priceCurrency": "BRL", "description": "Plano Grátis — 2.000 palavras por semana" },
+          { "@type": "Offer", "price": "29.90", "priceCurrency": "BRL", "description": "Plano Pro — assinatura mensal" }
+        ]
+      }
+    ]
+  }
+  </script>
   <style>
     /* ============ Tokens ============ */
     :root {
@@ -243,6 +275,23 @@
     .case .who { font-family: var(--f-display); font-size: 18px; font-weight: 700; min-width: 8.5ch; letter-spacing: -0.02em; color: var(--accent); }
     .case p { color: var(--muted); font-size: 15.5px; }
 
+    /* Antes e depois */
+    .ba { max-width: 780px; }
+    .ba-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .ba-tab {
+      font: inherit; font-size: 14px; font-weight: 650; padding: 10px 18px; border-radius: 999px;
+      border: 1.5px solid var(--line); background: transparent; color: var(--muted); cursor: pointer;
+      transition: background .18s ease, color .18s ease, border-color .18s ease;
+    }
+    .ba-tab:hover { border-color: var(--accent); color: var(--accent); }
+    .ba-tab.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+    .ba-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px 26px; }
+    .ba-panel[hidden] { display: none; }
+    .ba-raw { font-family: var(--f-mono); font-size: 13.5px; color: var(--faint); line-height: 1.6; }
+    .ba-raw::before { content: "fala  "; color: var(--hot); }
+    .ba-out { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 17px; line-height: 1.5; }
+    .ba-out::before { content: "texto"; font-family: var(--f-mono); font-size: 13px; color: var(--accent); display: block; margin-bottom: 6px; }
+
     /* Compare table */
     .tw { overflow-x: auto; border: 1px solid var(--line); border-radius: 18px; }
     table.cmp { width: 100%; border-collapse: collapse; min-width: 580px; background: var(--surface); }
@@ -325,7 +374,7 @@
     <div class="wrap nav-in">
       <a class="logo" href="#top">
         <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-        Vozza
+        VozzAI
       </a>
       <nav class="links" aria-label="Seções">
         <a href="#recursos">Recursos</a>
@@ -349,20 +398,20 @@
     <section class="hero">
       <div class="wrap hero-grid">
         <div>
-          <span class="lab">Ditado por voz com IA — Brasil</span>
-          <h1>Fale.<br>O texto <em>aparece.</em></h1>
-          <p class="hero-sub">Um atalho, sua voz, e o texto já sai pontuado e formatado — dentro do aplicativo que você estiver usando. Sem copiar, sem colar.</p>
+          <span class="lab">Ditado com IA feito para português do Brasil</span>
+          <h1>Fale.<br>O VozzAI <em>escreve por você.</em></h1>
+          <p class="hero-sub">Aperte um atalho, fale do seu jeito e receba um texto limpo, pontuado e pronto para enviar — no WhatsApp, Gmail, Notion, Docs e praticamente qualquer campo de texto do seu Mac.</p>
           <div class="hero-btns">
-            <a class="btn btn-fill" href="#baixar">Baixar grátis</a>
-            <a class="btn" href="#como">Como funciona</a>
+            <a class="btn btn-fill" href="#baixar">Baixar grátis para Mac</a>
+            <a class="btn" href="#exemplos">Ver demonstração</a>
           </div>
-          <p class="hero-fine">grátis para começar · sem cartão · macOS</p>
+          <p class="hero-fine">grátis para começar · sem cartão · macOS (Apple Silicon)</p>
         </div>
 
         <div class="panel" aria-hidden="true">
           <div class="panel-top">
             <span class="live"><b></b> gravando</span>
-            <span>⌘ ⇧ Espaço</span>
+            <span>exemplo · ⌘ ⇧ Espaço</span>
           </div>
           <div class="panel-body">
             <canvas id="wave" width="640" height="176"></canvas>
@@ -387,7 +436,7 @@
           <div class="stat"><div class="n">3×</div><div class="l">mais rápido que digitar</div></div>
           <div class="stat"><div class="n">PT-BR</div><div class="l">gírias e sotaques daqui</div></div>
           <div class="stat"><div class="n">Todos</div><div class="l">os apps que você já usa</div></div>
-          <div class="stat"><div class="n">R$</div><div class="l">preço em real, com Pix</div></div>
+          <div class="stat"><div class="n">R$</div><div class="l">preço em real, sem IOF</div></div>
         </div>
       </div>
     </section>
@@ -419,7 +468,7 @@
           <div class="feat">
             <div class="k">04</div>
             <h3>Dicionário pessoal</h3>
-            <p>Nomes de clientes, produtos e o jargão da sua área. Cadastre uma vez e o Vozza acerta a grafia sempre.</p>
+            <p>Nomes de clientes, produtos e o jargão da sua área. Cadastre uma vez e o VozzAI acerta a grafia sempre.</p>
           </div>
           <div class="feat">
             <div class="k">05</div>
@@ -429,7 +478,37 @@
           <div class="feat">
             <div class="k">06</div>
             <h3>Conta em real</h3>
-            <p>Assinatura em BRL com Pix e cartão nacional. Sem cobrança em dólar, sem IOF, sem susto na fatura.</p>
+            <p>Assinatura em real, no cartão, via Mercado Pago. Sem cobrança em dólar, sem IOF, sem susto na fatura.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANTES E DEPOIS -->
+    <section id="exemplos">
+      <div class="wrap">
+        <div class="head rv">
+          <span class="lab">Antes e depois</span>
+          <h2>Você fala como pensa. O VozzAI entrega como você escreveria.</h2>
+          <p>O VozzAI remove hesitações, organiza as frases e transforma sua fala em um texto que já pode ser usado. Exemplos demonstrativos:</p>
+        </div>
+        <div class="ba rv">
+          <div class="ba-tabs" role="tablist" aria-label="Exemplos por contexto">
+            <button class="ba-tab on" role="tab" aria-selected="true" data-ba="0">WhatsApp</button>
+            <button class="ba-tab" role="tab" aria-selected="false" data-ba="1">E-mail</button>
+            <button class="ba-tab" role="tab" aria-selected="false" data-ba="2">Trabalho</button>
+          </div>
+          <div class="ba-panel" data-bap="0" role="tabpanel">
+            <p class="ba-raw">oi bruna então eu vi o orçamento aqui acho que dá pra gente seguir mas manda a versão final com o prazo atualizado pra eu aprovar ainda hoje</p>
+            <p class="ba-out">Oi, Bruna! Vi o orçamento e podemos seguir. Pode me enviar a versão final com o prazo atualizado para eu aprovar ainda hoje?</p>
+          </div>
+          <div class="ba-panel" data-bap="1" role="tabpanel" hidden>
+            <p class="ba-raw">bom dia carlos só passando pra confirmar que a reunião de amanhã fica pras dez e se puder já leva os números de junho</p>
+            <p class="ba-out">Bom dia, Carlos. Confirmando nossa reunião de amanhã às 10h. Se possível, leve também os números de junho.</p>
+          </div>
+          <div class="ba-panel" data-bap="2" role="tabpanel" hidden>
+            <p class="ba-raw">o objetivo dessa mudança é reduzir o tempo de carregamento e tirar a duplicação da regra no front</p>
+            <p class="ba-out">Objetivo: reduzir o tempo de carregamento e eliminar a duplicação da regra no front-end.</p>
           </div>
         </div>
       </div>
@@ -486,7 +565,7 @@
       <div class="wrap">
         <div class="head rv">
           <span class="lab">Casos de uso</span>
-          <h2>Onde o Vozza devolve suas horas.</h2>
+          <h2>Onde o VozzAI devolve suas horas.</h2>
         </div>
         <div class="cases rv">
           <div class="case"><div class="who">Direito</div><p>Peças, e-mails e despachos ditados com a terminologia certa, em vez de horas no teclado.</p></div>
@@ -502,20 +581,21 @@
       <div class="wrap">
         <div class="head rv">
           <span class="lab">Comparação</span>
-          <h2>A mesma ideia, sem o pedágio internacional.</h2>
-          <p>As ferramentas de fora são boas — mas cobram em dólar e tratam o português como só mais um dos cem idiomas da lista.</p>
+          <h2>Ditado comum transcreve. O VozzAI prepara o texto para uso.</h2>
+          <p>A diferença não é ouvir o que você fala — é entregar um texto que você enviaria sem retrabalho.</p>
         </div>
         <div class="tw rv">
           <table class="cmp">
             <thead>
-              <tr><th></th><th class="v">Vozza</th><th>Apps de fora</th></tr>
+              <tr><th></th><th class="v">VozzAI</th><th>Ditado nativo</th></tr>
             </thead>
             <tbody>
-              <tr><td>Preço</td><td class="v">R$ 29,90/mês</td><td class="o">US$ 15/mês (~R$ 85) + IOF</td></tr>
-              <tr><td>Pagamento</td><td class="v">Pix, cartão nacional, nota fiscal</td><td class="o">Cartão internacional</td></tr>
-              <tr><td>Português</td><td class="v">Foco total no Brasil</td><td class="o">1 entre 100+ idiomas</td></tr>
-              <tr><td>Suporte</td><td class="v">Em português, no seu fuso</td><td class="o">Inglês, outro fuso</td></tr>
-              <tr><td>Texto formatado</td><td class="v">Sim</td><td class="o">Sim</td></tr>
+              <tr><td>Pontuação e maiúsculas</td><td class="v">Automáticas</td><td class="o">Você dita "vírgula", "ponto"…</td></tr>
+              <tr><td>Hesitações e vícios de fala</td><td class="v">Removidos</td><td class="o">Entram no texto</td></tr>
+              <tr><td>Organização das frases</td><td class="v">Texto pronto para enviar</td><td class="o">Transcrição bruta</td></tr>
+              <tr><td>Dicionário pessoal</td><td class="v">Nomes e termos seus</td><td class="o">Limitado</td></tr>
+              <tr><td>Tom de escrita</td><td class="v">Formal ou informal</td><td class="o">—</td></tr>
+              <tr><td>Português do Brasil</td><td class="v">Prioridade nº 1</td><td class="o">Um idioma entre muitos</td></tr>
             </tbody>
           </table>
         </div>
@@ -528,7 +608,7 @@
         <div class="head rv">
           <span class="lab">Preços</span>
           <h2>Comece de graça. Pague quando valer a pena.</h2>
-          <p>Preço de lançamento, em real. Comece grátis, sem cartão.</p>
+          <p>Preço de lançamento, em real, no cartão via Mercado Pago. Pode ser reajustado para novos assinantes no futuro.</p>
         </div>
         <div class="plans rv">
           <div class="plan">
@@ -538,21 +618,21 @@
             <ul>
               <li>2.000 palavras por semana</li>
               <li>Português do Brasil</li>
-              <li>Atalho em qualquer app</li>
-              <li class="no">Comando por voz</li>
+              <li>Atalho em qualquer app do Mac</li>
+              <li>Sem cartão</li>
             </ul>
             <a class="btn" href="#baixar">Começar grátis</a>
           </div>
 
           <div class="plan mark">
-            <div class="pn">Pro · mais popular</div>
+            <div class="pn">Pro · preço de lançamento</div>
             <div class="pp">R$ 29,90 <small>/mês</small></div>
-            <p class="pd">R$ 23,90/mês no plano anual. Para quem vive escrevendo.</p>
+            <p class="pd">Para quem vive escrevendo. Você assina dentro do aplicativo, quando quiser.</p>
             <ul>
-              <li>Palavras ilimitadas</li>
-              <li>Comando por voz para reescrever</li>
-              <li>Dicionário pessoal ilimitado</li>
-              <li>Suporte prioritário em português</li>
+              <li>Até 120.000 palavras por mês</li>
+              <li>Tom de escrita formal ou informal</li>
+              <li>Dicionário pessoal</li>
+              <li>Suporte por e-mail, em português</li>
             </ul>
             <a class="btn btn-fill" href="#baixar">Baixar e assinar</a>
           </div>
@@ -562,12 +642,12 @@
             <div class="pp">Sob consulta</div>
             <p class="pd">Para escritórios e equipes que querem uma assinatura só.</p>
             <ul>
-              <li>Tudo do Pro, para todo mundo</li>
-              <li>Cobrança única por nota fiscal</li>
-              <li>Dicionário compartilhado</li>
+              <li>Tudo do Pro, para toda a equipe</li>
+              <li>Cobrança centralizada</li>
+              <li>Volume combinado por contrato</li>
               <li>Onboarding com a gente</li>
             </ul>
-            <a class="btn" href="mailto:joaobondan5@gmail.com?subject=Vozza%20para%20times">Falar com a gente</a>
+            <a class="btn" href="mailto:joaobondan5@gmail.com?subject=VozzAI%20para%20times">Falar com a gente</a>
           </div>
         </div>
       </div>
@@ -582,6 +662,14 @@
         </div>
         <div class="faq rv">
           <details class="qa" open>
+            <summary><span class="sig"></span> O VozzAI já está disponível?</summary>
+            <div class="a">Sim. Você baixa o app para macOS (Apple Silicon) direto daqui do site e começa no plano grátis, sem cartão. Windows e a extensão de Chrome estão a caminho.</div>
+          </details>
+          <details class="qa">
+            <summary><span class="sig"></span> Quais permissões o Mac pede?</summary>
+            <div class="a">Duas: Microfone, para ouvir o que você dita, e Acessibilidade, para inserir o texto onde o cursor está. O VozzAI explica cada uma antes de o sistema pedir.</div>
+          </details>
+          <details class="qa">
             <summary><span class="sig"></span> Preciso de internet para usar?</summary>
             <div class="a">Sim. A transcrição roda na nuvem, e é isso que garante o texto saindo pronto em segundos. Uma versão que processa no próprio computador está no plano para mais adiante.</div>
           </details>
@@ -595,7 +683,7 @@
           </details>
           <details class="qa">
             <summary><span class="sig"></span> Como funciona a cobrança?</summary>
-            <div class="a">Assinatura mensal ou anual em real, com Pix e cartão nacional, e nota fiscal emitida. Cancela quando quiser, direto na sua conta.</div>
+            <div class="a">Assinatura mensal de R$ 29,90, em real, no cartão, processada pelo Mercado Pago. Você assina dentro do aplicativo e pode cancelar quando quiser — pela sua conta do Mercado Pago ou falando com a gente.</div>
           </details>
           <details class="qa">
             <summary><span class="sig"></span> Vale a pena para o meu trabalho?</summary>
@@ -610,17 +698,17 @@
       <div class="wrap">
         <div class="cta rv">
           <div id="dlMac">
-            <h2>Pare de digitar o que você podia falar.</h2>
-            <p>Baixe o Vozza para Mac agora — grátis para começar, sem cartão.</p>
+            <h2>Pare de digitar o que você já sabe dizer.</h2>
+            <p>Baixe o VozzAI para Mac agora — grátis para começar, sem cartão.</p>
             <div class="hero-btns" style="margin-top: 28px;">
-              <a class="btn" style="background: var(--accent-ink); border-color: var(--accent-ink); color: var(--accent);" href="/downloads/Vozza.dmg" download>Baixar para Mac — grátis</a>
+              <a class="btn" style="background: var(--accent-ink); border-color: var(--accent-ink); color: var(--accent);" href="/downloads/VozzAI.dmg" download>Baixar para Mac — grátis</a>
             </div>
-            <p class="wl-msg" style="opacity: .85;">Ao abrir, o macOS avisa que é de "desenvolvedor não identificado" — normal pra um app novo. Clique com o botão direito no Vozza → Abrir, só na primeira vez.</p>
+            <p class="wl-msg" style="opacity: .85;">Ao abrir, o macOS avisa que é de "desenvolvedor não identificado" — normal pra um app novo. Clique com o botão direito no VozzAI → Abrir, só na primeira vez.</p>
             <p class="wl-msg"><a href="#" id="noMacLink" style="text-decoration: underline;">Não tenho Mac →</a></p>
           </div>
 
           <div id="dlOther" style="display: none;">
-            <h2>O Vozza ainda é só para Mac.</h2>
+            <h2>O VozzAI ainda é só para Mac.</h2>
             <p>Windows e a extensão de Chrome estão a caminho. Deixa seu e-mail que a gente avisa assim que sair pra você.</p>
             <form class="wl" id="wl" novalidate>
               <input type="email" id="wlmail" placeholder="seu@email.com.br" aria-label="Seu e-mail" required />
@@ -640,7 +728,7 @@
         <div class="ft-l">
           <a class="logo" href="#top">
             <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-            Vozza
+            VozzAI
           </a>
           <p>Ditado por voz com IA, feito para o jeito brasileiro de falar.</p>
         </div>
@@ -658,10 +746,16 @@
             <a href="#comparar">Comparação</a>
             <a href="mailto:joaobondan5@gmail.com">Contato</a>
           </div>
+          <div class="ft-col">
+            <h4>Legal</h4>
+            <a href="/privacy.html">Privacidade</a>
+            <a href="/termos.html">Termos de uso</a>
+            <a href="/uso-justo.html">Uso justo</a>
+          </div>
         </div>
       </div>
       <div class="ft-bot">
-        <span>© 2026 Vozza · feito no Brasil</span>
+        <span>© 2026 VozzAI · feito no Brasil</span>
         <span>preços e recursos de lançamento sujeitos a ajuste</span>
       </div>
     </div>
@@ -759,6 +853,19 @@
         }
         if (reduce) { t = 10; draw(); } else { draw(); }
       }
+
+      /* Antes e depois — tabs */
+      var baTabs = document.querySelectorAll(".ba-tab");
+      var baPanels = document.querySelectorAll(".ba-panel");
+      baTabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          baTabs.forEach(function (t) { t.classList.remove("on"); t.setAttribute("aria-selected", "false"); });
+          baPanels.forEach(function (p) { p.hidden = true; });
+          tab.classList.add("on");
+          tab.setAttribute("aria-selected", "true");
+          document.querySelector('.ba-panel[data-bap="' + tab.getAttribute("data-ba") + '"]').hidden = false;
+        });
+      });
 
       /* Baixar — mostra o bloco certo conforme o sistema, com alternância manual */
       var dlMac = document.getElementById("dlMac"), dlOther = document.getElementById("dlOther");

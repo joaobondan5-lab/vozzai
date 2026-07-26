@@ -1,6 +1,6 @@
-# Vozza
+# VozzAI
 
-Ditado por voz com IA para o mercado brasileiro: você fala, o Vozza transcreve
+Ditado por voz com IA para o mercado brasileiro: você fala, o VozzAI transcreve
 e devolve o texto já formatado, pronto para colar em qualquer lugar.
 
 ## Como funciona (MVP)
@@ -35,7 +35,7 @@ de Acessibilidade (para colar o texto sozinho) — autorize as duas.
 npm run dist
 ```
 
-Gera um `Vozza.app` que abre com duplo clique e um instalador `.dmg` em
+Gera um `VozzAI.app` que abre com duplo clique e um instalador `.dmg` em
 `release/` (não versionado). O build é para Mac Apple Silicon (arm64) e não é
 assinado — no primeiro uso, clique com o botão direito no app e escolha "Abrir"
 para passar pelo Gatekeeper.

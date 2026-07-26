@@ -21,7 +21,7 @@ export async function createSubscription(userId: number, email: string): Promise
     method: 'POST',
     headers: { Authorization: `Bearer ${TOKEN()}`, 'content-type': 'application/json' },
     body: JSON.stringify({
-      reason: 'Vozza Pro — assinatura mensal',
+      reason: 'VozzAI Pro — assinatura mensal',
       external_reference: String(userId),
       payer_email: email,
       back_url: process.env.APP_URL || 'https://vozzai.vercel.app',

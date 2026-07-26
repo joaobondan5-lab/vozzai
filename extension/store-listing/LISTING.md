@@ -20,7 +20,7 @@ Fale e o texto aparece — ditado por voz com IA em português do Brasil, em qua
 ## Descrição detalhada
 
 ```
-Vozza é ditado por voz com IA feito para o português do Brasil.
+VozzAI é ditado por voz com IA feito para o português do Brasil.
 
 Aperte o atalho, fale normalmente — com gírias, hesitações, do jeito
 que você fala mesmo — e o texto aparece pontuado e formatado, direto
@@ -50,7 +50,7 @@ Produtividade
 
 ## Justificativa de permissões (a Google pede isso no formulário)
 
-- **storage**: guardar o token de login da sua conta Vozza no navegador
+- **storage**: guardar o token de login da sua conta VozzAI no navegador
 - **offscreen**: gravar o áudio do microfone em segundo plano (service
   workers do Manifest V3 não acessam o microfone diretamente)
 - **tabs**: identificar a aba ativa para enviar a ela o texto transcrito

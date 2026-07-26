@@ -1,4 +1,4 @@
-# Vozza — plano de marketing (rascunho inicial)
+# VozzAI — plano de marketing (rascunho inicial)
 
 ## Posicionamento
 

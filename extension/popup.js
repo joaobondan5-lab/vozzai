@@ -45,7 +45,7 @@ submitBtn.addEventListener('click', async () => {
     data = await res.json();
   } catch {
     msgEl.style.color = '#D93A1D';
-    msgEl.textContent = 'Não consegui falar com o servidor do Vozza.';
+    msgEl.textContent = 'Não consegui falar com o servidor do VozzAI.';
     return;
   }
 
@@ -78,7 +78,7 @@ subscribeBtn.addEventListener('click', async () => {
     });
     data = await res.json();
   } catch {
-    subMsgEl.textContent = 'Não consegui falar com o servidor do Vozza.';
+    subMsgEl.textContent = 'Não consegui falar com o servidor do VozzAI.';
     subscribeBtn.disabled = false;
     return;
   }

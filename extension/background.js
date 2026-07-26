@@ -63,7 +63,7 @@ chrome.runtime.onMessage.addListener((msg) => {
 async function handleAudio(audioBase64) {
   const { vozzaToken } = await chrome.storage.local.get('vozzaToken');
   if (!vozzaToken) {
-    notifyActiveTab('Faça login na extensão do Vozza primeiro (clique no ícone).');
+    notifyActiveTab('Faça login na extensão do VozzAI primeiro (clique no ícone).');
     return;
   }
 
@@ -75,7 +75,7 @@ async function handleAudio(audioBase64) {
       body: JSON.stringify({ audio: audioBase64, language: 'pt' }),
     });
   } catch {
-    notifyActiveTab('Não consegui falar com o servidor do Vozza.');
+    notifyActiveTab('Não consegui falar com o servidor do VozzAI.');
     return;
   }
 

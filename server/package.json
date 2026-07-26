@@ -2,7 +2,7 @@
   "name": "vozza-server",
   "version": "0.1.0",
   "private": true,
-  "description": "Backend do Vozza — contas, limite de uso e chave da OpenAI no servidor",
+  "description": "Backend do VozzAI — contas, limite de uso e chave da OpenAI no servidor",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",

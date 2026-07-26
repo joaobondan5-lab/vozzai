@@ -1,7 +1,7 @@
-# Vozza — servidor
+# VozzAI — servidor
 
 Backend que guarda a chave da OpenAI, controla contas e limita o uso por plano.
-É ele que torna o Vozza vendável: o usuário final não precisa de chave nenhuma.
+É ele que torna o VozzAI vendável: o usuário final não precisa de chave nenhuma.
 
 Banco de dados: **Postgres**. Não usa mais SQLite — um arquivo local não
 sobrevive a reinícios/deploys na nuvem, então isso deixou de ser opção assim

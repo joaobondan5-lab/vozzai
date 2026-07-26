@@ -1,4 +1,4 @@
-# Colocar o Vozza no ar — passo a passo
+# Colocar o VozzAI no ar — passo a passo
 
 Este guia é pra você (só você tem login nas contas). Depois de cada parte
 "dashboard", me avisa o que apareceu (principalmente a URL gerada) que eu
