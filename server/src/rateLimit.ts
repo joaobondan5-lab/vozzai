@@ -23,6 +23,11 @@ export function isRateLimited(key: string): boolean {
   return entry.count > MAX_ATTEMPTS;
 }
 
+/** Só para testes: zera as janelas para um teste não contaminar o seguinte. */
+export function resetRateLimits(): void {
+  attempts.clear();
+}
+
 // Evita crescer pra sempre: limpa entradas expiradas de tempos em tempos.
 setInterval(
   () => {

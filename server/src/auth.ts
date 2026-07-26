@@ -9,13 +9,17 @@ export interface User {
   dictionary: string;
 }
 
-function hashPassword(password: string): string {
+export function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+export function hashPassword(password: string): string {
   const salt = randomBytes(16).toString('hex');
   const hash = scryptSync(password, salt, 64).toString('hex');
   return `${salt}:${hash}`;
 }
 
-function verifyPassword(password: string, stored: string): boolean {
+export function verifyPassword(password: string, stored: string): boolean {
   const [salt, hash] = stored.split(':');
   if (!salt || !hash) return false;
   const candidate = scryptSync(password, salt, 64);
@@ -25,7 +29,7 @@ function verifyPassword(password: string, stored: string): boolean {
 }
 
 export async function createUser(email: string, password: string): Promise<User> {
-  const normalized = email.trim().toLowerCase();
+  const normalized = normalizeEmail(email);
   const result = await pool.query<{ id: number }>(
     'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id',
     [normalized, hashPassword(password)],
@@ -38,7 +42,7 @@ export async function findUserByEmail(
 ): Promise<(User & { password_hash: string }) | null> {
   const result = await pool.query<User & { password_hash: string }>(
     'SELECT id, email, plan, tone, dictionary, password_hash FROM users WHERE email = $1',
-    [email.trim().toLowerCase()],
+    [normalizeEmail(email)],
   );
   return result.rows[0] ?? null;
 }

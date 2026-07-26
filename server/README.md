@@ -31,9 +31,12 @@ um servidor local. Depois só apontar a `DATABASE_URL` pra ele.
 |---|---|
 | `OPENAI_API_KEY` | Chave usada para transcrever e limpar o texto. **Obrigatória.** |
 | `DATABASE_URL` | Conexão com o Postgres. **Obrigatória.** |
-| `MP_ACCESS_TOKEN` | Token do Mercado Pago, para confirmar assinaturas. |
+| `MP_ACCESS_TOKEN` | Token do Mercado Pago (`TEST-...` em dev, `APP_USR-...` em produção). |
+| `ADMIN_TOKEN` | Libera o painel `/admin`. Sem ela, o painel responde 503 (fechado de propósito). |
 | `VOZZA_STT_MODEL` | Modelo de transcrição (padrão `whisper-1`; `gpt-4o-mini-transcribe` custa metade). |
 | `PORT` | Porta HTTP (padrão 3000). |
+
+Modelo completo em `.env.example`.
 
 ## Rotas
 
@@ -41,9 +44,14 @@ um servidor local. Depois só apontar a `DATABASE_URL` pra ele.
 |---|---|
 | `POST /auth/signup` | Cria conta (`email`, `password`) e devolve token. |
 | `POST /auth/login` | Autentica e devolve token. |
-| `GET /me` | Dados da conta e uso do período. |
+| `GET /me` | Dados da conta, preferências e uso do período. |
+| `PATCH /me` | Atualiza `tone` (formal/informal) e `dictionary` (até 2.000 chars). |
 | `POST /transcribe` | Recebe áudio em base64, aplica a cota e devolve o texto pronto. |
+| `POST /waitlist` | Guarda e-mail de quem ainda não tem Mac. |
+| `POST /billing/subscribe` | Cria a assinatura no Mercado Pago e devolve o link de checkout. |
 | `POST /webhooks/mercadopago` | Recebe avisos de assinatura e atualiza o plano. |
+| `GET /admin` | Painel de métricas (pede o `ADMIN_TOKEN` na primeira visita). |
+| `GET /admin/metrics` | JSON com agregados do negócio — exige header `x-admin-token`. |
 
 Autenticação: cabeçalho `Authorization: Bearer <token>`.
 
@@ -60,14 +68,42 @@ protege a margem sem atrapalhar o uso normal.
   com uma instância rodando; se um dia escalar pra várias instâncias, precisa
   virar algo compartilhado (ex.: Redis).
 - **Erros não tratados viram JSON 500** em vez de derrubar a conexão sem
-  explicação — ver o middleware de erro no fim de `src/index.ts`.
+  explicação — ver o middleware de erro no fim de `src/app.ts`.
 - Reinício automático em caso de falha fica por conta da plataforma de deploy
   (Railway reinicia sozinho se o processo cair).
 
+## Testes
+
+```bash
+npm test
+```
+
+Precisa do Postgres local rodando na porta 5433 (Postgres.app). Os testes usam
+**sempre** um banco próprio (`vozza_test`, criado sozinho na primeira execução)
+— o `DATABASE_URL` do ambiente é ignorado de propósito, para ser impossível
+tocar em produção por engano.
+
+O teste de assinatura chama o **sandbox** do Mercado Pago e só roda se houver
+um token de teste no ambiente (sem ele, é pulado — a suíte continua verde):
+
+```bash
+MP_ACCESS_TOKEN=TEST-... npm test
+```
+
+Um token `APP_USR-...` no ambiente é descartado pelos testes automaticamente.
+
+A estrutura: `src/app.ts` exporta o app Express sem abrir porta (é o que os
+testes montam em memória); `src/index.ts` é só o entrypoint de produção.
+
+## Painel /admin
+
+Métricas agregadas do negócio (MRR estimado, assinantes, cadastros, uso,
+lista de espera) em `GET /admin` — pede o `ADMIN_TOKEN` na primeira visita e
+guarda no navegador. A resposta nunca inclui e-mail, texto ditado ou qualquer
+dado individual, só contagens. Sem `ADMIN_TOKEN` no ambiente o painel inteiro
+responde 503.
+
 ## O que ainda falta
 
-- **Mercado Pago não foi testado contra a API real.** O fluxo em
-  `src/mercadopago.ts` segue a documentação de *preapproval*, mas precisa rodar
-  em sandbox antes de cobrar alguém.
-- Não existe rota para *criar* a assinatura (só para receber o aviso de mudança).
 - Sem recuperação de senha, sem verificação de e-mail.
+- Rate limit em memória (uma instância só); Redis se um dia escalar.
