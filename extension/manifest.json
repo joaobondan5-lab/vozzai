@@ -4,9 +4,14 @@
   "version": "0.1.0",
   "description": "Fale e o texto aparece onde você estiver digitando no navegador.",
   "permissions": ["storage", "offscreen", "tabs"],
-  "host_permissions": ["https://vozzai-production.up.railway.app/*", "https://*.vozza.ai/*"],
+  "host_permissions": ["https://vozzai-production.up.railway.app/*"],
+  "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
   "background": { "service_worker": "background.js" },
-  "action": { "default_popup": "popup.html", "default_title": "Vozza" },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Vozza",
+    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png" }
+  },
   "commands": {
     "toggle-dictation": {
       "suggested_key": { "default": "Ctrl+Shift+Space", "mac": "Command+Shift+Space" },
