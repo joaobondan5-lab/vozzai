@@ -53,9 +53,18 @@ Produtividade
 - **storage**: guardar o token de login da sua conta Vozza no navegador
 - **offscreen**: gravar o áudio do microfone em segundo plano (service
   workers do Manifest V3 não acessam o microfone diretamente)
-- **tabs**: identificar a aba ativa para inserir o texto transcrito nela
+- **tabs**: identificar a aba ativa para enviar a ela o texto transcrito
+- **activeTab**: acessar a aba ativa apenas no momento em que o usuário
+  aciona o atalho de ditado, sem precisar de acesso permanente a todos
+  os sites
+- **scripting**: injetar o script que insere o texto transcrito na aba,
+  só quando o ditado é acionado (em vez de rodar em toda página aberta)
 - **host_permissions (vozzai-production.up.railway.app)**: enviar o
   áudio gravado para o nosso servidor transcrever
+
+Se o Google já tiver salvo justificativas antigas de "código remoto" ou de
+`content_scripts`/`<all_urls>`, ignore — essa versão (0.1.1) não usa mais
+isso, foi trocado por injeção sob demanda com `activeTab`.
 
 ## Propósito único (single purpose)
 

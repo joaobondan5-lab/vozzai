@@ -1,7 +1,13 @@
-chrome.runtime.onMessage.addListener((msg) => {
-  if (msg.type === 'vozza-insert-text') insertText(msg.text);
-  if (msg.type === 'vozza-toast') showToast(msg.text);
-});
+// Injetado sob demanda (activeTab) a cada ditado — evita registrar o
+// listener duas vezes se o usuário ditar mais de uma vez na mesma página.
+if (!window.__vozzaContentLoaded) {
+  window.__vozzaContentLoaded = true;
+
+  chrome.runtime.onMessage.addListener((msg) => {
+    if (msg.type === 'vozza-insert-text') insertText(msg.text);
+    if (msg.type === 'vozza-toast') showToast(msg.text);
+  });
+}
 
 function insertText(text) {
   navigator.clipboard?.writeText(text).catch(() => {});

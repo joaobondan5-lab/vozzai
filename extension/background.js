@@ -1,6 +1,10 @@
 const API_BASE = 'https://vozzai-production.up.railway.app';
 
 let recording = false;
+// Aba em que o ditado começou — capturada com activeTab no momento do
+// atalho, pra inserir o texto sempre no lugar certo mesmo se o usuário
+// trocar de aba enquanto fala.
+let dictationTabId = null;
 
 chrome.commands.onCommand.addListener((command) => {
   if (command !== 'toggle-dictation') return;
@@ -22,6 +26,18 @@ async function ensureOffscreen() {
 }
 
 async function startRecording() {
+  // Usa o gesto do atalho (activeTab) pra injetar o content script só na
+  // aba ativa, em vez de pedir acesso permanente a todos os sites.
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  dictationTabId = tab?.id ?? null;
+  if (dictationTabId) {
+    try {
+      await chrome.scripting.executeScript({ target: { tabId: dictationTabId }, files: ['content.js'] });
+    } catch {
+      // Páginas internas do navegador (chrome://, Web Store) não aceitam injeção.
+    }
+  }
+
   await ensureOffscreen();
   recording = true;
   chrome.runtime.sendMessage({ target: 'offscreen', type: 'start-recording' });
@@ -72,14 +88,12 @@ async function handleAudio(audioBase64) {
   insertIntoActiveTab(data.text);
 }
 
-async function insertIntoActiveTab(text) {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab?.id) return;
-  chrome.tabs.sendMessage(tab.id, { type: 'vozza-insert-text', text });
+function insertIntoActiveTab(text) {
+  if (!dictationTabId) return;
+  chrome.tabs.sendMessage(dictationTabId, { type: 'vozza-insert-text', text });
 }
 
-async function notifyActiveTab(message) {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab?.id) return;
-  chrome.tabs.sendMessage(tab.id, { type: 'vozza-toast', text: message });
+function notifyActiveTab(message) {
+  if (!dictationTabId) return;
+  chrome.tabs.sendMessage(dictationTabId, { type: 'vozza-toast', text: message });
 }

@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Vozza — ditado por voz com IA",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fale e o texto aparece onde você estiver digitando no navegador.",
-  "permissions": ["storage", "offscreen", "tabs"],
+  "permissions": ["storage", "offscreen", "tabs", "activeTab", "scripting"],
   "host_permissions": ["https://vozzai-production.up.railway.app/*"],
   "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
   "background": { "service_worker": "background.js" },
@@ -17,8 +17,5 @@
       "suggested_key": { "default": "Ctrl+Shift+Space", "mac": "Command+Shift+Space" },
       "description": "Iniciar/parar o ditado"
     }
-  },
-  "content_scripts": [
-    { "matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_idle" }
-  ]
+  }
 }
