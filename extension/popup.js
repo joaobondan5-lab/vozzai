@@ -7,6 +7,8 @@ const usageEl = document.getElementById('usage');
 const msgEl = document.getElementById('msg');
 const toggleModeEl = document.getElementById('toggleMode');
 const submitBtn = document.getElementById('submitBtn');
+const subscribeBtn = document.getElementById('subscribeBtn');
+const subMsgEl = document.getElementById('subMsg');
 
 let mode = 'login';
 
@@ -63,6 +65,35 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   loggedInEl.style.display = 'none';
 });
 
+subscribeBtn.addEventListener('click', async () => {
+  const { vozzaToken } = await chrome.storage.local.get('vozzaToken');
+  subscribeBtn.disabled = true;
+  subMsgEl.textContent = 'Abrindo checkout…';
+
+  let res, data;
+  try {
+    res = await fetch(`${API_BASE}/billing/subscribe`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${vozzaToken}` },
+    });
+    data = await res.json();
+  } catch {
+    subMsgEl.textContent = 'Não consegui falar com o servidor do Vozza.';
+    subscribeBtn.disabled = false;
+    return;
+  }
+
+  if (!res.ok) {
+    subMsgEl.textContent = data.error || 'Não consegui iniciar a assinatura.';
+    subscribeBtn.disabled = false;
+    return;
+  }
+
+  chrome.tabs.create({ url: data.checkoutUrl });
+  subMsgEl.textContent = '';
+  subscribeBtn.disabled = false;
+});
+
 async function showLoggedIn(token, email) {
   loggedOutEl.style.display = 'none';
   loggedInEl.style.display = 'block';
@@ -76,6 +107,7 @@ async function showLoggedIn(token, email) {
       const { used, limit, period } = data.usage;
       const janela = period === 'week' ? 'semana' : 'mês';
       usageEl.textContent = `${used.toLocaleString('pt-BR')} / ${limit.toLocaleString('pt-BR')} palavras nesta ${janela}`;
+      subscribeBtn.style.display = data.plan === 'pro' ? 'none' : 'block';
     } else {
       usageEl.textContent = '';
     }

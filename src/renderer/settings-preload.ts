@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld('vozzaSettings', {
   signup: (email: string, password: string) => ipcRenderer.invoke('signup', email, password),
   login: (email: string, password: string) => ipcRenderer.invoke('login', email, password),
   logout: () => ipcRenderer.invoke('logout'),
+  subscribe: () => ipcRenderer.invoke('subscribe'),
 });

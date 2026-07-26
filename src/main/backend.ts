@@ -47,6 +47,16 @@ export async function fetchMe(token: string): Promise<MeResult | null> {
   return (await res.json()) as MeResult;
 }
 
+export async function createSubscription(token: string): Promise<{ checkoutUrl?: string; error?: string }> {
+  const res = await fetch(`${API_BASE}/billing/subscribe`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = (await res.json()) as { checkoutUrl?: string; error?: string };
+  if (!res.ok) return { error: data.error || 'Não consegui iniciar a assinatura.' };
+  return { checkoutUrl: data.checkoutUrl };
+}
+
 export async function transcribeViaBackend(
   token: string,
   audioBase64: string,

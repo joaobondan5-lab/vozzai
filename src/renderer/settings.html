@@ -81,6 +81,10 @@
   <div id="loggedIn" style="display:none">
     <h1>Sua conta</h1>
     <p class="usage" id="usage"></p>
+    <div class="row">
+      <button id="subscribe" style="display:none">Assinar Pro — R$ 29,90/mês</button>
+    </div>
+    <div class="ok-msg" id="subMsg" role="status" aria-live="polite"></div>
     <button class="secondary" id="logout">Sair</button>
   </div>
 
@@ -94,6 +98,8 @@
     const submitBtn = document.getElementById('submit');
     const formTitle = document.getElementById('formTitle');
     const toggleModeEl = document.getElementById('toggleMode');
+    const subscribeBtn = document.getElementById('subscribe');
+    const subMsgEl = document.getElementById('subMsg');
 
     let mode = 'login';
 
@@ -104,16 +110,31 @@
       loggedInEl.style.display = 'none';
     }
 
-    function renderLoggedIn(email) {
+    function renderLoggedIn(email, plan) {
       dot.classList.add('ok');
       statusText.textContent = `Conectado como ${email}`;
       loggedOutEl.style.display = 'none';
       loggedInEl.style.display = 'block';
+      subscribeBtn.style.display = plan === 'pro' ? 'none' : 'block';
     }
 
     api.getConfig().then((cfg) => {
-      if (cfg.loggedIn) renderLoggedIn(cfg.email);
+      if (cfg.loggedIn) renderLoggedIn(cfg.email, cfg.plan);
       else renderLoggedOut();
+    });
+
+    subscribeBtn.addEventListener('click', async () => {
+      subscribeBtn.disabled = true;
+      subMsgEl.style.color = 'var(--muted)';
+      subMsgEl.textContent = 'Abrindo checkout no navegador…';
+      const result = await api.subscribe();
+      subscribeBtn.disabled = false;
+      if (!result.ok) {
+        subMsgEl.style.color = 'var(--danger)';
+        subMsgEl.textContent = result.error || 'Não consegui iniciar a assinatura.';
+        return;
+      }
+      subMsgEl.textContent = 'Continue no navegador que abriu para concluir o pagamento.';
     });
 
     toggleModeEl.addEventListener('click', () => {
@@ -138,7 +159,8 @@
         return;
       }
       msgEl.textContent = '';
-      renderLoggedIn(result.email);
+      const cfg = await api.getConfig();
+      renderLoggedIn(cfg.email, cfg.plan);
     });
 
     document.getElementById('logout').addEventListener('click', async () => {

@@ -1,7 +1,7 @@
-import { app, BrowserWindow, globalShortcut, ipcMain, Notification, Tray, Menu, nativeImage } from 'electron';
+import { app, BrowserWindow, globalShortcut, ipcMain, Notification, Tray, Menu, nativeImage, shell } from 'electron';
 import * as path from 'path';
 import { loadConfig, saveConfig, clearAuth, VozzaConfig } from './config';
-import { login, signup, transcribeViaBackend } from './backend';
+import { login, signup, transcribeViaBackend, fetchMe, createSubscription } from './backend';
 import { pasteAtCursor } from './paste';
 
 let config: VozzaConfig;
@@ -92,10 +92,22 @@ app.whenReady().then(() => {
 
   if (!config.authToken) openSettings();
 
-  ipcMain.handle('get-config', () => ({
-    loggedIn: Boolean(config.authToken),
-    email: config.userEmail,
-  }));
+  ipcMain.handle('get-config', async () => {
+    if (!config.authToken) return { loggedIn: false };
+    const me = await fetchMe(config.authToken);
+    return {
+      loggedIn: true,
+      email: config.userEmail,
+      plan: me?.plan || 'free',
+    };
+  });
+
+  ipcMain.handle('subscribe', async () => {
+    const result = await createSubscription(config.authToken);
+    if (result.error) return { ok: false, error: result.error };
+    shell.openExternal(result.checkoutUrl as string);
+    return { ok: true };
+  });
 
   ipcMain.handle('signup', async (_event, email: string, password: string) => {
     const result = await signup(email, password);
