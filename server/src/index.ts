@@ -1,5 +1,13 @@
 import express from 'express';
-import { createUser, findUserByEmail, login, userForToken, createSession, User } from './auth';
+import {
+  createUser,
+  findUserByEmail,
+  login,
+  userForToken,
+  createSession,
+  updatePreferences,
+  User,
+} from './auth';
 import { usageFor, recordUsage, countWords, PLANS, planOf } from './quota';
 import { transcribe, cleanup } from './openai';
 import { syncSubscription } from './mercadopago';
@@ -16,7 +24,7 @@ app.use((req, res, next) => {
   const origin = req.header('origin');
   if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
   if (req.method === 'OPTIONS') {
     res.sendStatus(204);
     return;
@@ -95,7 +103,33 @@ app.get(
   asyncRoute(async (req, res) => {
     const user = await requireUser(req, res);
     if (!user) return;
-    res.json({ email: user.email, plan: user.plan, usage: await usageFor(user.id, user.plan) });
+    res.json({
+      email: user.email,
+      plan: user.plan,
+      tone: user.tone,
+      dictionary: user.dictionary,
+      usage: await usageFor(user.id, user.plan),
+    });
+  }),
+);
+
+/** Preferências do Premium: tom de voz (formal/informal) e dicionário pessoal. */
+app.patch(
+  '/me',
+  asyncRoute(async (req, res) => {
+    const user = await requireUser(req, res);
+    if (!user) return;
+
+    const { tone, dictionary } = req.body ?? {};
+    if (tone !== undefined && tone !== 'formal' && tone !== 'informal') {
+      return void res.status(400).json({ error: 'Tom precisa ser "formal" ou "informal".' });
+    }
+    if (dictionary !== undefined && (typeof dictionary !== 'string' || dictionary.length > 2000)) {
+      return void res.status(400).json({ error: 'Dicionário precisa ter até 2.000 caracteres.' });
+    }
+
+    await updatePreferences(user.id, { tone, dictionary });
+    res.json({ ok: true });
   }),
 );
 
@@ -124,8 +158,12 @@ app.post(
     }
 
     try {
-      const { text, seconds } = await transcribe(Buffer.from(audio, 'base64'), language || 'pt');
-      const finalText = await cleanup(text);
+      const { text, seconds } = await transcribe(
+        Buffer.from(audio, 'base64'),
+        language || 'pt',
+        user.dictionary,
+      );
+      const finalText = await cleanup(text, user.tone);
       const words = countWords(finalText);
       await recordUsage(user.id, seconds, words);
       res.json({ text: finalText, usage: await usageFor(user.id, user.plan) });

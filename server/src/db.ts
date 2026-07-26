@@ -22,8 +22,15 @@ export async function initSchema(): Promise<void> {
       password_hash TEXT NOT NULL,
       plan          TEXT NOT NULL DEFAULT 'free',
       mp_customer   TEXT,
+      tone          TEXT NOT NULL DEFAULT 'informal',
+      dictionary    TEXT NOT NULL DEFAULT '',
       created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
     );
+
+    -- Colunas adicionadas depois da criação inicial da tabela: em produção,
+    -- CREATE TABLE IF NOT EXISTS não altera uma tabela que já existe.
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS tone TEXT NOT NULL DEFAULT 'informal';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS dictionary TEXT NOT NULL DEFAULT '';
 
     CREATE TABLE IF NOT EXISTS sessions (
       token      TEXT PRIMARY KEY,

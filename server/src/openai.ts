@@ -10,13 +10,21 @@ export interface Transcription {
   seconds: number;
 }
 
-export async function transcribe(audio: Buffer, language = 'pt'): Promise<Transcription> {
+export async function transcribe(
+  audio: Buffer,
+  language = 'pt',
+  dictionary = '',
+): Promise<Transcription> {
   if (!KEY()) throw new Error('OPENAI_API_KEY não configurada no servidor.');
 
   const form = new FormData();
   form.append('file', new Blob([audio], { type: 'audio/webm' }), 'audio.webm');
   form.append('model', process.env.VOZZA_STT_MODEL || 'whisper-1');
   form.append('language', language);
+  // O Whisper aceita um "prompt" curto como dica de vocabulário — é assim que
+  // o dicionário pessoal ajuda a acertar nomes e termos específicos, sem
+  // precisar treinar nenhum modelo. Só os ~200 primeiros caracteres importam.
+  if (dictionary.trim()) form.append('prompt', dictionary.slice(0, 800));
 
   const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
     method: 'POST',
@@ -30,8 +38,16 @@ export async function transcribe(audio: Buffer, language = 'pt'): Promise<Transc
   return { text: data.text, seconds: data.usage?.seconds ?? 0 };
 }
 
-export async function cleanup(rawText: string): Promise<string> {
+const TONE_INSTRUCTIONS: Record<string, string> = {
+  informal: 'Mantenha um tom natural e conversacional, como a pessoa realmente falou.',
+  formal:
+    'Troque só as gírias e expressões muito casuais ("cara", "tipo", "beleza?", "e aí") por palavras mais neutras, mantendo exatamente as mesmas frases, na mesma ordem, sem tirar nem adicionar conteúdo. Isto NÃO é uma carta nem um e-mail: é proibido escrever "Prezado", "Atenciosamente", qualquer saudação, despedida ou placeholder como "[Nome]". A saída deve ter o mesmo tamanho do texto original, só com palavras mais formais.',
+};
+
+export async function cleanup(rawText: string, tone = 'informal'): Promise<string> {
   if (!rawText.trim()) return rawText;
+
+  const toneInstruction = TONE_INSTRUCTIONS[tone] ?? TONE_INSTRUCTIONS.informal;
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -42,7 +58,7 @@ export async function cleanup(rawText: string): Promise<string> {
         {
           role: 'user',
           content:
-            'Corrija pontuação, maiúsculas e formatação do texto ditado abaixo, mantendo o sentido e o idioma originais. Responda apenas com o texto corrigido, sem comentários.\n\n' +
+            `Corrija pontuação, maiúsculas e formatação do texto ditado abaixo, mantendo o sentido e o idioma originais. ${toneInstruction} Responda apenas com o texto corrigido, sem comentários.\n\n` +
             rawText,
         },
       ],
