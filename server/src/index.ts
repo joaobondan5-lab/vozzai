@@ -11,7 +11,7 @@ import {
 import { usageFor, recordUsage, countWords, PLANS, planOf } from './quota';
 import { transcribe, cleanup } from './openai';
 import { syncSubscription } from './mercadopago';
-import { initSchema } from './db';
+import { initSchema, addToWaitlist } from './db';
 import { isRateLimited } from './rateLimit';
 
 const app = express();
@@ -56,6 +56,23 @@ async function requireUser(req: express.Request, res: express.Response): Promise
 }
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
+
+app.post(
+  '/waitlist',
+  asyncRoute(async (req, res) => {
+    if (isRateLimited(`waitlist:${req.ip}`)) {
+      return void res.status(429).json({ error: 'Muitas tentativas. Espere um pouco e tente de novo.' });
+    }
+
+    const { email } = req.body ?? {};
+    if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return void res.status(400).json({ error: 'E-mail inválido.' });
+    }
+
+    await addToWaitlist(email);
+    res.status(201).json({ ok: true });
+  }),
+);
 
 app.post(
   '/auth/signup',

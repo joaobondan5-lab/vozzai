@@ -48,5 +48,19 @@ export async function initSchema(): Promise<void> {
     );
 
     CREATE INDEX IF NOT EXISTS usage_user_date ON usage(user_id, created_at);
+
+    -- E-mails capturados na landing page antes do lançamento.
+    CREATE TABLE IF NOT EXISTS waitlist (
+      id         SERIAL PRIMARY KEY,
+      email      TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
   `);
+}
+
+/** Idempotente: reenviar o mesmo e-mail (ex.: usuário clica duas vezes) não gera erro. */
+export async function addToWaitlist(email: string): Promise<void> {
+  await pool.query('INSERT INTO waitlist (email) VALUES ($1) ON CONFLICT (email) DO NOTHING', [
+    email.trim().toLowerCase(),
+  ]);
 }

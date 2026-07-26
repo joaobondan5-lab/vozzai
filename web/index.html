@@ -747,14 +747,29 @@
         if (reduce) { t = 10; draw(); } else { draw(); }
       }
 
-      /* Waitlist (preview only — no backend yet) */
+      /* Waitlist */
+      var API_BASE = "https://vozzai-production.up.railway.app";
       var f = document.getElementById("wl"), msg = document.getElementById("wlmsg");
       f.addEventListener("submit", function (e) {
         e.preventDefault();
         var v = document.getElementById("wlmail").value.trim();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg.textContent = "confere o e-mail — parece que falta algo"; return; }
-        msg.textContent = "anotado ✓ (prévia — o cadastro ainda será conectado)";
-        f.reset();
+        var btn = f.querySelector("button");
+        btn.disabled = true;
+        msg.textContent = "enviando…";
+        fetch(API_BASE + "/waitlist", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ email: v }),
+        })
+          .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+          .then(function (r) {
+            if (!r.ok) { msg.textContent = r.data.error || "não consegui cadastrar, tenta de novo"; return; }
+            msg.textContent = "anotado ✓ — te avisamos assim que abrir";
+            f.reset();
+          })
+          .catch(function () { msg.textContent = "não consegui falar com o servidor, tenta de novo"; })
+          .finally(function () { btn.disabled = false; });
       });
     })();
   </script>
