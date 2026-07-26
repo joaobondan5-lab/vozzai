@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Fale e o texto aparece onde você estiver digitando no navegador.",
   "permissions": ["storage", "offscreen", "tabs"],
-  "host_permissions": ["http://localhost:4000/*", "https://*.vozza.ai/*"],
+  "host_permissions": ["https://vozzai-production.up.railway.app/*", "https://*.vozza.ai/*"],
   "background": { "service_worker": "background.js" },
   "action": { "default_popup": "popup.html", "default_title": "Vozza" },
   "commands": {

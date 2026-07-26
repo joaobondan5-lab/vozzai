@@ -10,8 +10,8 @@ em Windows, Linux e Chromebook também.
 1. Abra `chrome://extensions`
 2. Ative "Modo do desenvolvedor" (canto superior direito)
 3. Clique em "Carregar sem compactação" e selecione esta pasta (`extension/`)
-4. Antes de usar, rode o servidor (`../server`) e ajuste `API_BASE` em
-   `background.js` e `popup.js` se não for `http://localhost:4000`
+4. Já aponta para o backend em produção
+   (`https://vozzai-production.up.railway.app`) — não precisa rodar nada local
 5. Clique no ícone da extensão para criar conta ou entrar
 6. Em qualquer página, aperte `Ctrl+Shift+Espaço` (`⌘+Shift+Espaço` no Mac),
    fale, aperte de novo para parar
@@ -47,6 +47,7 @@ O que **foi** verificado, fora do contexto de extensão:
 
 ## Antes de publicar na Chrome Web Store
 
-- Trocar `API_BASE` para o domínio de produção em `background.js` e `popup.js`
 - Adicionar ícones (16/48/128px) no `manifest.json`
 - Cadastro de desenvolvedor na Chrome Web Store (taxa única de US$5)
+- Se/quando tiver domínio próprio (ex.: `api.vozza.ai`), trocar `API_BASE` de
+  novo e apontar um domínio customizado pro Railway

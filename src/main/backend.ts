@@ -1,5 +1,4 @@
-// TODO: trocar para o domínio de produção do servidor quando publicar
-export const API_BASE = 'http://localhost:4000';
+export const API_BASE = 'https://vozzai-production.up.railway.app';
 
 export interface AuthResult {
   token: string;
