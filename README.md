@@ -3,15 +3,20 @@
 Ditado por voz com IA para o mercado brasileiro: você fala, o VozzAI transcreve
 e devolve o texto já formatado, pronto para colar em qualquer lugar.
 
-## Como funciona (MVP)
+## Como funciona
 
-1. Crie uma conta ou entre (janela de Configurações, abre sozinha na primeira
-   vez) — sem chave de API nenhuma, é só e-mail e senha
-2. Pressione `Cmd+Shift+Space` para começar a gravar
-3. Fale normalmente
-4. Pressione `Cmd+Shift+Space` de novo para parar
-5. O texto transcrito e revisado é colado automaticamente onde o cursor
-   estiver
+1. Na primeira abertura, o onboarding cria sua conta e explica as duas
+   permissões (Microfone e Acessibilidade) antes de o sistema pedir — e só
+   termina depois do seu primeiro ditado real
+2. Pressione `Cmd+Shift+Space` (configurável) para começar a gravar
+3. Fale normalmente — `Esc` cancela sem gastar cota
+4. Pressione o atalho de novo para parar
+5. O texto revisado é colado onde o cursor estiver, no modo de escrita
+   escolhido no menu da barra (WhatsApp, E-mail, Jurídico…)
+
+Se a internet falhar, o ditado não se perde: fica guardado para "Tentar
+transcrever de novo" no menu. As últimas 50 transcrições ficam num histórico
+local (só texto, nunca áudio), com copiar/reinserir/excluir.
 
 A transcrição roda no [servidor](server/) — o app não fala mais direto com a
 OpenAI, então não existe chave para cada usuário configurar.

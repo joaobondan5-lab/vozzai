@@ -46,7 +46,8 @@ Modelo completo em `.env.example`.
 | `POST /auth/login` | Autentica e devolve token. |
 | `GET /me` | Dados da conta, preferências e uso do período. |
 | `PATCH /me` | Atualiza `tone` (formal/informal) e `dictionary` (até 2.000 chars). |
-| `POST /transcribe` | Recebe áudio em base64, aplica a cota e devolve o texto pronto. |
+| `GET /modes` | Catálogo dos modos de escrita (sem as instruções internas). |
+| `POST /transcribe` | Recebe áudio em base64 e `mode` opcional, aplica a cota e devolve o texto pronto. Modo Pro sem plano Pro = 403, antes de qualquer chamada paga. |
 | `POST /waitlist` | Guarda e-mail de quem ainda não tem Mac. |
 | `POST /billing/subscribe` | Cria a assinatura no Mercado Pago (cartão) e devolve o link de checkout. |
 | `POST /billing/subscribe/pix` | Cria o checkout na Asaas (Pix automático + cartão) e devolve o link. |
