@@ -6,26 +6,46 @@ export interface AuthResult {
   error?: string;
 }
 
+/** Um fetch que não pendura pra sempre e transforma falha de rede em erro legível. */
+async function api(path: string, init: RequestInit, timeoutMs: number): Promise<Response> {
+  try {
+    return await fetch(`${API_BASE}${path}`, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+  } catch (err) {
+    if ((err as Error).name === 'TimeoutError' || (err as Error).name === 'AbortError') {
+      throw new Error('O servidor demorou demais para responder. Tente de novo.');
+    }
+    throw new Error('Sem conexão com o servidor do VozzAI. Confira sua internet.');
+  }
+}
+
 export async function signup(email: string, password: string): Promise<AuthResult> {
-  const res = await fetch(`${API_BASE}/auth/signup`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
-  const data = (await res.json()) as { token?: string; email?: string; error?: string };
-  if (!res.ok) return { token: '', error: data.error || 'Não foi possível criar a conta.' };
-  return { token: data.token as string, email: data.email };
+  try {
+    const res = await api('/auth/signup', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    }, 15_000);
+    const data = (await res.json()) as { token?: string; email?: string; error?: string };
+    if (!res.ok) return { token: '', error: data.error || 'Não foi possível criar a conta.' };
+    return { token: data.token as string, email: data.email };
+  } catch (err) {
+    return { token: '', error: (err as Error).message };
+  }
 }
 
 export async function login(email: string, password: string): Promise<AuthResult> {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
-  const data = (await res.json()) as { token?: string; error?: string };
-  if (!res.ok) return { token: '', error: data.error || 'E-mail ou senha incorretos.' };
-  return { token: data.token as string, email };
+  try {
+    const res = await api('/auth/login', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    }, 15_000);
+    const data = (await res.json()) as { token?: string; error?: string };
+    if (!res.ok) return { token: '', error: data.error || 'E-mail ou senha incorretos.' };
+    return { token: data.token as string, email };
+  } catch (err) {
+    return { token: '', error: (err as Error).message };
+  }
 }
 
 export interface UsageStatus {
@@ -38,36 +58,87 @@ export interface UsageStatus {
 export interface MeResult {
   email: string;
   plan: string;
+  tone: string;
+  dictionary: string;
   usage: UsageStatus;
 }
 
 export async function fetchMe(token: string): Promise<MeResult | null> {
-  const res = await fetch(`${API_BASE}/me`, { headers: { Authorization: `Bearer ${token}` } });
-  if (!res.ok) return null;
-  return (await res.json()) as MeResult;
+  try {
+    const res = await api('/me', { headers: { Authorization: `Bearer ${token}` } }, 15_000);
+    if (!res.ok) return null;
+    return (await res.json()) as MeResult;
+  } catch {
+    return null;
+  }
+}
+
+export async function updatePreferences(
+  token: string,
+  partial: { tone?: string; dictionary?: string },
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await api('/me', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(partial),
+    }, 15_000);
+    const data = (await res.json()) as { error?: string };
+    if (!res.ok) return { ok: false, error: data.error || 'Não consegui salvar.' };
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
 }
 
 export async function createSubscription(token: string): Promise<{ checkoutUrl?: string; error?: string }> {
-  const res = await fetch(`${API_BASE}/billing/subscribe`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const data = (await res.json()) as { checkoutUrl?: string; error?: string };
-  if (!res.ok) return { error: data.error || 'Não consegui iniciar a assinatura.' };
-  return { checkoutUrl: data.checkoutUrl };
+  try {
+    const res = await api('/billing/subscribe', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    }, 20_000);
+    const data = (await res.json()) as { checkoutUrl?: string; error?: string };
+    if (!res.ok) return { error: data.error || 'Não consegui iniciar a assinatura.' };
+    return { checkoutUrl: data.checkoutUrl };
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
+}
+
+export interface TranscribeResult {
+  text?: string;
+  error?: string;
+  /** true = erro de rede/servidor; vale a pena tentar de novo com o mesmo áudio. */
+  retryable?: boolean;
+  /** true = cota do plano estourada (HTTP 402). */
+  quotaExceeded?: boolean;
+  usage?: UsageStatus;
 }
 
 export async function transcribeViaBackend(
   token: string,
   audioBase64: string,
   language: string,
-): Promise<{ text?: string; error?: string }> {
-  const res = await fetch(`${API_BASE}/transcribe`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ audio: audioBase64, language }),
-  });
-  const data = (await res.json()) as { text?: string; error?: string };
-  if (!res.ok) return { error: data.error || 'Não consegui transcrever agora.' };
-  return { text: data.text };
+  mode: string,
+): Promise<TranscribeResult> {
+  let res: Response;
+  try {
+    // Transcrição é a chamada longa: áudio sobe e a OpenAI processa.
+    res = await api('/transcribe', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ audio: audioBase64, language, mode }),
+    }, 90_000);
+  } catch (err) {
+    return { error: (err as Error).message, retryable: true };
+  }
+
+  const data = (await res.json()) as { text?: string; error?: string; usage?: UsageStatus };
+  if (res.status === 402) {
+    return { error: data.error || 'Você atingiu o limite do plano.', quotaExceeded: true, usage: data.usage };
+  }
+  if (!res.ok) {
+    return { error: data.error || 'Não consegui transcrever agora.', retryable: res.status >= 500 };
+  }
+  return { text: data.text, usage: data.usage };
 }

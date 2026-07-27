@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bem-vindo ao VozzAI</title>
+  <style>
+    :root {
+      --bg: #0B1A17; --surface: #10221E; --line: #1F332D; --ink: #ECEFEA;
+      --muted: #97A79F; --brand: #38C79A; --accent: #F5B646; --danger: #FB7C5F;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #F5F2EC; --surface: #FDFBF6; --line: #E2DBCD; --ink: #17211E;
+        --muted: #57655F; --brand: #0E6E5C; --accent: #E0951C; --danger: #E15B3D;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg); color: var(--ink); padding: 30px 34px; line-height: 1.55; font-size: 14.5px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .dots { display: flex; gap: 7px; margin-bottom: 26px; }
+    .dots i { width: 26px; height: 4px; border-radius: 2px; background: var(--line); }
+    .dots i.on { background: var(--brand); }
+    h1 { font-size: 22px; letter-spacing: -0.02em; margin: 0 0 10px; }
+    p { color: var(--muted); margin: 0 0 14px; max-width: 52ch; }
+    p strong { color: var(--ink); font-weight: 650; }
+    .step { display: none; }
+    .step.on { display: block; }
+    button {
+      font: inherit; font-weight: 650; font-size: 14px; padding: 11px 20px; border-radius: 999px;
+      border: none; cursor: pointer; background: var(--brand); color: var(--bg);
+    }
+    button:hover { filter: brightness(1.08); }
+    button:disabled { opacity: .45; cursor: default; filter: none; }
+    button.secondary { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+    .actions { display: flex; gap: 10px; margin-top: 22px; align-items: center; flex-wrap: wrap; }
+    .later { margin-top: 26px; font-size: 12.5px; }
+    .later a { color: var(--muted); cursor: pointer; text-decoration: underline; }
+    label { display: block; font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin: 0 0 6px; }
+    input {
+      width: 100%; font: inherit; font-size: 14px; padding: 10px 13px; border-radius: 10px;
+      border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); margin-bottom: 11px;
+    }
+    input:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+    .msg { font-size: 13px; min-height: 18px; margin-top: 8px; color: var(--danger); }
+    .ok-badge { display: inline-flex; gap: 7px; align-items: center; color: var(--brand); font-weight: 650; }
+    .kbd { display: inline-block; font-family: "SF Mono", ui-monospace, monospace; font-size: 13px; padding: 4px 10px; border: 1px solid var(--line); border-bottom-width: 2.5px; border-radius: 8px; background: var(--surface); }
+    textarea {
+      width: 100%; min-height: 110px; font: inherit; font-size: 15px; padding: 12px 14px;
+      border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+      resize: none; margin-top: 8px;
+    }
+    textarea:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+    .toggle-link { font-size: 12.5px; color: var(--brand); cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="dots" id="dots"></div>
+
+  <!-- 1. Boas-vindas -->
+  <section class="step on" data-step="0">
+    <h1>Bem-vindo ao VozzAI 👋</h1>
+    <p>Em dois minutos você faz seu primeiro ditado: aperta um atalho, fala do seu jeito e o texto aparece pronto onde o cursor estiver.</p>
+    <p>Vamos configurar sua conta e as duas permissões que o macOS exige — explicando o porquê de cada uma antes de pedir.</p>
+    <div class="actions"><button id="startBtn">Começar</button></div>
+  </section>
+
+  <!-- 2. Conta -->
+  <section class="step" data-step="1">
+    <h1 id="accTitle">Sua conta</h1>
+    <p>A transcrição roda nos nossos servidores — por isso você usa uma conta, e não precisa de chave de API nenhuma.</p>
+    <label for="email">E-mail</label>
+    <input id="email" type="email" placeholder="seu@email.com.br" autocomplete="username" />
+    <label for="password">Senha</label>
+    <input id="password" type="password" placeholder="mínimo 8 caracteres" autocomplete="new-password" />
+    <div class="actions">
+      <button id="accBtn">Criar conta</button>
+      <span class="toggle-link" id="accToggle">Já tenho conta — entrar</span>
+    </div>
+    <div class="msg" id="accMsg" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- 3. Microfone -->
+  <section class="step" data-step="2">
+    <h1>Permissão 1 de 2: Microfone</h1>
+    <p><strong>Para quê:</strong> ouvir o que você dita enquanto o atalho está ativo. O VozzAI não escuta em segundo plano — a gravação só acontece entre você iniciar e parar o ditado.</p>
+    <p>O macOS vai mostrar o pedido oficial do sistema.</p>
+    <div class="actions">
+      <button id="micBtn">Permitir microfone</button>
+      <span class="ok-badge" id="micOk" style="display:none">✓ Liberado</span>
+    </div>
+    <div class="msg" id="micMsg"></div>
+  </section>
+
+  <!-- 4. Acessibilidade -->
+  <section class="step" data-step="3">
+    <h1>Permissão 2 de 2: Acessibilidade</h1>
+    <p><strong>Para quê:</strong> colar o texto sozinho onde o cursor estiver (é um Cmd+V automático). Sem ela o VozzAI continua funcionando — o texto fica copiado e você cola manualmente.</p>
+    <p>O macOS abre os Ajustes do Sistema; marque o <strong>VozzAI</strong> na lista e volte aqui.</p>
+    <div class="actions">
+      <button id="axBtn">Abrir pedido do sistema</button>
+      <button class="secondary" id="axCheck">Já marquei — verificar</button>
+      <span class="ok-badge" id="axOk" style="display:none">✓ Liberado</span>
+    </div>
+    <div class="msg" id="axMsg"></div>
+    <div class="later"><a id="axSkip">Deixar a Acessibilidade para depois →</a></div>
+  </section>
+
+  <!-- 5. Primeiro ditado -->
+  <section class="step" data-step="4">
+    <h1>Seu primeiro ditado</h1>
+    <p>Clique no campo abaixo, aperte <span class="kbd" id="shortcutLabel">⌘ ⇧ Espaço</span>, fale uma frase e aperte de novo para parar.</p>
+    <textarea id="testField" placeholder="Clique aqui e aperte o atalho para começar a falar…"></textarea>
+    <div class="msg" id="testMsg" role="status" aria-live="polite"></div>
+    <div class="actions">
+      <button id="finishBtn" disabled>Concluir</button>
+    </div>
+  </section>
+
+  <!-- 6. Pronto -->
+  <section class="step" data-step="5">
+    <h1>Pronto! 🎉</h1>
+    <p>O VozzAI mora na barra de menu (🎙️). Use o atalho em qualquer app: WhatsApp, Gmail, Notion, onde você já estiver escrevendo.</p>
+    <p>Nas <strong>Configurações</strong> você ajusta o atalho, o tom de escrita e o dicionário pessoal. No <strong>Histórico</strong>, recupera qualquer transcrição.</p>
+    <div class="actions"><button id="doneBtn">Começar a usar</button></div>
+  </section>
+
+  <div class="later" id="laterWrap"><a id="laterLink">Fazer isso depois (fecha e volta na próxima abertura)</a></div>
+
+  <script>
+    const api = window.vozzaOnboarding;
+    const steps = Array.from(document.querySelectorAll('.step'));
+    const dotsEl = document.getElementById('dots');
+    let current = 0;
+
+    steps.forEach(() => {
+      const i = document.createElement('i');
+      dotsEl.appendChild(i);
+    });
+
+    function go(n) {
+      current = n;
+      steps.forEach((s, i) => s.classList.toggle('on', i === n));
+      Array.from(dotsEl.children).forEach((d, i) => d.classList.toggle('on', i <= n));
+      document.getElementById('laterWrap').style.display = n >= 4 ? 'none' : 'block';
+    }
+    go(0);
+
+    document.getElementById('startBtn').addEventListener('click', () => go(1));
+    document.getElementById('laterLink').addEventListener('click', () => window.close());
+
+    /* Conta */
+    let accMode = 'signup';
+    const accMsg = document.getElementById('accMsg');
+    document.getElementById('accToggle').addEventListener('click', () => {
+      accMode = accMode === 'signup' ? 'login' : 'signup';
+      document.getElementById('accBtn').textContent = accMode === 'signup' ? 'Criar conta' : 'Entrar';
+      document.getElementById('accToggle').textContent =
+        accMode === 'signup' ? 'Já tenho conta — entrar' : 'Não tenho conta — criar';
+      accMsg.textContent = '';
+    });
+    document.getElementById('accBtn').addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      accMsg.style.color = 'var(--muted)';
+      accMsg.textContent = accMode === 'signup' ? 'Criando conta…' : 'Entrando…';
+      const result = accMode === 'signup' ? await api.signup(email, password) : await api.login(email, password);
+      if (!result.ok) {
+        accMsg.style.color = 'var(--danger)';
+        accMsg.textContent = result.error || 'Algo deu errado.';
+        return;
+      }
+      accMsg.textContent = '';
+      go(2);
+      refreshMic();
+    });
+
+    /* Microfone */
+    const micOk = document.getElementById('micOk');
+    const micMsg = document.getElementById('micMsg');
+    const micBtn = document.getElementById('micBtn');
+    async function refreshMic() {
+      const status = await api.micStatus();
+      if (status === 'granted') {
+        micOk.style.display = 'inline-flex';
+        micBtn.textContent = 'Continuar';
+      }
+    }
+    micBtn.addEventListener('click', async () => {
+      const status = await api.micStatus();
+      if (status === 'granted') { go(3); refreshAx(); return; }
+      micMsg.style.color = 'var(--muted)';
+      micMsg.textContent = 'Aguardando sua resposta no pedido do sistema…';
+      const granted = await api.micRequest();
+      if (granted) {
+        micMsg.textContent = '';
+        micOk.style.display = 'inline-flex';
+        go(3);
+        refreshAx();
+      } else {
+        micMsg.style.color = 'var(--danger)';
+        micMsg.textContent = 'Sem o microfone o ditado não funciona. Libere em Ajustes do Sistema → Privacidade e Segurança → Microfone → VozzAI, e clique de novo.';
+      }
+    });
+
+    /* Acessibilidade */
+    const axOk = document.getElementById('axOk');
+    const axMsg = document.getElementById('axMsg');
+    async function refreshAx() {
+      if (await api.accessibilityStatus()) {
+        axOk.style.display = 'inline-flex';
+        axMsg.textContent = '';
+        setTimeout(async () => { go(4); await loadShortcut(); }, 500);
+        return true;
+      }
+      return false;
+    }
+    document.getElementById('axBtn').addEventListener('click', async () => {
+      await api.accessibilityRequest();
+      axMsg.style.color = 'var(--muted)';
+      axMsg.textContent = 'Marque o VozzAI na lista dos Ajustes do Sistema e clique em "Já marquei".';
+    });
+    document.getElementById('axCheck').addEventListener('click', async () => {
+      if (!(await refreshAx())) {
+        axMsg.style.color = 'var(--danger)';
+        axMsg.textContent = 'Ainda não apareceu como liberado. Confira em Ajustes do Sistema → Privacidade e Segurança → Acessibilidade.';
+      }
+    });
+    document.getElementById('axSkip').addEventListener('click', async () => {
+      go(4);
+      await loadShortcut();
+    });
+
+    /* Primeiro ditado */
+    const testMsg = document.getElementById('testMsg');
+    const finishBtn = document.getElementById('finishBtn');
+    async function loadShortcut() {
+      document.getElementById('shortcutLabel').textContent = await api.shortcut();
+      document.getElementById('testField').focus();
+    }
+    api.onDictationDone((text) => {
+      if (current !== 4) return;
+      const field = document.getElementById('testField');
+      // Se a Acessibilidade colou sozinha, o campo já tem o texto; senão, mostramos aqui.
+      if (!field.value.trim()) field.value = text;
+      testMsg.style.color = 'var(--brand)';
+      testMsg.textContent = '✓ Primeiro ditado concluído!';
+      finishBtn.disabled = false;
+    });
+    api.onDictationFailed((message) => {
+      if (current !== 4) return;
+      testMsg.style.color = 'var(--danger)';
+      testMsg.textContent = message + ' Tente de novo com o atalho.';
+    });
+    finishBtn.addEventListener('click', () => go(5));
+
+    document.getElementById('doneBtn').addEventListener('click', async () => {
+      await api.finish();
+    });
+  </script>
+</body>
+</html>

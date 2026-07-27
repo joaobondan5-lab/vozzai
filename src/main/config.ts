@@ -7,6 +7,12 @@ export interface VozzaConfig {
   userEmail: string;
   shortcut: string;
   language: string;
+  /** Modo de escrita enviado ao servidor (ex.: padrao, whatsapp, email). */
+  mode: string;
+  /** false = novas transcrições não são guardadas no histórico local. */
+  historyEnabled: boolean;
+  /** true depois que o usuário concluiu um ditado real no onboarding. */
+  onboardingDone: boolean;
 }
 
 const DEFAULTS: VozzaConfig = {
@@ -14,6 +20,9 @@ const DEFAULTS: VozzaConfig = {
   userEmail: '',
   shortcut: 'CommandOrControl+Shift+Space',
   language: 'pt',
+  mode: 'padrao',
+  historyEnabled: true,
+  onboardingDone: false,
 };
 
 function configPath(): string {
@@ -28,7 +37,13 @@ export function loadConfig(): VozzaConfig {
   } catch {
     stored = {};
   }
-  return { ...DEFAULTS, ...stored };
+  const merged = { ...DEFAULTS, ...stored };
+  // Quem já usava o app antes do onboarding existir não deve ver o tour:
+  // conta conectada = já passou pelo fluxo antigo e já ditou.
+  if (stored.onboardingDone === undefined && merged.authToken) {
+    merged.onboardingDone = true;
+  }
+  return merged;
 }
 
 export function saveConfig(partial: Partial<VozzaConfig>): VozzaConfig {

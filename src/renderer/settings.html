@@ -31,11 +31,13 @@
     .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--danger); flex: none; }
     .dot.ok { background: var(--brand); }
     label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin-bottom: 7px; }
-    input {
+    input, select, textarea {
       width: 100%; font: inherit; font-size: 14px; padding: 11px 13px; border-radius: 10px;
       border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); margin-bottom: 12px;
     }
-    input:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+    textarea { min-height: 84px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+    input.capturing { outline: 2px solid var(--accent); border-color: var(--accent); }
     .row { display: flex; gap: 10px; margin-top: 4px; }
     button {
       font: inherit; font-weight: 650; font-size: 14px; padding: 11px 18px; border-radius: 999px;
@@ -43,9 +45,16 @@
     }
     button:hover { filter: brightness(1.08); }
     button.secondary { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+    button.small { font-size: 12.5px; padding: 8px 14px; }
     .toggle { margin-top: 12px; font-size: 12.5px; color: var(--brand); cursor: pointer; text-align: center; }
-    .ok-msg { margin-top: 14px; font-size: 13px; color: var(--danger); min-height: 18px; }
-    .usage { font-size: 12.5px; color: var(--muted); margin-top: -6px; margin-bottom: 16px; }
+    .ok-msg { margin-top: 10px; font-size: 13px; color: var(--danger); min-height: 18px; }
+    .usage { font-size: 12.5px; color: var(--muted); margin: -2px 0 6px; }
+    .bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; margin-bottom: 16px; }
+    .bar i { display: block; height: 100%; background: var(--brand); width: 0; transition: width .3s ease; }
+    .bar i.warn { background: var(--accent); }
+    .bar i.hot { background: var(--danger); }
+    section.card { border-top: 1px solid var(--line); margin-top: 20px; padding-top: 4px; }
+    .logout-row { margin-top: 26px; }
   </style>
 </head>
 <body>
@@ -79,13 +88,40 @@
   </div>
 
   <div id="loggedIn" style="display:none">
-    <h1>Sua conta</h1>
+    <h1>Uso do plano</h1>
     <p class="usage" id="usage"></p>
+    <div class="bar"><i id="usageBar"></i></div>
     <div class="row">
       <button id="subscribe" style="display:none">Assinar Pro — R$ 29,90/mês</button>
     </div>
     <div class="ok-msg" id="subMsg" role="status" aria-live="polite"></div>
-    <button class="secondary" id="logout">Sair</button>
+
+    <section class="card">
+      <h1>Escrita</h1>
+      <p class="hint">Como o VozzAI prepara o texto que você dita.</p>
+      <label for="tone">Tom</label>
+      <select id="tone">
+        <option value="informal">Informal — do jeito que você fala</option>
+        <option value="formal">Formal — sem gírias</option>
+      </select>
+      <label for="dictionary">Dicionário pessoal</label>
+      <textarea id="dictionary" placeholder="Nomes, empresas e termos que o VozzAI deve acertar. Separe por vírgula: VozzAI, Wecasar, Cíntia, LGPD…"></textarea>
+      <div class="row">
+        <button class="small" id="savePrefs">Salvar escrita</button>
+      </div>
+      <div class="ok-msg" id="prefsMsg" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card">
+      <h1>Atalho de ditado</h1>
+      <p class="hint">Clique no campo e pressione a combinação nova (precisa de ⌘, ⌃ ou ⌥ + uma tecla). Esc cancela.</p>
+      <input id="shortcutField" readonly placeholder="Clique e pressione o atalho…" />
+      <div class="ok-msg" id="shortcutMsg" role="status" aria-live="polite"></div>
+    </section>
+
+    <div class="logout-row">
+      <button class="secondary" id="logout">Sair</button>
+    </div>
   </div>
 
   <script>
@@ -110,18 +146,35 @@
       loggedInEl.style.display = 'none';
     }
 
-    function renderLoggedIn(email, plan) {
+    function renderLoggedIn(cfg) {
       dot.classList.add('ok');
-      statusText.textContent = `Conectado como ${email}`;
+      statusText.textContent = `Conectado como ${cfg.email} · plano ${cfg.plan === 'pro' ? 'Pro' : 'Grátis'}`;
       loggedOutEl.style.display = 'none';
       loggedInEl.style.display = 'block';
-      subscribeBtn.style.display = plan === 'pro' ? 'none' : 'block';
+      subscribeBtn.style.display = cfg.plan === 'pro' ? 'none' : 'block';
+
+      if (cfg.usage) {
+        const { used, limit, period } = cfg.usage;
+        const janela = period === 'week' ? 'nesta semana' : 'neste mês';
+        document.getElementById('usage').textContent =
+          `${used.toLocaleString('pt-BR')} de ${limit.toLocaleString('pt-BR')} palavras ${janela}`;
+        const ratio = limit > 0 ? Math.min(1, used / limit) : 0;
+        const bar = document.getElementById('usageBar');
+        bar.style.width = `${Math.round(ratio * 100)}%`;
+        bar.className = ratio >= 0.95 ? 'hot' : ratio >= 0.7 ? 'warn' : '';
+      }
+
+      document.getElementById('tone').value = cfg.tone || 'informal';
+      document.getElementById('dictionary').value = cfg.dictionary || '';
+      document.getElementById('shortcutField').value = cfg.prettyShortcut || '';
     }
 
-    api.getConfig().then((cfg) => {
-      if (cfg.loggedIn) renderLoggedIn(cfg.email, cfg.plan);
+    async function refresh() {
+      const cfg = await api.getConfig();
+      if (cfg.loggedIn) renderLoggedIn(cfg);
       else renderLoggedOut();
-    });
+    }
+    refresh();
 
     subscribeBtn.addEventListener('click', async () => {
       subscribeBtn.disabled = true;
@@ -159,13 +212,90 @@
         return;
       }
       msgEl.textContent = '';
-      const cfg = await api.getConfig();
-      renderLoggedIn(cfg.email, cfg.plan);
+      refresh();
     });
 
     document.getElementById('logout').addEventListener('click', async () => {
       await api.logout();
       renderLoggedOut();
+    });
+
+    /* Tom + dicionário */
+    document.getElementById('savePrefs').addEventListener('click', async () => {
+      const prefsMsg = document.getElementById('prefsMsg');
+      prefsMsg.style.color = 'var(--muted)';
+      prefsMsg.textContent = 'Salvando…';
+      const result = await api.setPreferences({
+        tone: document.getElementById('tone').value,
+        dictionary: document.getElementById('dictionary').value,
+      });
+      if (!result.ok) {
+        prefsMsg.style.color = 'var(--danger)';
+        prefsMsg.textContent = result.error || 'Não consegui salvar.';
+        return;
+      }
+      prefsMsg.style.color = 'var(--brand)';
+      prefsMsg.textContent = '✓ Salvo — vale a partir do próximo ditado.';
+    });
+
+    /* Captura do atalho */
+    const shortcutField = document.getElementById('shortcutField');
+    const shortcutMsg = document.getElementById('shortcutMsg');
+    let savedShortcutLabel = '';
+
+    shortcutField.addEventListener('focus', () => {
+      savedShortcutLabel = shortcutField.value;
+      shortcutField.value = '';
+      shortcutField.placeholder = 'Pressione a combinação…';
+      shortcutField.classList.add('capturing');
+      shortcutMsg.textContent = '';
+    });
+
+    shortcutField.addEventListener('blur', () => {
+      shortcutField.classList.remove('capturing');
+      if (!shortcutField.value) shortcutField.value = savedShortcutLabel;
+    });
+
+    shortcutField.addEventListener('keydown', async (e) => {
+      e.preventDefault();
+      if (e.key === 'Escape') { shortcutField.blur(); return; }
+
+      const mods = [];
+      if (e.metaKey) mods.push('Command');
+      if (e.ctrlKey) mods.push('Control');
+      if (e.altKey) mods.push('Alt');
+      if (e.shiftKey) mods.push('Shift');
+
+      const isModifier = ['Meta', 'Control', 'Alt', 'Shift'].includes(e.key);
+      if (isModifier) return; // espera a tecla "de verdade"
+
+      if (!mods.some((m) => m !== 'Shift')) {
+        shortcutMsg.style.color = 'var(--danger)';
+        shortcutMsg.textContent = 'Use pelo menos ⌘, ⌃ ou ⌥ junto com a tecla.';
+        return;
+      }
+
+      let key = e.key;
+      if (key === ' ') key = 'Space';
+      else if (key.length === 1) key = key.toUpperCase();
+      else if (key.startsWith('Arrow')) key = key.slice(5); // ArrowUp → Up
+
+      const accelerator = [...mods, key].join('+');
+      shortcutMsg.style.color = 'var(--muted)';
+      shortcutMsg.textContent = 'Testando o atalho…';
+      const result = await api.setShortcut(accelerator);
+      if (!result.ok) {
+        shortcutMsg.style.color = 'var(--danger)';
+        shortcutMsg.textContent = result.error;
+        shortcutField.value = savedShortcutLabel;
+        shortcutField.blur();
+        return;
+      }
+      shortcutMsg.style.color = 'var(--brand)';
+      shortcutMsg.textContent = '✓ Atalho atualizado.';
+      shortcutField.value = result.prettyShortcut;
+      savedShortcutLabel = result.prettyShortcut;
+      shortcutField.blur();
     });
   </script>
 </body>

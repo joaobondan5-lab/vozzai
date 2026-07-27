@@ -10,18 +10,23 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 
 let mediaRecorder: MediaRecorder | null = null;
 let chunks: Blob[] = [];
+// Cancelar (Esc) para o gravador do mesmo jeito, mas descarta o áudio em vez
+// de enviar — sem isso, todo "deixa pra lá" viraria uma transcrição cobrada.
+let cancelled = false;
 
 async function startRecording(): Promise<void> {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     chunks = [];
+    cancelled = false;
     mediaRecorder = new MediaRecorder(stream);
     mediaRecorder.ondataavailable = (e: BlobEvent) => chunks.push(e.data);
     mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop());
+      if (cancelled) return;
       const blob = new Blob(chunks, { type: 'audio/webm' });
       const buffer = await blob.arrayBuffer();
       (window as any).vozza.sendAudio(arrayBufferToBase64(buffer));
-      stream.getTracks().forEach((t) => t.stop());
     };
     mediaRecorder.start();
   } catch (err) {
@@ -33,5 +38,11 @@ function stopRecording(): void {
   mediaRecorder?.stop();
 }
 
+function cancelRecording(): void {
+  cancelled = true;
+  mediaRecorder?.stop();
+}
+
 (window as any).vozza.onStart(startRecording);
 (window as any).vozza.onStop(stopRecording);
+(window as any).vozza.onCancel(cancelRecording);
