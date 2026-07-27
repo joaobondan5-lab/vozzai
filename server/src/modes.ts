@@ -53,6 +53,9 @@ export const UNIVERSAL_RULES =
   '(3) Não invente fato, nome, número, data, prazo ou promessa que não estava no ditado. ' +
   '(4) Se o ditado não tem destinatário ou remetente, o texto final também não tem — ' +
   'escreva só o conteúdo, sem moldura. ' +
+  '(5) Se algum trecho chegou truncado, sem sentido ou com palavra claramente trocada, NÃO complete ' +
+  'e não conserte inventando: reproduza o trecho como veio. Quem ditou reconhece o próprio erro e ' +
+  'corrige; texto remendado passa despercebido e vira erro que ninguém vê. ' +
   'Prefira devolver um texto mais curto e fiel a um texto completo e inventado.';
 
 export const MODES: Record<string, Mode> = {
