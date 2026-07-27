@@ -14,11 +14,13 @@ import { syncSubscription, createSubscription, resolveBillingCycle } from './mer
 import { createCheckout, isValidWebhookToken, syncFromWebhook } from './asaas';
 import { resolveMode, publicModes } from './modes';
 import { isMpSignatureCheckEnabled, isValidMpSignature } from './webhookSignature';
+import { track, isValidClientEvent, normalizePlatform, wordsBucket } from './events';
 import { sendWelcomeEmail } from './email';
 import { addToWaitlist, pool } from './db';
 import { isRateLimited } from './rateLimit';
 import { isValidEmail } from './validation';
 import { requireAdmin, collectMetrics, collectLeads, ADMIN_PAGE } from './admin';
+import { collectDashboard } from './analytics';
 
 // O app fica separado do entrypoint (index.ts) para os testes montarem as
 // rotas em memória sem abrir porta nem preparar o schema.
@@ -93,6 +95,32 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 /** Catálogo público de modos (sem as instruções, que são ativo do produto). */
 app.get('/modes', (_req, res) => res.json({ modes: publicModes() }));
 
+/**
+ * Eventos de produto vindos do app e da extensão — passos que só o cliente
+ * conhece (permissões, onboarding, falha ao colar). O nome precisa estar na
+ * allowlist de events.ts e as props são filtradas lá; conteúdo nunca entra.
+ * Responde 204 sempre que o formato é aceitável: telemetria não é caminho
+ * crítico e não deve gerar erro visível pro usuário.
+ */
+app.post(
+  '/events',
+  asyncRoute(async (req, res) => {
+    const { name, platform } = req.body ?? {};
+    if (!isValidClientEvent(name)) return void res.sendStatus(204);
+
+    // Rate limit generoso por IP: evita flood sem atrapalhar uso normal.
+    if (isRateLimited(`events:${req.ip}`, 300)) return void res.sendStatus(204);
+
+    const user = await userForToken(bearer(req));
+    void track(name, {
+      userId: user?.id ?? null,
+      platform: normalizePlatform(platform),
+      props: (req.body ?? {}).props,
+    });
+    res.sendStatus(204);
+  }),
+);
+
 app.post(
   '/waitlist',
   asyncRoute(async (req, res) => {
@@ -136,6 +164,7 @@ app.post(
     res.status(201).json({ token, email: user.email, plan: user.plan });
     // Depois da resposta, sem bloquear o cadastro — e sendEmail nunca lança.
     void sendWelcomeEmail(user.email);
+    void track('signup', { userId: user.id, platform: normalizePlatform(req.body?.platform) });
   }),
 );
 
@@ -214,11 +243,16 @@ app.post(
     // usa modo Pro sem plano Pro, não importa o que a UI dele mostre.
     const resolution = resolveMode(modeId, planOf(user.plan));
     if (!resolution.ok) {
+      void track('mode_denied', {
+        userId: user.id,
+        props: { mode: String(modeId), plan: user.plan },
+      });
       return void res.status(resolution.status).json({ error: resolution.error });
     }
 
     const status = await usageFor(user.id, user.plan);
     if (status.remaining <= 0) {
+      void track('quota_blocked', { userId: user.id, props: { plan: user.plan } });
       const limite = PLANS[status.plan].label;
       return void res.status(402).json({
         error:
@@ -239,8 +273,16 @@ app.post(
       const words = countWords(finalText);
       await recordUsage(user.id, seconds, words);
       res.json({ text: finalText, usage: await usageFor(user.id, user.plan) });
+      void track('dictation_ok', {
+        userId: user.id,
+        props: { mode: resolution.mode.id, words_bucket: wordsBucket(words) },
+      });
     } catch (err) {
       console.error('[vozza] erro na transcrição:', err);
+      void track('dictation_error', {
+        userId: user.id,
+        props: { mode: resolution.mode.id, error_code: 'transcribe_failed' },
+      });
       res.status(502).json({ error: 'Não consegui transcrever agora. Tente de novo.' });
     }
   }),
@@ -261,6 +303,7 @@ app.post(
     try {
       const checkoutUrl = await createSubscription(user.id, user.email, cycle);
       res.json({ checkoutUrl });
+      void track('checkout_started', { userId: user.id, props: { cycle } });
     } catch (err) {
       console.error('[vozza] erro ao criar assinatura:', err);
       res.status(502).json({ error: 'Não consegui iniciar a assinatura agora. Tente de novo.' });
@@ -331,6 +374,15 @@ app.get(
   asyncRoute(async (req, res) => {
     if (!requireAdmin(req, res)) return;
     res.json(await collectMetrics());
+  }),
+);
+
+/** Tudo que o painel mostra, numa chamada — só agregados, sem e-mail. */
+app.get(
+  '/admin/dashboard',
+  asyncRoute(async (req, res) => {
+    if (!requireAdmin(req, res)) return;
+    res.json(await collectDashboard());
   }),
 );
 

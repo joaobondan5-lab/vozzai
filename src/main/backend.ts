@@ -109,6 +109,28 @@ export async function createSubscription(
   }
 }
 
+/**
+ * Manda um evento de funil. Fire-and-forget de propósito: telemetria não pode
+ * atrasar nem quebrar nada do ditado, e o servidor descarta o que não conhece.
+ * Só nome do passo e metadados fechados — nunca o texto ditado.
+ */
+export function trackEvent(
+  token: string,
+  name: string,
+  props?: Record<string, string>,
+): void {
+  const headers: Record<string, string> = { 'content-type': 'application/json' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  fetch(`${API_BASE}/events`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ name, platform: 'mac', props }),
+    signal: AbortSignal.timeout(5_000),
+  }).catch(() => {
+    /* telemetria é best-effort: se falhar, segue a vida */
+  });
+}
+
 export interface TranscribeResult {
   text?: string;
   error?: string;

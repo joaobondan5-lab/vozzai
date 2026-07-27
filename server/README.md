@@ -120,18 +120,47 @@ Um token `APP_USR-...` no ambiente é descartado pelos testes automaticamente.
 A estrutura: `src/app.ts` exporta o app Express sem abrir porta (é o que os
 testes montam em memória); `src/index.ts` é só o entrypoint de produção.
 
+## Eventos de produto
+
+`events` guarda os passos que as pessoas dão (cadastro, ditado, erro, cota,
+checkout, permissões, onboarding). É o que permite o painel responder **onde
+a pessoa parou** — sem eles só dá para ver o resultado, nunca o caminho.
+
+- **Servidor** emite sozinho: `signup`, `dictation_ok`, `dictation_error`,
+  `quota_blocked`, `mode_denied`, `checkout_started`, `plan_activated`,
+  `plan_ended`. Chegam mesmo com app/extensão desatualizados.
+- **Clientes** emitem o que só eles sabem via `POST /events`: permissões,
+  passos do onboarding, cancelamento, falha ao colar, troca de modo.
+- **Privacidade**: `src/events.ts` tem allowlist de nomes E de chaves de
+  props. Qualquer coisa fora dela é descartada antes de gravar — áudio,
+  texto ditado e e-mail nunca entram. Números viram faixas (`words_bucket`).
+- `track()` é fire-and-forget de propósito; `flushEvents()` existe só para os
+  testes esperarem as gravações antes de truncar as tabelas.
+
 ## Painel /admin
 
-Duas abas em `GET /admin` (pede o `ADMIN_TOKEN` na primeira visita e guarda
-no navegador; sem a variável no ambiente, tudo responde 503):
+`GET /admin` (pede o `ADMIN_TOKEN` na primeira visita e guarda no navegador;
+sem a variável no ambiente, tudo responde 503). Sete abas:
 
-- **Métricas** (`/admin/metrics`) — só agregados: MRR estimado, assinantes,
-  cadastros, uso, lista de espera. Nunca inclui e-mail nem dado individual
-  (tem teste garantindo).
-- **Leads** (`/admin/leads`) — a ÚNICA rota que expõe e-mails, de propósito:
-  contas (plano, cadastro, último ditado, palavras 30d) e lista de espera,
-  com botão de copiar os e-mails para outreach. A fronteira é deliberada:
-  quem quer números não precisa ver PII.
+| Aba | Responde |
+|---|---|
+| **Visão geral** | MRR, ativação, conversão, North Star (ditados/ativo/semana), série de 30 dias e uma **leitura automática** do que os números significam |
+| **Funil** | Cadastro → 1º ditado → 3 → 10 → checkout → Pro, com a queda de cada passo e o **maior gargalo** apontado |
+| **Retenção** | Coortes semanais em heatmap: de cada turma, quantos voltaram nas semanas seguintes |
+| **Dinheiro** | MRR/ARR, custo de API estimado, margem bruta, custo por ativo e por ditado, lista de assinantes |
+| **Usuários** | Quatro segmentos acionáveis: nunca ditaram, perto da cota, sumiram, quem mais usa — cada um com copiar e-mails |
+| **Produto** | Taxa de falha, erros por código, uso por modo, todos os eventos registrados |
+| **Leads** | Contas e lista de espera, com copiar e-mails e **exportar CSV** |
+
+Rotas: `/admin/dashboard` (tudo agregado, sem PII — tem teste garantindo),
+`/admin/leads` e os segmentos são as únicas que expõem e-mail, de propósito:
+é a lista de contato. A fronteira é deliberada — quem quer número não precisa
+ver PII.
+
+O custo de API é **estimativa**: o whisper-1 não devolve a duração do áudio,
+então o tempo de fala é inferido das palavras (≈150 ppm) e somado ao custo de
+tokens do gpt-4o-mini. Serve para ordem de grandeza e margem, não para
+contabilidade. Cotação do dólar via `USD_BRL_RATE` (padrão 5,4).
 
 ## Dois provedores de pagamento (por enquanto)
 

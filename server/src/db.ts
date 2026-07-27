@@ -55,6 +55,22 @@ export async function initSchema(): Promise<void> {
       email      TEXT NOT NULL UNIQUE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
+
+    -- Eventos de produto: é o que permite saber ONDE a pessoa parou.
+    -- Nunca guarda conteúdo (áudio, texto ditado, o que ela escreveu) — só o
+    -- nome do passo e metadados fechados (código de erro, modo, faixa de
+    -- duração). user_id é nulo em eventos anteriores ao cadastro.
+    CREATE TABLE IF NOT EXISTS events (
+      id         BIGSERIAL PRIMARY KEY,
+      user_id    INTEGER REFERENCES users(id),
+      name       TEXT NOT NULL,
+      platform   TEXT,
+      props      JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+    CREATE INDEX IF NOT EXISTS events_name_date ON events(name, created_at);
+    CREATE INDEX IF NOT EXISTS events_user_date ON events(user_id, created_at);
   `);
 }
 

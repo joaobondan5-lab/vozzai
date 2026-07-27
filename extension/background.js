@@ -1,5 +1,24 @@
 const API_BASE = 'https://vozzai-production.up.railway.app';
 
+/**
+ * Evento de funil. Fire-and-forget: telemetria não pode atrasar o ditado nem
+ * quebrar nada. Só nome do passo e metadados fechados — nunca o texto ditado.
+ */
+async function trackEvent(name, props) {
+  try {
+    const { vozzaToken } = await chrome.storage.local.get('vozzaToken');
+    const headers = { 'content-type': 'application/json' };
+    if (vozzaToken) headers.Authorization = `Bearer ${vozzaToken}`;
+    await fetch(`${API_BASE}/events`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ name, platform: 'extension', props }),
+    });
+  } catch {
+    /* best-effort */
+  }
+}
+
 let recording = false;
 // Aba em que o ditado começou — capturada com activeTab no momento do
 // atalho, pra inserir o texto sempre no lugar certo mesmo se o usuário
@@ -40,6 +59,8 @@ async function startRecording() {
 
   await ensureOffscreen();
   recording = true;
+  const { vozzaMode } = await chrome.storage.local.get('vozzaMode');
+  void trackEvent('dictation_started', { mode: vozzaMode || 'padrao' });
   chrome.runtime.sendMessage({ target: 'offscreen', type: 'start-recording' });
 }
 
@@ -90,6 +111,7 @@ async function handleAudio(audioBase64) {
 
 function insertIntoActiveTab(text) {
   if (!dictationTabId) return;
+  void trackEvent('insertion_ok');
   chrome.tabs.sendMessage(dictationTabId, { type: 'vozza-insert-text', text });
 }
 

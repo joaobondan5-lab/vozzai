@@ -21,6 +21,7 @@ import {
   fetchMe,
   createSubscription,
   updatePreferences,
+  trackEvent,
   TranscribeResult,
   UsageStatus,
 } from './backend';
@@ -192,6 +193,7 @@ function updateTray(): void {
         checked: config.mode === m.id,
         click: () => {
           config = saveConfig({ mode: m.id });
+          trackEvent(config.authToken, 'mode_changed', { mode: m.id });
           updateTray();
         },
       })),
@@ -221,6 +223,7 @@ function toggleRecording(): void {
 
   if (machine.current === 'idle') {
     if (!machine.to('recording')) return;
+    trackEvent(config.authToken, 'dictation_started', { mode: config.mode });
     recorderWindow.webContents.send('start-recording');
     maxDurationTimer = setTimeout(() => {
       if (machine.current === 'recording') {
@@ -251,6 +254,7 @@ function cancelRecording(): void {
   clearRecordingTimer();
   recorderWindow?.webContents.send('cancel-recording');
   machine.reset();
+  trackEvent(config.authToken, 'dictation_cancelled');
   notify('VozzAI', 'Ditado cancelado — nada foi enviado.');
 }
 
@@ -316,7 +320,12 @@ async function handleAudio(audioBase64: string): Promise<void> {
     historyWindow?.webContents.send('history-changed');
   }
   if (pasteResult === 'clipboard-only') {
+    // Sinal importante: a transcrição funcionou, mas o texto não entrou no
+    // app de destino. É o tipo de falha que o usuário sente e não reporta.
+    trackEvent(config.authToken, 'insertion_clipboard_only', { error_code: 'no_accessibility' });
     notify('VozzAI', 'Texto copiado — Cmd+V para colar. Libere a Acessibilidade para colar sozinho.');
+  } else {
+    trackEvent(config.authToken, 'insertion_ok');
   }
   tellOnboarding('ob-dictation-done', text);
 
@@ -408,8 +417,11 @@ app.whenReady().then(() => {
     );
   }
 
-  if (!config.onboardingDone) openOnboarding();
-  else if (!config.authToken) openSettings();
+  trackEvent(config.authToken, 'app_opened');
+  if (!config.onboardingDone) {
+    trackEvent(config.authToken, 'onboarding_started');
+    openOnboarding();
+  } else if (!config.authToken) openSettings();
 
   /* ---- IPC: conta e preferências ---- */
 
@@ -526,12 +538,16 @@ app.whenReady().then(() => {
 
   ipcMain.handle('ob-mic-request', async () => {
     // No macOS isso abre o pedido do sistema; a resposta vem quando o usuário decide.
-    return systemPreferences.askForMediaAccess('microphone');
+    const granted = await systemPreferences.askForMediaAccess('microphone');
+    trackEvent(config.authToken, granted ? 'mic_permission_granted' : 'mic_permission_denied');
+    return granted;
   });
 
-  ipcMain.handle('ob-accessibility-status', () =>
-    systemPreferences.isTrustedAccessibilityClient(false),
-  );
+  ipcMain.handle('ob-accessibility-status', () => {
+    const trusted = systemPreferences.isTrustedAccessibilityClient(false);
+    if (trusted) trackEvent(config.authToken, 'accessibility_granted');
+    return trusted;
+  });
 
   ipcMain.handle('ob-accessibility-request', () =>
     // prompt: true faz o macOS abrir o painel pedindo a permissão.
@@ -542,6 +558,7 @@ app.whenReady().then(() => {
 
   ipcMain.handle('ob-finish', () => {
     config = saveConfig({ onboardingDone: true });
+    trackEvent(config.authToken, 'onboarding_completed');
     onboardingWindow?.close();
     return { ok: true };
   });

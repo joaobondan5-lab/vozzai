@@ -5,6 +5,7 @@ import { app } from '../src/app';
 import { initSchema, pool } from '../src/db';
 import { resetRateLimits } from '../src/rateLimit';
 import { reconcileAllSubscriptions } from '../src/mercadopago';
+import { flushEvents } from '../src/events';
 
 let server: Server;
 let base: string;
@@ -23,7 +24,10 @@ afterAll(async () => {
 
 beforeEach(async () => {
   resetRateLimits();
-  await pool.query('TRUNCATE usage, sessions, waitlist, users RESTART IDENTITY CASCADE');
+  // As rotas gravam eventos sem await; sem esperar, um INSERT em voo colide
+  // com o TRUNCATE abaixo e o Postgres mata a transação por deadlock.
+  await flushEvents();
+  await pool.query('TRUNCATE events, usage, sessions, waitlist, users RESTART IDENTITY CASCADE');
 });
 
 async function post(path: string, body: unknown, headers: Record<string, string> = {}) {
@@ -210,12 +214,6 @@ describe('admin', () => {
     expect(JSON.stringify(data)).not.toContain('vozzai.com.br'); // nenhum e-mail vaza
   });
 
-  it('serve a página do painel', async () => {
-    const res = await fetch(`${base}/admin`);
-    expect(res.status).toBe(200);
-    expect(await res.text()).toContain('VozzAI — Métricas');
-  });
-
   it('/admin/leads exige o token igual às métricas', async () => {
     expect((await get('/admin/leads')).status).toBe(401);
     expect((await get('/admin/leads', { 'x-admin-token': 'errado' })).status).toBe(401);
@@ -275,6 +273,104 @@ describe('modes', () => {
       { authorization: `Bearer ${token}` },
     );
     expect(status).toBe(400);
+  });
+});
+
+describe('painel /admin/dashboard', () => {
+  it('exige token, igual às outras rotas de admin', async () => {
+    expect((await get('/admin/dashboard')).status).toBe(401);
+    expect((await get('/admin/dashboard', { 'x-admin-token': 'errado' })).status).toBe(401);
+  });
+
+  it('entrega o painel inteiro sem vazar e-mail nos agregados', async () => {
+    await signup('painel@vozzai.com.br');
+    await pool.query(`UPDATE users SET plan = 'pro' WHERE email = 'painel@vozzai.com.br'`);
+    await pool.query(`INSERT INTO usage (user_id, seconds, words) VALUES (1, 0, 120)`);
+
+    const { status, data } = await get('/admin/dashboard', {
+      'x-admin-token': process.env.ADMIN_TOKEN as string,
+    });
+    expect(status).toBe(200);
+    expect(data.overview.totalUsers).toBe(1);
+    expect(data.overview.proUsers).toBe(1);
+    expect(data.series).toHaveLength(30);
+    expect(Array.isArray(data.funnel)).toBe(true);
+
+    // agregados nunca carregam PII; segmentos/assinantes carregam de propósito
+    expect(JSON.stringify(data.overview)).not.toContain('painel@vozzai.com.br');
+    expect(JSON.stringify(data.funnel)).not.toContain('painel@vozzai.com.br');
+  });
+
+  it('a página do painel é servida e não é indexável', async () => {
+    const res = await fetch(`${base}/admin`);
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain('VozzAI — Painel');
+    expect(html).toContain('noindex');
+  });
+});
+
+describe('POST /events', () => {
+  it('aceita evento da allowlist e o associa ao usuário logado', async () => {
+    const token = await signup('evento@vozzai.com.br');
+    const res = await fetch(`${base}/events`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
+      body: JSON.stringify({ name: 'onboarding_completed', platform: 'mac' }),
+    });
+    expect(res.status).toBe(204);
+    await flushEvents();
+
+    const { rows } = await pool.query(
+      `SELECT name, platform, user_id FROM events WHERE name = 'onboarding_completed'`,
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0].platform).toBe('mac');
+    expect(rows[0].user_id).not.toBeNull();
+  });
+
+  it('descarta nome fora da allowlist sem gravar nada', async () => {
+    const res = await fetch(`${base}/events`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'evento_inventado_qualquer' }),
+    });
+    expect(res.status).toBe(204); // telemetria não gera erro pro cliente
+    await flushEvents();
+    const { rows } = await pool.query(`SELECT * FROM events`);
+    expect(rows).toHaveLength(0);
+  });
+
+  it('filtra props fora da allowlist — conteúdo nunca entra no banco', async () => {
+    await fetch(`${base}/events`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        name: 'dictation_started',
+        platform: 'extension',
+        props: {
+          mode: 'whatsapp',
+          texto_ditado: 'minha senha do banco é 1234',
+          email: 'vazou@nao.com',
+        },
+      }),
+    });
+    await flushEvents();
+
+    const { rows } = await pool.query<{ props: Record<string, string> }>(
+      `SELECT props FROM events WHERE name = 'dictation_started'`,
+    );
+    expect(rows[0].props).toEqual({ mode: 'whatsapp' });
+    const dump = JSON.stringify(rows[0].props);
+    expect(dump).not.toContain('senha');
+    expect(dump).not.toContain('vazou@nao.com');
+  });
+
+  it('cadastro e ditado com erro geram eventos de servidor sozinhos', async () => {
+    await signup('auto@vozzai.com.br');
+    await flushEvents();
+    const { rows } = await pool.query(`SELECT name FROM events WHERE name = 'signup'`);
+    expect(rows).toHaveLength(1);
   });
 });
 

@@ -1,5 +1,6 @@
 import { pool } from './db';
 import { sendProActivatedEmail, sendProEndedEmail } from './email';
+import { track } from './events';
 
 /** Integração com assinaturas (preapproval) do Mercado Pago. */
 const TOKEN = () => process.env.MP_ACCESS_TOKEN || '';
@@ -127,6 +128,11 @@ async function applySubscriptionStatus(sub: Preapproval): Promise<void> {
     user.id,
   ]);
   console.log(`[vozza] usuário ${user.id} agora está no plano ${plan} (assinatura ${sub.status})`);
+
+  void track(plan === 'pro' ? 'plan_activated' : 'plan_ended', {
+    userId: user.id,
+    props: { plan },
+  });
 
   // sendEmail nunca lança — falha de e-mail não pode quebrar webhook/reconciliação.
   if (plan === 'pro') await sendProActivatedEmail(user.email);
