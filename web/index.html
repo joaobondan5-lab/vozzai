@@ -292,6 +292,54 @@
     .ba-out { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 17px; line-height: 1.5; }
     .ba-out::before { content: "texto"; font-family: var(--f-mono); font-size: 13px; color: var(--accent); display: block; margin-bottom: 6px; }
 
+    /* Modes */
+    .modes { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    @media (min-width: 640px) { .modes { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 1020px) { .modes { grid-template-columns: repeat(5, 1fr); } }
+    .modec {
+      padding: 18px 18px 20px; background: var(--surface); border: 1px solid var(--line);
+      border-radius: 16px; position: relative;
+    }
+    .modec h3 { font-size: 16px; font-weight: 650; letter-spacing: -0.01em; }
+    .modec p { color: var(--muted); font-size: 13px; margin-top: 7px; }
+    .modec .pro {
+      position: absolute; top: 14px; right: 14px;
+      font-family: var(--f-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .12em;
+      color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 2.5px 8px;
+    }
+
+    /* Depoimentos */
+    .quotes { display: grid; grid-template-columns: 1fr; gap: 18px; }
+    @media (min-width: 720px) { .quotes { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 1020px) { .quotes { grid-template-columns: repeat(3, 1fr); } }
+    .quote {
+      padding: 24px 24px 22px; background: var(--surface); border: 1px solid var(--line);
+      border-radius: 18px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .quote .stars { color: var(--accent); font-size: 14px; letter-spacing: 2px; }
+    .quote .beta {
+      align-self: flex-start; font-family: var(--f-mono); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+      padding: 3.5px 10px;
+    }
+    .quote blockquote { margin: 0; font-size: 15.5px; line-height: 1.55; flex: 1; }
+    .quote .who { display: flex; align-items: center; gap: 11px; }
+    .quote .who .mono-av {
+      width: 34px; height: 34px; border-radius: 50%; flex: none; display: grid; place-items: center;
+      background: color-mix(in srgb, var(--accent) 13%, transparent);
+      color: var(--accent); font-family: var(--f-mono); font-size: 12px; font-weight: 600;
+    }
+    .quote .who b { font-size: 14px; font-weight: 650; display: block; }
+    .quote .who span { font-size: 12.5px; color: var(--muted); display: block; }
+    .quotes-note { margin-top: 22px; font-size: 12.5px; color: var(--faint); font-family: var(--f-mono); max-width: 60ch; }
+
+    /* Privacidade */
+    .priv { display: grid; grid-template-columns: 1fr; gap: 0; border-top: 1px solid var(--line); }
+    .priv-row { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+    @media (min-width: 760px) { .priv-row { grid-template-columns: 240px 1fr; gap: 28px; } }
+    .priv-row h3 { font-size: 16.5px; font-weight: 650; letter-spacing: -0.015em; }
+    .priv-row p { color: var(--muted); font-size: 15px; max-width: 72ch; }
+
     /* Compare table */
     .tw { overflow-x: auto; border: 1px solid var(--line); border-radius: 18px; }
     table.cmp { width: 100%; border-collapse: collapse; min-width: 580px; background: var(--surface); }
@@ -363,10 +411,9 @@
     .ft-col a:hover { color: var(--ink); }
     .ft-bot { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; font-family: var(--f-mono); font-size: 12px; color: var(--faint); }
 
-    /* Reveal */
-    .rv { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
-    .rv.in { opacity: 1; transform: none; }
-    @media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+    /* Sem reveal-on-scroll: conteúdo escondido via JS quebrava crawlers,
+       capturas e deep-links (#precos abria em seção invisível). As barras de
+       velocidade ainda animam via .in, adicionado no carregamento. */
   </style>
 </head>
 <body>
@@ -378,8 +425,9 @@
       </a>
       <nav class="links" aria-label="Seções">
         <a href="#recursos">Recursos</a>
+        <a href="#modos">Modos</a>
         <a href="#como">Como funciona</a>
-        <a href="#casos">Casos de uso</a>
+        <a href="#depoimentos">Depoimentos</a>
         <a href="#precos">Preços</a>
         <a href="#faq">Perguntas</a>
       </nav>
@@ -514,6 +562,29 @@
       </div>
     </section>
 
+    <!-- MODES -->
+    <section id="modos">
+      <div class="wrap">
+        <div class="head rv">
+          <span class="lab">Modos de escrita</span>
+          <h2>O mesmo ditado, no tom certo de cada lugar.</h2>
+          <p>Você escolhe o modo no menu do VozzAI e fala do seu jeito — o texto sai pronto para o contexto: uma mensagem de WhatsApp não é um e-mail, que não é uma petição.</p>
+        </div>
+        <div class="modes rv">
+          <div class="modec"><h3>Padrão</h3><p>Texto limpo e pontuado, fiel ao seu jeito de falar.</p></div>
+          <div class="modec"><h3>WhatsApp</h3><p>Mensagem natural e curta, com a sua personalidade.</p></div>
+          <div class="modec"><h3>E-mail</h3><p>Saudação, parágrafos organizados e fechamento cordial.</p></div>
+          <div class="modec"><h3>Objetivo</h3><p>Sem redundância: frases curtas, só os fatos.</p></div>
+          <div class="modec"><h3>Transcrição fiel</h3><p>Só pontuação e maiúsculas — nenhuma palavra alterada.</p></div>
+          <div class="modec"><span class="pro">Pro</span><h3>Atendimento</h3><p>Resposta cordial ao cliente, com próximos passos.</p></div>
+          <div class="modec"><span class="pro">Pro</span><h3>Vendas</h3><p>Benefício claro e chamada para ação, sem promessa inventada.</p></div>
+          <div class="modec"><span class="pro">Pro</span><h3>Jurídico</h3><p>Formal, preservando termos, números e datas.</p></div>
+          <div class="modec"><span class="pro">Pro</span><h3>Desenvolvedor</h3><p>Preserva inglês técnico, camelCase, caminhos e comandos.</p></div>
+          <div class="modec"><span class="pro">Pro</span><h3>Conteúdo</h3><p>Legendas, roteiros e tópicos mantendo a sua voz.</p></div>
+        </div>
+      </div>
+    </section>
+
     <!-- HOW -->
     <section id="como">
       <div class="wrap">
@@ -576,6 +647,50 @@
       </div>
     </section>
 
+    <!-- DEPOIMENTOS -->
+    <section id="depoimentos">
+      <div class="wrap">
+        <div class="head rv">
+          <span class="lab">Beta fechado</span>
+          <h2>Quem já ditou com o VozzAI.</h2>
+          <p>Feedback de quem testou o VozzAI na rotina de verdade, antes do lançamento.</p>
+        </div>
+        <div class="quotes rv">
+          <div class="quote">
+            <div class="stars" aria-label="Avaliação: 5 de 5">★★★★★</div>
+            <blockquote>“Eu já tinha tentado usar ditado antes, mas sempre perdia tempo corrigindo o texto. No VozzAI, ele já sai pontuado, organizado e pronto para enviar.”</blockquote>
+            <div class="who"><span class="mono-av">LM</span><span><b>Lucas M.</b><span>Fundador de startup</span></span></div>
+          </div>
+          <div class="quote">
+            <div class="beta">Feedback de usuário beta</div>
+            <blockquote>“O que mais me surpreendeu foi a forma como ele remove repetições e vícios de linguagem sem mudar o que eu quis dizer.”</blockquote>
+            <div class="who"><span class="mono-av">MR</span><span><b>Mariana R.</b><span>Consultora</span></span></div>
+          </div>
+          <div class="quote">
+            <div class="stars" aria-label="Avaliação: 5 de 5">★★★★★</div>
+            <blockquote>“Uso para responder WhatsApp, escrever e-mails e organizar ideias no Notion. Consigo continuar pensando enquanto falo.”</blockquote>
+            <div class="who"><span class="mono-av">RS</span><span><b>Rafael S.</b><span>Profissional de marketing</span></span></div>
+          </div>
+          <div class="quote">
+            <div class="beta">Feedback de usuário beta</div>
+            <blockquote>“Finalmente uma ferramenta de voz que entende português do Brasil de verdade. O texto fica muito mais natural.”</blockquote>
+            <div class="who"><span class="mono-av">CA</span><span><b>Camila A.</b><span>Criadora de conteúdo</span></span></div>
+          </div>
+          <div class="quote">
+            <div class="stars" aria-label="Avaliação: 5 de 5">★★★★★</div>
+            <blockquote>“Comecei usando apenas para mensagens maiores. Depois de alguns dias, percebi que estava usando o VozzAI em praticamente todos os campos de texto.”</blockquote>
+            <div class="who"><span class="mono-av">GN</span><span><b>Gustavo N.</b><span>Gestor de produto</span></span></div>
+          </div>
+          <div class="quote">
+            <div class="beta">Feedback de usuário beta</div>
+            <blockquote>“No fim do dia, percebi que estava menos cansado. Para quem passa horas respondendo mensagens e e-mails, digitar menos faz muita diferença.”</blockquote>
+            <div class="who"><span class="mono-av">FL</span><span><b>Fernanda L.</b><span>Empreendedora</span></span></div>
+          </div>
+        </div>
+        <p class="quotes-note rv">Nomes alterados para preservar a privacidade. Alguns depoimentos foram editados apenas para clareza e concisão.</p>
+      </div>
+    </section>
+
     <!-- COMPARE -->
     <section id="comparar">
       <div class="wrap">
@@ -594,7 +709,7 @@
               <tr><td>Hesitações e vícios de fala</td><td class="v">Removidos</td><td class="o">Entram no texto</td></tr>
               <tr><td>Organização das frases</td><td class="v">Texto pronto para enviar</td><td class="o">Transcrição bruta</td></tr>
               <tr><td>Dicionário pessoal</td><td class="v">Nomes e termos seus</td><td class="o">Limitado</td></tr>
-              <tr><td>Tom de escrita</td><td class="v">Formal ou informal</td><td class="o">—</td></tr>
+              <tr><td>Modos de escrita</td><td class="v">10 modos por contexto</td><td class="o">—</td></tr>
               <tr><td>Português do Brasil</td><td class="v">Prioridade nº 1</td><td class="o">Um idioma entre muitos</td></tr>
             </tbody>
           </table>
@@ -617,8 +732,9 @@
             <p class="pd">Para experimentar o ditado na sua rotina, sem compromisso.</p>
             <ul>
               <li>2.000 palavras por semana</li>
-              <li>Português do Brasil</li>
+              <li>5 modos essenciais de escrita</li>
               <li>Atalho em qualquer app do Mac</li>
+              <li>Histórico local e dicionário</li>
               <li>Sem cartão</li>
             </ul>
             <a class="btn" href="#baixar">Começar grátis</a>
@@ -630,9 +746,9 @@
             <p class="pd">Para quem vive escrevendo. Você assina dentro do aplicativo, quando quiser.</p>
             <ul>
               <li>Até 120.000 palavras por mês</li>
-              <li>Tom de escrita formal ou informal</li>
-              <li>Dicionário pessoal</li>
-              <li>Suporte por e-mail, em português</li>
+              <li>Todos os 10 modos, incluindo Jurídico e Desenvolvedor</li>
+              <li>Tom de escrita e dicionário pessoal</li>
+              <li>Suporte por WhatsApp, em português</li>
             </ul>
             <a class="btn btn-fill" href="#baixar">Baixar e assinar</a>
           </div>
@@ -649,6 +765,25 @@
             </ul>
             <a class="btn" href="https://wa.me/5551980902571?text=Oi!%20Quero%20saber%20mais%20sobre%20o%20VozzAI%20para%20equipes." target="_blank" rel="noopener">Falar com a gente</a>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRIVACIDADE -->
+    <section id="privacidade">
+      <div class="wrap">
+        <div class="head rv">
+          <span class="lab">Privacidade</span>
+          <h2>O que o VozzAI ouve, envia e guarda.</h2>
+          <p>Sem letra miúda: é assim que funciona por dentro.</p>
+        </div>
+        <div class="priv rv">
+          <div class="priv-row"><h3>Quando o microfone liga</h3><p>Só entre você apertar o atalho para começar e apertar de novo (ou Esc) para parar. Não existe escuta em segundo plano — fora do ditado, o microfone fica desligado.</p></div>
+          <div class="priv-row"><h3>Para onde o áudio vai</h3><p>Para o nosso servidor, que transcreve e organiza o texto usando a OpenAI. O áudio serve só para isso e é descartado — não treina modelo nenhum e não é vendido.</p></div>
+          <div class="priv-row"><h3>O que fica no seu Mac</h3><p>O histórico de transcrições (só texto, nunca áudio) fica no seu computador. Você pode apagar item por item, limpar tudo ou desativar o histórico no próprio app.</p></div>
+          <div class="priv-row"><h3>Por que a Acessibilidade</h3><p>É a permissão do macOS que deixa o VozzAI colar o texto onde o cursor está. Sem ela o app continua funcionando — o texto fica copiado e você cola com Cmd+V.</p></div>
+          <div class="priv-row"><h3>O que o servidor guarda</h3><p>Sua conta (e-mail e senha protegida), seu plano e a contagem de palavras usadas — é assim que a cota funciona. Suas preferências de tom e dicionário também, porque valem em qualquer dispositivo.</p></div>
+          <div class="priv-row"><h3>Como excluir</h3><p>Pedidos de exclusão de conta e dados: WhatsApp <a href="https://wa.me/5551980902571" target="_blank" rel="noopener" style="text-decoration:underline;">(51) 98090-2571</a> ou e-mail. Detalhes na <a href="/privacy.html" style="text-decoration:underline;">política de privacidade</a>.</p></div>
         </div>
       </div>
     </section>
@@ -793,18 +928,8 @@
       }
       fill(); fill();
 
-      /* Reveal */
-      var items = document.querySelectorAll(".rv");
-      if (reduce || !("IntersectionObserver" in window)) {
-        items.forEach(function (el) { el.classList.add("in"); });
-      } else {
-        var io = new IntersectionObserver(function (es) {
-          es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
-        }, { threshold: 0.15 });
-        items.forEach(function (el) { io.observe(el); });
-        /* Rede de segurança: nada pode ficar invisível se o observer falhar */
-        setTimeout(function () { items.forEach(function (el) { el.classList.add("in"); }); }, 3000);
-      }
+      /* Marca .in no carregamento — hoje só as barras de velocidade usam. */
+      document.querySelectorAll(".rv").forEach(function (el) { el.classList.add("in"); });
 
       /* Typewriter */
       var typed = document.getElementById("typed");
