@@ -14,6 +14,7 @@ import { syncSubscription, createSubscription } from './mercadopago';
 import { createCheckout, isValidWebhookToken, syncFromWebhook } from './asaas';
 import { resolveMode, publicModes } from './modes';
 import { isMpSignatureCheckEnabled, isValidMpSignature } from './webhookSignature';
+import { sendWelcomeEmail } from './email';
 import { addToWaitlist, pool } from './db';
 import { isRateLimited } from './rateLimit';
 import { isValidEmail } from './validation';
@@ -133,6 +134,8 @@ app.post(
     const user = await createUser(email, password);
     const token = await createSession(user.id);
     res.status(201).json({ token, email: user.email, plan: user.plan });
+    // Depois da resposta, sem bloquear o cadastro — e sendEmail nunca lança.
+    void sendWelcomeEmail(user.email);
   }),
 );
 

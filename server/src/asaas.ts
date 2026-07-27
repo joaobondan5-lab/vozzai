@@ -5,6 +5,7 @@
  * deles; não precisamos coletar isso no cadastro.
  */
 import { createHash, timingSafeEqual } from 'node:crypto';
+import { sendProActivatedEmail } from './email';
 
 const PRICE_BRL = 29.9;
 
@@ -112,10 +113,23 @@ export async function syncFromWebhook(body: WebhookBody, pool: { query: Function
 
   if (!PAID_STATUSES.has(payment.status)) return; // só nos importa quando vira pago
 
+  const current = (await pool.query('SELECT plan, email FROM users WHERE id = $1', [userId])) as {
+    rows: Array<{ plan: string; email: string }>;
+  };
+  const user = current.rows[0];
+  if (!user) {
+    console.error(`[vozza] webhook Asaas para usuário inexistente (${userId})`);
+    return;
+  }
+  const wasPro = user.plan === 'pro';
+
   await pool.query('UPDATE users SET plan = $1, mp_customer = $2 WHERE id = $3', [
     'pro',
     payment.subscription || payment.id,
     userId,
   ]);
   console.log(`[vozza] usuário ${userId} agora está no plano pro (Asaas, pagamento ${payment.status})`);
+
+  // Só no primeiro pagamento — renovação mensal não precisa de e-mail.
+  if (!wasPro) await sendProActivatedEmail(user.email);
 }

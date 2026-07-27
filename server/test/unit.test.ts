@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { sendEmail, sendWelcomeEmail } from '../src/email';
 import { countWords, planOf, PLANS } from '../src/quota';
 import { normalizeEmail, hashPassword, verifyPassword } from '../src/auth';
 import { isValidEmail } from '../src/validation';
@@ -117,6 +118,52 @@ describe('VozzAI Modes', () => {
     for (const mode of Object.values(MODES)) {
       expect(serialized).not.toContain(mode.instruction.slice(0, 30));
     }
+  });
+});
+
+describe('e-mails transacionais (Resend)', () => {
+  afterEach(() => {
+    delete process.env.RESEND_API_KEY;
+    vi.unstubAllGlobals();
+  });
+
+  it('sem RESEND_API_KEY: pula sem chamar rede e sem lançar', async () => {
+    delete process.env.RESEND_API_KEY;
+    const fetchSpy = vi.fn();
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await sendEmail('a@b.co', 'Assunto', '<p>oi</p>');
+    expect(result.sent).toBe(false);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('com chave: envia pro Resend com destinatário e assunto certos', async () => {
+    process.env.RESEND_API_KEY = 're_teste';
+    const fetchSpy = vi.fn(async () => new Response('{"id":"email_1"}', { status: 200 }));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await sendWelcomeEmail('novo@vozzai.com.br');
+    expect(result.sent).toBe(true);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+    const [url, init] = fetchSpy.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('https://api.resend.com/emails');
+    const body = JSON.parse(String(init.body));
+    expect(body.to).toEqual(['novo@vozzai.com.br']);
+    expect(body.subject).toMatch(/Bem-vindo/);
+    expect(body.html).toContain('2.000 palavras');
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer re_teste');
+  });
+
+  it('Resend fora do ar: devolve sent=false sem lançar (nunca quebra o fluxo)', async () => {
+    process.env.RESEND_API_KEY = 're_teste';
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('erro interno', { status: 500 })));
+    const result = await sendEmail('a@b.co', 'Assunto', '<p>oi</p>');
+    expect(result).toMatchObject({ sent: false });
+
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('rede caiu'); }));
+    const result2 = await sendEmail('a@b.co', 'Assunto', '<p>oi</p>');
+    expect(result2).toMatchObject({ sent: false });
   });
 });
 

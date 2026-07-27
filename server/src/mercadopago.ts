@@ -1,4 +1,5 @@
 import { pool } from './db';
+import { sendProActivatedEmail, sendProEndedEmail } from './email';
 
 /** Integração com assinaturas (preapproval) do Mercado Pago. */
 const TOKEN = () => process.env.MP_ACCESS_TOKEN || '';
@@ -83,8 +84,10 @@ async function applySubscriptionStatus(sub: Preapproval): Promise<void> {
   const userId = Number(sub.external_reference);
   const byId = Number.isFinite(userId) && userId > 0;
 
-  const result = await pool.query<{ id: number; plan: string }>(
-    byId ? 'SELECT id, plan FROM users WHERE id = $1' : 'SELECT id, plan FROM users WHERE email = $1',
+  const result = await pool.query<{ id: number; plan: string; email: string }>(
+    byId
+      ? 'SELECT id, plan, email FROM users WHERE id = $1'
+      : 'SELECT id, plan, email FROM users WHERE email = $1',
     [byId ? userId : (sub.payer_email ?? '')],
   );
   const user = result.rows[0];
@@ -103,6 +106,10 @@ async function applySubscriptionStatus(sub: Preapproval): Promise<void> {
     user.id,
   ]);
   console.log(`[vozza] usuário ${user.id} agora está no plano ${plan} (assinatura ${sub.status})`);
+
+  // sendEmail nunca lança — falha de e-mail não pode quebrar webhook/reconciliação.
+  if (plan === 'pro') await sendProActivatedEmail(user.email);
+  else if (user.plan === 'pro') await sendProEndedEmail(user.email);
 }
 
 export async function syncSubscription(notification: Notification): Promise<void> {

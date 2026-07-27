@@ -431,6 +431,110 @@ describe('reconciliação Mercado Pago (rede de segurança para webhook perdido)
   });
 });
 
+describe('e-mails nas transições de plano', () => {
+  const savedMpToken = process.env.MP_ACCESS_TOKEN;
+
+  beforeEach(() => {
+    process.env.MP_ACCESS_TOKEN = 'TEST-emails-fake';
+    process.env.RESEND_API_KEY = 're_teste_transicao';
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    delete process.env.RESEND_API_KEY;
+    if (savedMpToken === undefined) delete process.env.MP_ACCESS_TOKEN;
+    else process.env.MP_ACCESS_TOKEN = savedMpToken;
+  });
+
+  it('virar Pro pela reconciliação dispara o e-mail de confirmação', async () => {
+    const realFetch = globalThis.fetch;
+    await signup('vai-virar-pro@vozzai.com.br');
+    await pool.query(
+      `UPDATE users SET plan = 'free', mp_customer = 'sub_email_1' WHERE email = 'vai-virar-pro@vozzai.com.br'`,
+    );
+
+    const resendCalls: Array<{ to: string[]; subject: string }> = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        const u = String(url);
+        if (u.includes('api.resend.com')) {
+          resendCalls.push(JSON.parse(String(init?.body)));
+          return new Response('{"id":"email_1"}', { status: 200 });
+        }
+        if (u.includes('api.mercadopago.com')) {
+          return new Response(
+            JSON.stringify({ id: 'sub_email_1', status: 'authorized', external_reference: '1' }),
+            { status: 200 },
+          );
+        }
+        return realFetch(url, init);
+      }),
+    );
+
+    await reconcileAllSubscriptions();
+    expect(resendCalls).toHaveLength(1);
+    expect(resendCalls[0].to).toEqual(['vai-virar-pro@vozzai.com.br']);
+    expect(resendCalls[0].subject).toMatch(/Pro está ativo/);
+  });
+
+  it('perder o Pro dispara o e-mail de encerramento (avisa cartão recusado)', async () => {
+    const realFetch = globalThis.fetch;
+    await signup('vai-perder-pro@vozzai.com.br');
+    await pool.query(
+      `UPDATE users SET plan = 'pro', mp_customer = 'sub_email_2' WHERE email = 'vai-perder-pro@vozzai.com.br'`,
+    );
+
+    const resendCalls: Array<{ to: string[]; subject: string }> = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        const u = String(url);
+        if (u.includes('api.resend.com')) {
+          resendCalls.push(JSON.parse(String(init?.body)));
+          return new Response('{"id":"email_2"}', { status: 200 });
+        }
+        if (u.includes('api.mercadopago.com')) {
+          return new Response(
+            JSON.stringify({ id: 'sub_email_2', status: 'cancelled', external_reference: '1' }),
+            { status: 200 },
+          );
+        }
+        return realFetch(url, init);
+      }),
+    );
+
+    await reconcileAllSubscriptions();
+    expect(resendCalls).toHaveLength(1);
+    expect(resendCalls[0].subject).toMatch(/encerrado/);
+  });
+
+  it('cadastro dispara o e-mail de boas-vindas sem atrasar a resposta', async () => {
+    const realFetch = globalThis.fetch;
+    const resendCalls: Array<{ to: string[]; subject: string }> = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        const u = String(url);
+        if (u.includes('api.resend.com')) {
+          resendCalls.push(JSON.parse(String(init?.body)));
+          return new Response('{"id":"email_3"}', { status: 200 });
+        }
+        return realFetch(url, init);
+      }),
+    );
+
+    await signup('recem-chegado@vozzai.com.br');
+    // O envio é fire-and-forget depois da resposta — espera curta e determinística.
+    for (let i = 0; i < 50 && resendCalls.length === 0; i++) {
+      await new Promise((r) => setTimeout(r, 10));
+    }
+    expect(resendCalls).toHaveLength(1);
+    expect(resendCalls[0].to).toEqual(['recem-chegado@vozzai.com.br']);
+    expect(resendCalls[0].subject).toMatch(/Bem-vindo/);
+  });
+});
+
 describe('webhook Asaas', () => {
   it('rejeita sem o token configurado, ignora ainda-não-pago, ativa Pro quando confirma', async () => {
     process.env.ASAAS_WEBHOOK_TOKEN = 'segredo-de-teste';
