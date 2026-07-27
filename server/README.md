@@ -120,6 +120,32 @@ Um token `APP_USR-...` no ambiente é descartado pelos testes automaticamente.
 A estrutura: `src/app.ts` exporta o app Express sem abrir porta (é o que os
 testes montam em memória); `src/index.ts` é só o entrypoint de produção.
 
+## Modos e tom
+
+São dois eixos independentes, e a distinção é o que faz os dois conviverem:
+
+- **Modo** (`mode` no `/transcribe`) manda no **formato** — e-mail vira corpo de
+  e-mail, Objetivo encurta, Fiel não mexe em nada. Catálogo em `src/modes.ts`;
+  criar um modo novo é só acrescentar ali, sem tocar no app nem na extensão,
+  que puxam a lista de `GET /modes`.
+- **Tom** (`tone` no `PATCH /me`) manda no **registro** — Formal troca gíria por
+  palavra neutra, Informal preserva o jeito de falar. Nada mais: se o texto de
+  tom começar a falar de tamanho, parágrafo ou saudação, ele briga com o modo.
+  Foi assim que o tom ficou preso ao Padrão por um tempo. Há teste guardando.
+
+Duas exceções, declaradas em `Mode.toneRule`, onde o registro é definição e não
+preferência: **Transcrição fiel** (`'none'` — prometemos não trocar palavra
+nenhuma) e **Jurídico** (`'always-formal'`). A tela de configurações do app diz
+isso ao usuário por escrito, e um teste falha se o conjunto mudar sem o texto
+acompanhar.
+
+`UNIVERSAL_RULES` é anexado ao prompt de **todo** modo, inclusive dos futuros:
+proíbe placeholder (`[Seu Nome]`), saudação/despedida/assinatura que a pessoa
+não ditou, fato inventado, e — a que só apareceu no teste com voz real —
+completar trecho que a transcrição entregou quebrado. Essa última importa mais
+do que parece: quem ditou reconhece `se falta` como erro e corrige, mas um
+remendo plausível (`Se faltar, me avisa`) passa batido e vai pro cliente.
+
 ## Eventos de produto
 
 `events` guarda os passos que as pessoas dão (cadastro, ditado, erro, cota,
