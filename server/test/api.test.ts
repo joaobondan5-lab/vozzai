@@ -51,10 +51,11 @@ async function signup(email = 'teste@vozzai.com.br', password = 'senha-forte-123
 }
 
 describe('health', () => {
-  it('responde ok', async () => {
+  it('responde ok e diz que commit está rodando', async () => {
     const { status, data } = await get('/health');
     expect(status).toBe(200);
-    expect(data).toEqual({ ok: true });
+    // Fora do Railway não existe SHA, então 'dev' é a resposta certa aqui.
+    expect(data).toEqual({ ok: true, commit: 'dev' });
   });
 });
 
