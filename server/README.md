@@ -76,6 +76,13 @@ protege a margem sem atrapalhar o uso normal.
   teto, uma conta grátis conseguiria queimar API com áudio de silêncio.
 - **Body de 1 MB** em todas as rotas, exceto `/transcribe` (25 MB, que recebe
   áudio). Corpo grande fora dali leva 413.
+- **Reconciliação periódica do Mercado Pago**: rede de segurança para quando o
+  webhook nunca chega (Railway fora do ar no instante da notificação, falha
+  transitória na API do MP). A cada hora (e uma vez logo na subida do
+  processo), o servidor revarre todo mundo com assinatura MP conhecida e
+  resincroniza o plano com o estado real — uma falha numa assinatura não
+  impede as outras. Roda só em produção (`src/index.ts`), não durante os
+  testes (`src/app.ts`).
 - **Webhooks autenticados**: Asaas exige o token estático (comparação em tempo
   constante); Mercado Pago valida a assinatura `x-signature` (HMAC-SHA256)
   quando `MP_WEBHOOK_SECRET` está configurado — e, com ou sem secret, nunca

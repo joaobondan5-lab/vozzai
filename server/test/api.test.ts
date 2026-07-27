@@ -1,9 +1,10 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
 import { app } from '../src/app';
 import { initSchema, pool } from '../src/db';
 import { resetRateLimits } from '../src/rateLimit';
+import { reconcileAllSubscriptions } from '../src/mercadopago';
 
 let server: Server;
 let base: string;
@@ -327,6 +328,106 @@ describe('hardening', () => {
     delete process.env.MP_WEBHOOK_SECRET;
     const { status } = await post('/webhooks/mercadopago', { data: {} });
     expect(status).toBe(200);
+  });
+});
+
+describe('reconciliação Mercado Pago (rede de segurança para webhook perdido)', () => {
+  const savedMpToken = process.env.MP_ACCESS_TOKEN;
+
+  beforeEach(() => {
+    // fetchPreapproval recusa chamar a API sem token configurado — aqui o
+    // valor não importa (a chamada real é mockada), só precisa existir.
+    process.env.MP_ACCESS_TOKEN = 'TEST-reconciliacao-fake';
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    if (savedMpToken === undefined) delete process.env.MP_ACCESS_TOKEN;
+    else process.env.MP_ACCESS_TOKEN = savedMpToken;
+  });
+
+  // vi.stubGlobal('fetch', ...) substitui o fetch inteiro do processo — inclusive
+  // o que os helpers post()/get() deste arquivo usam pra falar com o servidor
+  // local. Por isso todo mock aqui repassa pro fetch real quando a URL não é
+  // da API do Mercado Pago, em vez de travar as próprias chamadas do teste.
+  const realFetch = globalThis.fetch;
+
+  it('sem nenhum mp_customer no banco, não chama a API e não falha', async () => {
+    const fetchSpy = vi.fn(realFetch);
+    vi.stubGlobal('fetch', fetchSpy);
+    const result = await reconcileAllSubscriptions();
+    expect(result).toEqual({ checked: 0, failed: 0 });
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('corrige um usuário que ficou "pro" no banco mas foi cancelado na MP', async () => {
+    const token = await signup('esqueceu-de-cancelar@vozzai.com.br');
+    await pool.query(
+      `UPDATE users SET plan = 'pro', mp_customer = 'sub_cancelada_1' WHERE email = 'esqueceu-de-cancelar@vozzai.com.br'`,
+    );
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        if (!String(url).includes('api.mercadopago.com')) return realFetch(url, init);
+        return new Response(JSON.stringify({ id: 'sub_cancelada_1', status: 'cancelled', external_reference: '1' }), {
+          status: 200,
+        });
+      }),
+    );
+
+    const result = await reconcileAllSubscriptions();
+    expect(result).toEqual({ checked: 1, failed: 0 });
+
+    const me = await get('/me', { authorization: `Bearer ${token}` });
+    expect(me.data.plan).toBe('free');
+  });
+
+  it('libera o Pro de um usuário que ficou "free" no banco por causa de um webhook perdido', async () => {
+    const token = await signup('webhook-perdido@vozzai.com.br');
+    await pool.query(
+      `UPDATE users SET plan = 'free', mp_customer = 'sub_autorizada_1' WHERE email = 'webhook-perdido@vozzai.com.br'`,
+    );
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        if (!String(url).includes('api.mercadopago.com')) return realFetch(url, init);
+        return new Response(JSON.stringify({ id: 'sub_autorizada_1', status: 'authorized', external_reference: '1' }), {
+          status: 200,
+        });
+      }),
+    );
+
+    await reconcileAllSubscriptions();
+    const me = await get('/me', { authorization: `Bearer ${token}` });
+    expect(me.data.plan).toBe('pro');
+  });
+
+  it('uma assinatura com falha na consulta não impede as outras de reconciliarem', async () => {
+    await signup('falha@vozzai.com.br');
+    await pool.query(`UPDATE users SET plan = 'pro', mp_customer = 'sub_com_erro' WHERE email = 'falha@vozzai.com.br'`);
+
+    const okToken = await signup('ok-junto@vozzai.com.br');
+    await pool.query(`UPDATE users SET plan = 'free', mp_customer = 'sub_ok' WHERE email = 'ok-junto@vozzai.com.br'`);
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        if (!String(url).includes('api.mercadopago.com')) return realFetch(url, init);
+        if (String(url).includes('sub_com_erro')) throw new Error('timeout simulado');
+        return new Response(JSON.stringify({ id: 'sub_ok', status: 'authorized', external_reference: String(2) }), {
+          status: 200,
+        });
+      }),
+    );
+
+    const result = await reconcileAllSubscriptions();
+    expect(result.checked).toBe(2);
+    expect(result.failed).toBe(1);
+
+    const me = await get('/me', { authorization: `Bearer ${okToken}` });
+    expect(me.data.plan).toBe('pro');
   });
 });
 

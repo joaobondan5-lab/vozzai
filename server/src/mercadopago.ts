@@ -76,6 +76,35 @@ async function fetchPreapproval(id: string): Promise<Preapproval | null> {
   return (await res.json()) as Preapproval;
 }
 
+/** Aplica o estado real de uma assinatura MP ao usuário dono dela. Compartilhado
+ * pelo webhook (evento único) e pela reconciliação periódica (varredura). */
+async function applySubscriptionStatus(sub: Preapproval): Promise<void> {
+  // external_reference é onde guardamos o id do usuário ao criar a assinatura.
+  const userId = Number(sub.external_reference);
+  const byId = Number.isFinite(userId) && userId > 0;
+
+  const result = await pool.query<{ id: number; plan: string }>(
+    byId ? 'SELECT id, plan FROM users WHERE id = $1' : 'SELECT id, plan FROM users WHERE email = $1',
+    [byId ? userId : (sub.payer_email ?? '')],
+  );
+  const user = result.rows[0];
+
+  if (!user) {
+    console.error(`[vozza] assinatura ${sub.id} sem usuário correspondente`);
+    return;
+  }
+
+  const plan = sub.status === 'authorized' ? 'pro' : 'free';
+  if (user.plan === plan) return; // já está correto — evita update e log à toa
+
+  await pool.query('UPDATE users SET plan = $1, mp_customer = $2 WHERE id = $3', [
+    plan,
+    sub.id,
+    user.id,
+  ]);
+  console.log(`[vozza] usuário ${user.id} agora está no plano ${plan} (assinatura ${sub.status})`);
+}
+
 export async function syncSubscription(notification: Notification): Promise<void> {
   const id = notification?.data?.id;
   if (!id) return;
@@ -84,27 +113,29 @@ export async function syncSubscription(notification: Notification): Promise<void
 
   const sub = await fetchPreapproval(id);
   if (!sub) return;
+  await applySubscriptionStatus(sub);
+}
 
-  // external_reference é onde guardamos o id do usuário ao criar a assinatura.
-  const userId = Number(sub.external_reference);
-  const byId = Number.isFinite(userId) && userId > 0;
-
-  const result = await pool.query<{ id: number }>(
-    byId ? 'SELECT id FROM users WHERE id = $1' : 'SELECT id FROM users WHERE email = $1',
-    [byId ? userId : (sub.payer_email ?? '')],
+/**
+ * Rede de segurança para quando o webhook nunca chega (Railway fora do ar no
+ * instante da notificação, falha transitória na API do MP etc.): varre todo
+ * mundo com assinatura MP conhecida e resincroniza o plano com o estado real.
+ * Uma falha numa assinatura não derruba as outras — cada uma é isolada.
+ */
+export async function reconcileAllSubscriptions(): Promise<{ checked: number; failed: number }> {
+  const { rows } = await pool.query<{ mp_customer: string }>(
+    'SELECT DISTINCT mp_customer FROM users WHERE mp_customer IS NOT NULL',
   );
-  const user = result.rows[0];
 
-  if (!user) {
-    console.error(`[vozza] assinatura ${id} sem usuário correspondente`);
-    return;
+  let failed = 0;
+  for (const row of rows) {
+    try {
+      const sub = await fetchPreapproval(row.mp_customer);
+      if (sub) await applySubscriptionStatus(sub);
+    } catch (err) {
+      failed++;
+      console.error(`[vozza] reconciliação MP falhou para ${row.mp_customer}:`, err);
+    }
   }
-
-  const plan = sub.status === 'authorized' ? 'pro' : 'free';
-  await pool.query('UPDATE users SET plan = $1, mp_customer = $2 WHERE id = $3', [
-    plan,
-    sub.id,
-    user.id,
-  ]);
-  console.log(`[vozza] usuário ${user.id} agora está no plano ${plan} (assinatura ${sub.status})`);
+  return { checked: rows.length, failed };
 }
