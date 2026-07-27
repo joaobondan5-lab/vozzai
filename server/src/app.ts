@@ -90,7 +90,18 @@ async function requireUser(req: express.Request, res: express.Response): Promise
   return user;
 }
 
-app.get('/health', (_req, res) => res.json({ ok: true }));
+/**
+ * Vivo? E rodando qual código?
+ *
+ * O `commit` existe porque, sem ele, "já subiu?" só dá pra responder no olho —
+ * e olhar não é conferir: um deploy que ainda não trocou devolve a resposta
+ * antiga com cara de sucesso. Isso já produziu dois falsos positivos aqui
+ * (o plano anual e o conserto dos modos). O SHA curto é opaco e o repositório
+ * é privado, então não conta nada que interesse a quem não deveria saber.
+ */
+app.get('/health', (_req, res) =>
+  res.json({ ok: true, commit: (process.env.RAILWAY_GIT_COMMIT_SHA || 'dev').slice(0, 7) }),
+);
 
 /** Catálogo público de modos (sem as instruções, que são ativo do produto). */
 app.get('/modes', (_req, res) => res.json({ modes: publicModes() }));
