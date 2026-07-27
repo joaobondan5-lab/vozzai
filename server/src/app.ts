@@ -10,7 +10,7 @@ import {
 } from './auth';
 import { usageFor, recordUsage, countWords, PLANS, planOf } from './quota';
 import { transcribe, cleanup } from './openai';
-import { syncSubscription, createSubscription } from './mercadopago';
+import { syncSubscription, createSubscription, resolveBillingCycle } from './mercadopago';
 import { createCheckout, isValidWebhookToken, syncFromWebhook } from './asaas';
 import { resolveMode, publicModes } from './modes';
 import { isMpSignatureCheckEnabled, isValidMpSignature } from './webhookSignature';
@@ -246,15 +246,20 @@ app.post(
   }),
 );
 
-/** Cria a assinatura Pro no Mercado Pago e devolve o link de checkout. */
+/**
+ * Cria a assinatura Pro no Mercado Pago e devolve o link de checkout.
+ * `cycle` no corpo: "monthly" (padrão) ou "annual". Qualquer outro valor
+ * cai em mensal — o cliente nunca escolhe um preço que o servidor não conhece.
+ */
 app.post(
   '/billing/subscribe',
   asyncRoute(async (req, res) => {
     const user = await requireUser(req, res);
     if (!user) return;
 
+    const cycle = resolveBillingCycle((req.body ?? {}).cycle);
     try {
-      const checkoutUrl = await createSubscription(user.id, user.email);
+      const checkoutUrl = await createSubscription(user.id, user.email, cycle);
       res.json({ checkoutUrl });
     } catch (err) {
       console.error('[vozza] erro ao criar assinatura:', err);

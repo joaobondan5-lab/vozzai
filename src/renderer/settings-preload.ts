@@ -5,7 +5,7 @@ contextBridge.exposeInMainWorld('vozzaSettings', {
   signup: (email: string, password: string) => ipcRenderer.invoke('signup', email, password),
   login: (email: string, password: string) => ipcRenderer.invoke('login', email, password),
   logout: () => ipcRenderer.invoke('logout'),
-  subscribe: () => ipcRenderer.invoke('subscribe'),
+  subscribe: (cycle: 'monthly' | 'annual' = 'monthly') => ipcRenderer.invoke('subscribe', cycle),
   setPreferences: (partial: { tone?: string; dictionary?: string }) =>
     ipcRenderer.invoke('set-preferences', partial),
   setShortcut: (accelerator: string) => ipcRenderer.invoke('set-shortcut', accelerator),

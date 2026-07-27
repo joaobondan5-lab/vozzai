@@ -91,11 +91,15 @@ export async function updatePreferences(
   }
 }
 
-export async function createSubscription(token: string): Promise<{ checkoutUrl?: string; error?: string }> {
+export async function createSubscription(
+  token: string,
+  cycle: 'monthly' | 'annual' = 'monthly',
+): Promise<{ checkoutUrl?: string; error?: string }> {
   try {
     const res = await api('/billing/subscribe', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 'content-type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ cycle }),
     }, 20_000);
     const data = (await res.json()) as { checkoutUrl?: string; error?: string };
     if (!res.ok) return { error: data.error || 'Não consegui iniciar a assinatura.' };

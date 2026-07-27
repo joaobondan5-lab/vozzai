@@ -3,7 +3,22 @@ import { sendProActivatedEmail, sendProEndedEmail } from './email';
 
 /** Integração com assinaturas (preapproval) do Mercado Pago. */
 const TOKEN = () => process.env.MP_ACCESS_TOKEN || '';
-const PRICE_BRL = 29.9;
+
+/**
+ * Ciclos de cobrança do Pro. O anual dá ~30% de desconto (R$249 vs R$358,80
+ * de 12 meses avulsos) — o preço saiu de uma decisão de negócio, não do código.
+ * O Mercado Pago só aceita frequency_type "days" ou "months"; anual = 12 meses.
+ */
+export type BillingCycle = 'monthly' | 'annual';
+
+export const BILLING_PLANS: Record<BillingCycle, { amount: number; frequency: number; reason: string }> = {
+  monthly: { amount: 29.9, frequency: 1, reason: 'VozzAI Pro — assinatura mensal' },
+  annual: { amount: 249, frequency: 12, reason: 'VozzAI Pro — assinatura anual' },
+};
+
+export function resolveBillingCycle(raw: unknown): BillingCycle {
+  return raw === 'annual' ? 'annual' : 'monthly';
+}
 
 interface PreapprovalCreated {
   id: string;
@@ -15,21 +30,27 @@ interface PreapprovalCreated {
  * Cria uma assinatura "pendente" e devolve o link de checkout do Mercado
  * Pago pro usuário preencher o cartão. Nada é cobrado até ele confirmar lá.
  */
-export async function createSubscription(userId: number, email: string): Promise<string> {
+export async function createSubscription(
+  userId: number,
+  email: string,
+  cycle: BillingCycle = 'monthly',
+): Promise<string> {
   if (!TOKEN()) throw new Error('MP_ACCESS_TOKEN não configurado no servidor.');
+
+  const plan = BILLING_PLANS[cycle];
 
   const res = await fetch('https://api.mercadopago.com/preapproval', {
     method: 'POST',
     headers: { Authorization: `Bearer ${TOKEN()}`, 'content-type': 'application/json' },
     body: JSON.stringify({
-      reason: 'VozzAI Pro — assinatura mensal',
+      reason: plan.reason,
       external_reference: String(userId),
       payer_email: email,
       back_url: process.env.APP_URL || 'https://vozzai.vercel.app',
       auto_recurring: {
-        frequency: 1,
+        frequency: plan.frequency,
         frequency_type: 'months',
-        transaction_amount: PRICE_BRL,
+        transaction_amount: plan.amount,
         currency_id: 'BRL',
       },
       status: 'pending',

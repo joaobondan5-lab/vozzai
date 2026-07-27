@@ -432,8 +432,8 @@ app.whenReady().then(() => {
     };
   });
 
-  ipcMain.handle('subscribe', async () => {
-    const result = await createSubscription(config.authToken);
+  ipcMain.handle('subscribe', async (_event, cycle: 'monthly' | 'annual' = 'monthly') => {
+    const result = await createSubscription(config.authToken, cycle);
     if (result.error) return { ok: false, error: result.error };
     shell.openExternal(result.checkoutUrl as string);
     return { ok: true };

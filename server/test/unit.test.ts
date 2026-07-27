@@ -7,6 +7,7 @@ import { isValidWebhookToken } from '../src/asaas';
 import { isValidMpSignature, isMpSignatureCheckEnabled } from '../src/webhookSignature';
 import { createHmac } from 'node:crypto';
 import { MODES, resolveMode, publicModes, DEFAULT_MODE_ID } from '../src/modes';
+import { BILLING_PLANS, resolveBillingCycle } from '../src/mercadopago';
 
 describe('quota', () => {
   it('countWords conta palavras separadas por espaços', () => {
@@ -69,6 +70,29 @@ describe('isValidEmail', () => {
     expect(isValidEmail('')).toBe(false);
     expect(isValidEmail(undefined)).toBe(false);
     expect(isValidEmail(123)).toBe(false);
+  });
+});
+
+describe('ciclos de cobrança (mensal/anual)', () => {
+  it('mensal e anual têm os preços e frequências certos', () => {
+    expect(BILLING_PLANS.monthly).toMatchObject({ amount: 29.9, frequency: 1 });
+    expect(BILLING_PLANS.annual).toMatchObject({ amount: 249, frequency: 12 });
+  });
+
+  it('o anual desconta de verdade contra 12 meses avulsos', () => {
+    const dozeMeses = BILLING_PLANS.monthly.amount * 12;
+    expect(BILLING_PLANS.annual.amount).toBeLessThan(dozeMeses);
+    const desconto = 1 - BILLING_PLANS.annual.amount / dozeMeses;
+    expect(desconto).toBeGreaterThan(0.25); // pelo menos 25% off
+  });
+
+  it('resolveBillingCycle só aceita "annual"; qualquer outra coisa é mensal', () => {
+    expect(resolveBillingCycle('annual')).toBe('annual');
+    expect(resolveBillingCycle('monthly')).toBe('monthly');
+    expect(resolveBillingCycle('anual')).toBe('monthly'); // grafia errada não vira anual
+    expect(resolveBillingCycle(undefined)).toBe('monthly');
+    expect(resolveBillingCycle('grátis-pra-sempre')).toBe('monthly');
+    expect(resolveBillingCycle({ cycle: 'annual' })).toBe('monthly'); // objeto não engana
   });
 });
 
