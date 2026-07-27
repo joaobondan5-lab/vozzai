@@ -27,6 +27,7 @@ import {
 import { pasteAtCursor } from './paste';
 import { DictationMachine } from './state';
 import { HistoryStore } from './history';
+import { CLIENT_MODES } from './modes';
 
 let config: VozzaConfig;
 let recorderWindow: BrowserWindow | null = null;
@@ -182,6 +183,19 @@ function updateTray(): void {
   }
 
   items.push(
+    { type: 'separator' },
+    {
+      label: 'Modo de escrita',
+      submenu: CLIENT_MODES.map((m) => ({
+        label: m.proOnly ? `${m.name} · Pro` : m.name,
+        type: 'radio' as const,
+        checked: config.mode === m.id,
+        click: () => {
+          config = saveConfig({ mode: m.id });
+          updateTray();
+        },
+      })),
+    },
     { type: 'separator' },
     { label: 'Copiar última transcrição', enabled: Boolean(lastTranscription), click: copyLast },
     { label: 'Inserir última de novo', enabled: Boolean(lastTranscription), click: insertLastAgain },

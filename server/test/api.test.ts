@@ -216,6 +216,38 @@ describe('admin', () => {
   });
 });
 
+describe('modes', () => {
+  it('GET /modes lista o catálogo sem expor instruções', async () => {
+    const { status, data } = await get('/modes');
+    expect(status).toBe(200);
+    expect(data.modes.length).toBeGreaterThanOrEqual(10);
+    expect(data.modes[0]).toHaveProperty('id');
+    expect(data.modes[0]).toHaveProperty('proOnly');
+    expect(JSON.stringify(data)).not.toContain('instruction');
+  });
+
+  it('free pedindo modo Pro leva 403 antes de qualquer gasto', async () => {
+    const token = await signup('free-modo@vozzai.com.br');
+    const { status, data } = await post(
+      '/transcribe',
+      { audio: 'QUFBQQ==', mode: 'juridico' },
+      { authorization: `Bearer ${token}` },
+    );
+    expect(status).toBe(403);
+    expect(data.error).toMatch(/Pro/);
+  });
+
+  it('modo desconhecido leva 400', async () => {
+    const token = await signup('modo-x@vozzai.com.br');
+    const { status } = await post(
+      '/transcribe',
+      { audio: 'QUFBQQ==', mode: 'nao-existe' },
+      { authorization: `Bearer ${token}` },
+    );
+    expect(status).toBe(400);
+  });
+});
+
 describe('webhook Asaas', () => {
   it('rejeita sem o token configurado, ignora ainda-não-pago, ativa Pro quando confirma', async () => {
     process.env.ASAAS_WEBHOOK_TOKEN = 'segredo-de-teste';

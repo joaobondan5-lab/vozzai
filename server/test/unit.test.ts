@@ -3,6 +3,7 @@ import { countWords, planOf, PLANS } from '../src/quota';
 import { normalizeEmail, hashPassword, verifyPassword } from '../src/auth';
 import { isValidEmail } from '../src/validation';
 import { isValidWebhookToken } from '../src/asaas';
+import { MODES, resolveMode, publicModes, DEFAULT_MODE_ID } from '../src/modes';
 
 describe('quota', () => {
   it('countWords conta palavras separadas por espaços', () => {
@@ -65,6 +66,55 @@ describe('isValidEmail', () => {
     expect(isValidEmail('')).toBe(false);
     expect(isValidEmail(undefined)).toBe(false);
     expect(isValidEmail(123)).toBe(false);
+  });
+});
+
+describe('VozzAI Modes', () => {
+  it('todo modo do registro é coerente (id, textos, schema)', () => {
+    for (const [key, mode] of Object.entries(MODES)) {
+      expect(mode.id).toBe(key);
+      expect(mode.name.length).toBeGreaterThan(2);
+      expect(mode.description.length).toBeGreaterThan(10);
+      expect(mode.instruction.length).toBeGreaterThan(40);
+      expect(mode.schemaVersion).toBe(1);
+    }
+  });
+
+  it('tem modos essenciais grátis e profissionais no Pro', () => {
+    const free = Object.values(MODES).filter((m) => !m.proOnly).map((m) => m.id);
+    const pro = Object.values(MODES).filter((m) => m.proOnly).map((m) => m.id);
+    expect(free).toEqual(expect.arrayContaining(['padrao', 'whatsapp', 'email', 'objetivo', 'fiel']));
+    expect(pro).toEqual(expect.arrayContaining(['atendimento', 'vendas', 'juridico', 'dev', 'conteudo']));
+  });
+
+  it('sem modo (ou vazio) cai no Padrão', () => {
+    for (const requested of [undefined, '', '  ']) {
+      const r = resolveMode(requested, 'free');
+      expect(r.ok).toBe(true);
+      if (r.ok) expect(r.mode.id).toBe(DEFAULT_MODE_ID);
+    }
+  });
+
+  it('modo desconhecido é 400, não fallback silencioso', () => {
+    const r = resolveMode('haiku', 'pro');
+    expect(r).toMatchObject({ ok: false, status: 400 });
+  });
+
+  it('plano free não usa modo Pro (403), plano pro usa tudo', () => {
+    const blocked = resolveMode('juridico', 'free');
+    expect(blocked).toMatchObject({ ok: false, status: 403 });
+    if (!blocked.ok) expect(blocked.error).toMatch(/Pro/);
+
+    expect(resolveMode('juridico', 'pro').ok).toBe(true);
+    expect(resolveMode('whatsapp', 'free').ok).toBe(true);
+  });
+
+  it('catálogo público não vaza as instruções', () => {
+    const serialized = JSON.stringify(publicModes());
+    expect(serialized).not.toContain('instruction');
+    for (const mode of Object.values(MODES)) {
+      expect(serialized).not.toContain(mode.instruction.slice(0, 30));
+    }
   });
 });
 

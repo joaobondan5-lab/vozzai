@@ -12,10 +12,20 @@ const subMsgEl = document.getElementById('subMsg');
 
 let mode = 'login';
 
+const modeSelect = document.getElementById('modeSelect');
+modeSelect.addEventListener('change', async () => {
+  await chrome.storage.local.set({ vozzaMode: modeSelect.value });
+});
+
 init();
 
 async function init() {
-  const { vozzaToken, vozzaEmail } = await chrome.storage.local.get(['vozzaToken', 'vozzaEmail']);
+  const { vozzaToken, vozzaEmail, vozzaMode } = await chrome.storage.local.get([
+    'vozzaToken',
+    'vozzaEmail',
+    'vozzaMode',
+  ]);
+  if (vozzaMode) modeSelect.value = vozzaMode;
   if (vozzaToken) await showLoggedIn(vozzaToken, vozzaEmail);
 }
 

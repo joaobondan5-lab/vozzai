@@ -3,6 +3,8 @@
  * é isso que permite cobrar assinatura em vez de pedir que cada usuário traga
  * a própria chave.
  */
+import { DEFAULT_MODE_ID, Mode, MODES } from './modes';
+
 const KEY = () => process.env.OPENAI_API_KEY || '';
 
 export interface Transcription {
@@ -44,10 +46,16 @@ const TONE_INSTRUCTIONS: Record<string, string> = {
     'Troque só as gírias e expressões muito casuais ("cara", "tipo", "beleza?", "e aí") por palavras mais neutras, mantendo exatamente as mesmas frases, na mesma ordem, sem tirar nem adicionar conteúdo. Isto NÃO é uma carta nem um e-mail: é proibido escrever "Prezado", "Atenciosamente", qualquer saudação, despedida ou placeholder como "[Nome]". A saída deve ter o mesmo tamanho do texto original, só com palavras mais formais.',
 };
 
-export async function cleanup(rawText: string, tone = 'informal'): Promise<string> {
+export async function cleanup(rawText: string, tone = 'informal', mode?: Mode): Promise<string> {
   if (!rawText.trim()) return rawText;
 
-  const toneInstruction = TONE_INSTRUCTIONS[tone] ?? TONE_INSTRUCTIONS.informal;
+  const base = mode?.instruction ?? MODES[DEFAULT_MODE_ID].instruction;
+  // A preferência de tom só entra no modo Padrão — os outros modos já
+  // definem o próprio tom (WhatsApp informal, Jurídico formal, etc.).
+  const toneInstruction =
+    !mode || mode.id === DEFAULT_MODE_ID
+      ? ` ${TONE_INSTRUCTIONS[tone] ?? TONE_INSTRUCTIONS.informal}`
+      : '';
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -58,8 +66,7 @@ export async function cleanup(rawText: string, tone = 'informal'): Promise<strin
         {
           role: 'user',
           content:
-            `Corrija pontuação, maiúsculas e formatação do texto ditado abaixo, mantendo o sentido e o idioma originais. ${toneInstruction} Responda apenas com o texto corrigido, sem comentários.\n\n` +
-            rawText,
+            `${base}${toneInstruction} Responda apenas com o texto final, sem comentários.\n\n` + rawText,
         },
       ],
     }),

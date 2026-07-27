@@ -12,6 +12,7 @@ import { usageFor, recordUsage, countWords, PLANS, planOf } from './quota';
 import { transcribe, cleanup } from './openai';
 import { syncSubscription, createSubscription } from './mercadopago';
 import { createCheckout, isValidWebhookToken, syncFromWebhook } from './asaas';
+import { resolveMode, publicModes } from './modes';
 import { addToWaitlist, pool } from './db';
 import { isRateLimited } from './rateLimit';
 import { isValidEmail } from './validation';
@@ -61,6 +62,9 @@ async function requireUser(req: express.Request, res: express.Response): Promise
 }
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
+
+/** Catálogo público de modos (sem as instruções, que são ativo do produto). */
+app.get('/modes', (_req, res) => res.json({ modes: publicModes() }));
 
 app.post(
   '/waitlist',
@@ -165,9 +169,16 @@ app.post(
     const user = await requireUser(req, res);
     if (!user) return;
 
-    const { audio, language } = req.body ?? {};
+    const { audio, language, mode: modeId } = req.body ?? {};
     if (typeof audio !== 'string' || !audio) {
       return void res.status(400).json({ error: 'Áudio ausente.' });
+    }
+
+    // Valida o modo ANTES de cota e de qualquer chamada paga — cliente nenhum
+    // usa modo Pro sem plano Pro, não importa o que a UI dele mostre.
+    const resolution = resolveMode(modeId, planOf(user.plan));
+    if (!resolution.ok) {
+      return void res.status(resolution.status).json({ error: resolution.error });
     }
 
     const status = await usageFor(user.id, user.plan);
@@ -188,7 +199,7 @@ app.post(
         language || 'pt',
         user.dictionary,
       );
-      const finalText = await cleanup(text, user.tone);
+      const finalText = await cleanup(text, user.tone, resolution.mode);
       const words = countWords(finalText);
       await recordUsage(user.id, seconds, words);
       res.json({ text: finalText, usage: await usageFor(user.id, user.plan) });

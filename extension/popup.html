@@ -19,6 +19,11 @@
     }
     button.ghost { background: transparent; color: #5B606B; margin-top: 8px; }
     .msg { font-size: 12px; color: #D93A1D; margin-top: 8px; min-height: 14px; }
+    .mode-label { display: block; font-size: 11px; color: #5B606B; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin: 12px 0 5px; }
+    select {
+      width: 100%; box-sizing: border-box; padding: 8px 10px;
+      border: 1px solid #DBD9D2; border-radius: 8px; font: inherit; font-size: 13px; background: #fff;
+    }
     .status { font-size: 13.5px; }
     .usage { font-size: 12px; color: #5B606B; margin-top: 6px; }
     #subscribeBtn { margin-top: 12px; }
@@ -41,6 +46,19 @@
   <div id="loggedIn" style="display:none">
     <p class="status" id="status"></p>
     <p class="usage" id="usage"></p>
+    <label class="mode-label" for="modeSelect">Modo de escrita</label>
+    <select id="modeSelect">
+      <option value="padrao">Padrão</option>
+      <option value="whatsapp">WhatsApp</option>
+      <option value="email">E-mail profissional</option>
+      <option value="objetivo">Objetivo</option>
+      <option value="fiel">Transcrição fiel</option>
+      <option value="atendimento">Atendimento · Pro</option>
+      <option value="vendas">Vendas · Pro</option>
+      <option value="juridico">Jurídico · Pro</option>
+      <option value="dev">Desenvolvedor · Pro</option>
+      <option value="conteudo">Conteúdo · Pro</option>
+    </select>
     <button id="subscribeBtn" style="display:none">Assinar Pro — R$ 29,90/mês</button>
     <p class="subMsg" id="subMsg"></p>
     <button class="ghost" id="logoutBtn">Sair</button>
