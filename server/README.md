@@ -33,6 +33,7 @@ um servidor local. Depois só apontar a `DATABASE_URL` pra ele.
 | `DATABASE_URL` | Conexão com o Postgres. **Obrigatória.** |
 | `MP_ACCESS_TOKEN` | Token do Mercado Pago (`TEST-...` em dev, `APP_USR-...` em produção). |
 | `ADMIN_TOKEN` | Libera o painel `/admin`. Sem ela, o painel responde 503 (fechado de propósito). |
+| `MP_WEBHOOK_SECRET` | Assinatura secreta dos webhooks do Mercado Pago (painel → Webhooks). Opcional; com ela, notificação sem `x-signature` válida leva 401. |
 | `VOZZA_STT_MODEL` | Modelo de transcrição (padrão `whisper-1`; `gpt-4o-mini-transcribe` custa metade). |
 | `PORT` | Porta HTTP (padrão 3000). |
 
@@ -64,12 +65,26 @@ Definidos em `src/quota.ts`. O Pro tem teto alto (120.000 palavras/mês ≈ 13 h
 fala) em vez de "ilimitado" de verdade — cada minuto ditado custa API, e um teto
 protege a margem sem atrapalhar o uso normal.
 
-## Confiabilidade
+## Confiabilidade e segurança
 
 - **Limite de tentativas** em `/auth/login` e `/auth/signup` (10 por 15 min,
   por IP) — protege contra força bruta. Fica em memória, então só funciona bem
   com uma instância rodando; se um dia escalar pra várias instâncias, precisa
   virar algo compartilhado (ex.: Redis).
+- **Limite de chamadas no `/transcribe`** (60 por 15 min, por usuário) — a
+  cota conta palavras, mas o custo do Whisper é por minuto de áudio; sem esse
+  teto, uma conta grátis conseguiria queimar API com áudio de silêncio.
+- **Body de 1 MB** em todas as rotas, exceto `/transcribe` (25 MB, que recebe
+  áudio). Corpo grande fora dali leva 413.
+- **Webhooks autenticados**: Asaas exige o token estático (comparação em tempo
+  constante); Mercado Pago valida a assinatura `x-signature` (HMAC-SHA256)
+  quando `MP_WEBHOOK_SECRET` está configurado — e, com ou sem secret, nunca
+  confia no corpo: consulta a API antes de mudar plano.
+- **CORS com lista de origens** (vozzai.com.br, previews Vercel, localhost,
+  extensão de Chrome) em vez de refletir qualquer origem; headers `nosniff`,
+  `X-Frame-Options: DENY` e `Referrer-Policy: no-referrer` em toda resposta.
+- **Sem shell**: nenhuma rota executa comando de sistema; senhas com scrypt +
+  salt e comparações de segredo sempre em tempo constante.
 - **Erros não tratados viram JSON 500** em vez de derrubar a conexão sem
   explicação — ver o middleware de erro no fim de `src/app.ts`.
 - Reinício automático em caso de falha fica por conta da plataforma de deploy

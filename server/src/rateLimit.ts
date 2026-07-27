@@ -10,7 +10,7 @@ const attempts = new Map<string, { count: number; resetAt: number }>();
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_ATTEMPTS = 10;
 
-export function isRateLimited(key: string): boolean {
+export function isRateLimited(key: string, max = MAX_ATTEMPTS): boolean {
   const now = Date.now();
   const entry = attempts.get(key);
 
@@ -20,7 +20,7 @@ export function isRateLimited(key: string): boolean {
   }
 
   entry.count += 1;
-  return entry.count > MAX_ATTEMPTS;
+  return entry.count > max;
 }
 
 /** Só para testes: zera as janelas para um teste não contaminar o seguinte. */

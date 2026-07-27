@@ -248,6 +248,88 @@ describe('modes', () => {
   });
 });
 
+describe('hardening', () => {
+  it('rejeita body acima de 1MB fora do /transcribe (413)', async () => {
+    const res = await fetch(`${base}/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'a@b.co', password: 'x'.repeat(1_200_000) }),
+    });
+    expect(res.status).toBe(413);
+    const data = (await res.json()) as { error: string };
+    expect(data.error).toMatch(/grande/i);
+  });
+
+  it('aceita body de 2MB no /transcribe (limite maior, só ali)', async () => {
+    const token = await signup('audio-grande@vozzai.com.br');
+    const { status } = await post(
+      '/transcribe',
+      { audio: 'A'.repeat(2_000_000), mode: 'padrao' },
+      { authorization: `Bearer ${token}` },
+    );
+    // Sem OPENAI_API_KEY no ambiente de teste a transcrição falha em 502 —
+    // o que importa aqui é NÃO ser 413.
+    expect(status).not.toBe(413);
+  });
+
+  it('CORS: origem desconhecida não recebe Access-Control-Allow-Origin', async () => {
+    const evil = await fetch(`${base}/health`, { headers: { origin: 'https://malicioso.com' } });
+    expect(evil.headers.get('access-control-allow-origin')).toBeNull();
+
+    const ok = await fetch(`${base}/health`, { headers: { origin: 'https://www.vozzai.com.br' } });
+    expect(ok.headers.get('access-control-allow-origin')).toBe('https://www.vozzai.com.br');
+  });
+
+  it('respostas carregam headers de segurança', async () => {
+    const res = await fetch(`${base}/health`);
+    expect(res.headers.get('x-content-type-options')).toBe('nosniff');
+    expect(res.headers.get('x-frame-options')).toBe('DENY');
+  });
+
+  it('rate limit por usuário no /transcribe: 429 depois de 60 chamadas', async () => {
+    const token = await signup('tagarela@vozzai.com.br');
+    let got429 = false;
+    for (let i = 0; i < 61; i++) {
+      const { status } = await post(
+        '/transcribe',
+        { audio: 'QUFBQQ==' },
+        { authorization: `Bearer ${token}` },
+      );
+      if (i < 60) expect(status).not.toBe(429);
+      else got429 = status === 429;
+    }
+    expect(got429).toBe(true);
+  });
+
+  it('webhook MP exige assinatura válida quando o secret está configurado', async () => {
+    process.env.MP_WEBHOOK_SECRET = 'segredo-mp-teste';
+    try {
+      const semAssinatura = await post('/webhooks/mercadopago', { data: { id: '123' } });
+      expect(semAssinatura.status).toBe(401);
+
+      const { createHmac } = await import('node:crypto');
+      const ts = '1742505638683';
+      const requestId = 'req-teste';
+      const manifest = `id:123;request-id:${requestId};ts:${ts};`;
+      const v1 = createHmac('sha256', 'segredo-mp-teste').update(manifest).digest('hex');
+      const assinado = await post(
+        '/webhooks/mercadopago',
+        { data: { id: '123' }, type: 'ignorar' },
+        { 'x-signature': `ts=${ts},v1=${v1}`, 'x-request-id': requestId },
+      );
+      expect(assinado.status).toBe(200);
+    } finally {
+      delete process.env.MP_WEBHOOK_SECRET;
+    }
+  });
+
+  it('webhook MP continua aberto sem secret (comportamento atual preservado)', async () => {
+    delete process.env.MP_WEBHOOK_SECRET;
+    const { status } = await post('/webhooks/mercadopago', { data: {} });
+    expect(status).toBe(200);
+  });
+});
+
 describe('webhook Asaas', () => {
   it('rejeita sem o token configurado, ignora ainda-não-pago, ativa Pro quando confirma', async () => {
     process.env.ASAAS_WEBHOOK_TOKEN = 'segredo-de-teste';

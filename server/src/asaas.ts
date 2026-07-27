@@ -4,6 +4,8 @@
  * mercadopago.ts). O checkout já pede o CPF do pagador na própria página
  * deles; não precisamos coletar isso no cadastro.
  */
+import { createHash, timingSafeEqual } from 'node:crypto';
+
 const PRICE_BRL = 29.9;
 
 function token(): string {
@@ -89,7 +91,13 @@ const PAID_STATUSES = new Set(['CONFIRMED', 'RECEIVED']);
 /** Compara o header asaas-access-token com o token que a gente mesmo configurou no painel da Asaas. */
 export function isValidWebhookToken(receivedToken: string | undefined): boolean {
   const expected = process.env.ASAAS_WEBHOOK_TOKEN;
-  return Boolean(expected) && receivedToken === expected;
+  if (!expected || !receivedToken) return false;
+  // sha256 dos dois lados iguala o tamanho e permite comparação em tempo
+  // constante — um === vazaria, pelo tempo de resposta, quantos caracteres
+  // do token o atacante já acertou.
+  const a = createHash('sha256').update(receivedToken).digest();
+  const b = createHash('sha256').update(expected).digest();
+  return timingSafeEqual(a, b);
 }
 
 export async function syncFromWebhook(body: WebhookBody, pool: { query: Function }): Promise<void> {

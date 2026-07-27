@@ -3,6 +3,8 @@ import { countWords, planOf, PLANS } from '../src/quota';
 import { normalizeEmail, hashPassword, verifyPassword } from '../src/auth';
 import { isValidEmail } from '../src/validation';
 import { isValidWebhookToken } from '../src/asaas';
+import { isValidMpSignature, isMpSignatureCheckEnabled } from '../src/webhookSignature';
+import { createHmac } from 'node:crypto';
 import { MODES, resolveMode, publicModes, DEFAULT_MODE_ID } from '../src/modes';
 
 describe('quota', () => {
@@ -115,6 +117,46 @@ describe('VozzAI Modes', () => {
     for (const mode of Object.values(MODES)) {
       expect(serialized).not.toContain(mode.instruction.slice(0, 30));
     }
+  });
+});
+
+describe('assinatura de webhook do Mercado Pago', () => {
+  const secret = 'segredo-de-teste-mp';
+
+  function sign(dataId: string, requestId: string, ts: string): string {
+    const manifest = `id:${dataId.toLowerCase()};request-id:${requestId};ts:${ts};`;
+    return createHmac('sha256', secret).update(manifest).digest('hex');
+  }
+
+  it('fica desligada sem MP_WEBHOOK_SECRET', () => {
+    delete process.env.MP_WEBHOOK_SECRET;
+    expect(isMpSignatureCheckEnabled()).toBe(false);
+    expect(
+      isValidMpSignature({ xSignature: 'ts=1,v1=abc', xRequestId: 'r', dataId: 'd' }),
+    ).toBe(false); // sem secret, nada valida — o app nem chama neste caso
+  });
+
+  it('aceita assinatura correta e normaliza o data.id para minúsculas', () => {
+    const v1 = sign('ABC123', 'req-1', '1742505638683');
+    expect(
+      isValidMpSignature(
+        { xSignature: `ts=1742505638683,v1=${v1}`, xRequestId: 'req-1', dataId: 'ABC123' },
+        secret,
+      ),
+    ).toBe(true);
+  });
+
+  it('rejeita assinatura de outro secret, ts adulterado e headers ausentes', () => {
+    const v1 = sign('123', 'req-1', '111');
+    const ok = { xSignature: `ts=111,v1=${v1}`, xRequestId: 'req-1', dataId: '123' };
+    expect(isValidMpSignature(ok, secret)).toBe(true);
+
+    expect(isValidMpSignature(ok, 'outro-secret')).toBe(false);
+    expect(isValidMpSignature({ ...ok, xSignature: `ts=222,v1=${v1}` }, secret)).toBe(false);
+    expect(isValidMpSignature({ ...ok, xSignature: undefined }, secret)).toBe(false);
+    expect(isValidMpSignature({ ...ok, xRequestId: undefined }, secret)).toBe(false);
+    expect(isValidMpSignature({ ...ok, dataId: undefined }, secret)).toBe(false);
+    expect(isValidMpSignature({ ...ok, xSignature: 'sem-formato' }, secret)).toBe(false);
   });
 });
 
