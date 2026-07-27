@@ -19,6 +19,16 @@ export interface Mode {
   /** Sugestão de apps onde o modo brilha (associação automática é futura). */
   apps: string[];
   proOnly: boolean;
+  /**
+   * O que fazer com a preferência de tom da pessoa (Formal/Informal).
+   *
+   * Ausente = respeitar a escolha, que é o caso da maioria: e-mail formal e
+   * e-mail casual são os dois legítimos, e quem decide é quem escreve. Dois
+   * modos são exceção porque o registro faz parte da definição deles:
+   * 'none' na Transcrição fiel (que promete não trocar palavra nenhuma — mudar
+   * registro é exatamente trocar palavras) e 'always-formal' no Jurídico.
+   */
+  toneRule?: 'none' | 'always-formal';
   schemaVersion: 1;
 }
 
@@ -108,6 +118,7 @@ export const MODES: Record<string, Mode> = {
     example: 'Então, assim, ó: preciso mandar o relatório pro cliente ainda hoje, sem falta.',
     apps: [],
     proOnly: false,
+    toneRule: 'none',
   },
   atendimento: {
     ...V,
@@ -145,6 +156,7 @@ export const MODES: Record<string, Mode> = {
     example: 'Requer-se a juntada do comprovante de pagamento, nos termos do art. 434 do CPC.',
     apps: ['Word'],
     proOnly: true,
+    toneRule: 'always-formal',
   },
   dev: {
     ...V,

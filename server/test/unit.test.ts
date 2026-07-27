@@ -171,6 +171,65 @@ describe('VozzAI Modes', () => {
   });
 });
 
+describe('tom (Formal/Informal) por modo', () => {
+  /** Roda cleanup() com fetch mockado e devolve o prompt que a OpenAI receberia. */
+  async function promptFor(modeId: string, tone: string): Promise<string> {
+    let captured = '';
+    vi.stubGlobal('fetch', async (_url: string, init: { body: string }) => {
+      captured = JSON.parse(init.body).messages[0].content;
+      return { ok: true, json: async () => ({ choices: [{ message: { content: 'ok' } }] }) };
+    });
+    await cleanup('e aí cara, beleza', tone, MODES[modeId]);
+    vi.unstubAllGlobals();
+    return captured;
+  }
+
+  // O seletor de Tom existia desde antes dos modos e, por um descuido meu,
+  // só valia no Padrão — nos outros nove era silenciosamente ignorado.
+  // Botão que não faz nada é pior que botão ausente.
+  it('a escolha da pessoa chega em todo modo que a respeita', async () => {
+    const respeitam = Object.values(MODES).filter((m) => !m.toneRule);
+    expect(respeitam.length).toBeGreaterThan(5);
+
+    for (const mode of respeitam) {
+      expect(await promptFor(mode.id, 'formal')).toContain('REGISTRO FORMAL');
+      expect(await promptFor(mode.id, 'informal')).toContain('REGISTRO INFORMAL');
+    }
+  });
+
+  it('Transcrição fiel ignora o tom, Jurídico é sempre formal', async () => {
+    expect(await promptFor('fiel', 'formal')).not.toContain('REGISTRO');
+    expect(await promptFor('fiel', 'informal')).not.toContain('REGISTRO');
+
+    expect(await promptFor('juridico', 'informal')).toContain('REGISTRO FORMAL');
+    expect(await promptFor('juridico', 'formal')).toContain('REGISTRO FORMAL');
+  });
+
+  it('o tom nunca dita formato — quem manda nisso é o modo', async () => {
+    // A versão antiga do texto de tom mandava "mesmo tamanho do texto original"
+    // e proibia saudação, o que brigava com E-mail e Objetivo. Se alguém
+    // reintroduzir regra de forma aqui, o tom volta a só servir pro Padrão.
+    for (const tone of ['formal', 'informal']) {
+      const prompt = await promptFor('email', tone);
+      // Só o pedaço do tom: dali em diante vêm as REGRAS ABSOLUTAS, que
+      // falam de saudação de propósito e não são assunto deste teste.
+      const trecho = prompt.slice(prompt.indexOf('REGISTRO'), prompt.indexOf('REGRAS ABSOLUTAS'));
+      expect(trecho.length).toBeGreaterThan(50);
+      expect(trecho).not.toMatch(/mesmo tamanho|parágrafo|saudação|despedida/i);
+    }
+  });
+
+  it('as exceções de tom são só Fiel e Jurídico (a tela do app diz isso)', () => {
+    // src/renderer/settings.html promete ao usuário, por escrito, que o Tom
+    // vale em tudo menos nesses dois. Mudou aqui, muda lá.
+    const excecoes = Object.values(MODES)
+      .filter((m) => m.toneRule)
+      .map((m) => m.id)
+      .sort();
+    expect(excecoes).toEqual(['fiel', 'juridico']);
+  });
+});
+
 describe('e-mails transacionais (Resend)', () => {
   afterEach(() => {
     delete process.env.RESEND_API_KEY;

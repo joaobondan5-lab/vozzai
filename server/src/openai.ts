@@ -40,22 +40,41 @@ export async function transcribe(
   return { text: data.text, seconds: data.usage?.seconds ?? 0 };
 }
 
+/**
+ * Tom = registro (escolha de palavras), nunca formato.
+ *
+ * A distinção importa porque o tom agora acompanha QUALQUER modo, e o modo é
+ * quem manda no formato. Se o texto de tom disser algo sobre tamanho, estrutura
+ * ou saudação, ele briga com o modo — foi assim que a versão anterior, escrita
+ * pensando só no Padrão, ficou presa a ele.
+ */
 const TONE_INSTRUCTIONS: Record<string, string> = {
-  informal: 'Mantenha um tom natural e conversacional, como a pessoa realmente falou.',
+  informal:
+    'REGISTRO INFORMAL: preserve o vocabulário do dia a dia e o jeito de falar da pessoa. ' +
+    'Não troque palavras simples por palavras rebuscadas nem engesse o texto.',
   formal:
-    'Troque só as gírias e expressões muito casuais ("cara", "tipo", "beleza?", "e aí") por palavras mais neutras, mantendo exatamente as mesmas frases, na mesma ordem, sem tirar nem adicionar conteúdo. Isto NÃO é uma carta nem um e-mail: é proibido escrever "Prezado", "Atenciosamente", qualquer saudação, despedida ou placeholder como "[Nome]". A saída deve ter o mesmo tamanho do texto original, só com palavras mais formais.',
+    'REGISTRO FORMAL: troque gírias e expressões muito casuais ("cara", "tipo", "beleza?", "e aí", ' +
+    '"pra", "tá") por equivalentes neutros, e prefira "você" a "tu"/"cê". Isso muda apenas a escolha ' +
+    'das palavras — o formato continua sendo o que foi pedido acima, com o mesmo conteúdo e sem ' +
+    'ficar mais longo.',
 };
+
+/**
+ * Junta a preferência da pessoa com a regra do modo. Ver `Mode.toneRule`:
+ * a maioria respeita a escolha, Fiel ignora, Jurídico é sempre formal.
+ */
+function toneInstructionFor(mode: Mode, tone: string): string {
+  if (mode.toneRule === 'none') return '';
+  const key = mode.toneRule === 'always-formal' ? 'formal' : tone;
+  return ` ${TONE_INSTRUCTIONS[key] ?? TONE_INSTRUCTIONS.informal}`;
+}
 
 export async function cleanup(rawText: string, tone = 'informal', mode?: Mode): Promise<string> {
   if (!rawText.trim()) return rawText;
 
-  const base = mode?.instruction ?? MODES[DEFAULT_MODE_ID].instruction;
-  // A preferência de tom só entra no modo Padrão — os outros modos já
-  // definem o próprio tom (WhatsApp informal, Jurídico formal, etc.).
-  const toneInstruction =
-    !mode || mode.id === DEFAULT_MODE_ID
-      ? ` ${TONE_INSTRUCTIONS[tone] ?? TONE_INSTRUCTIONS.informal}`
-      : '';
+  const active = mode ?? MODES[DEFAULT_MODE_ID];
+  const base = active.instruction;
+  const toneInstruction = toneInstructionFor(active, tone);
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
