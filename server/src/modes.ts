@@ -75,7 +75,7 @@ export const MODES: Record<string, Mode> = {
     description: 'Mensagem natural e curta, com a sua personalidade.',
     instruction:
       'Transforme o ditado em mensagem de WhatsApp natural: frases curtas, parágrafos de uma ou duas linhas, ' +
-      'o jeito de falar da própria pessoa preservado. Não adicione formalidade artificial nem emojis que a ' +
+      'o jeito de falar da própria pessoa preservado. Não engesse o texto nem acrescente emojis que a ' +
       'pessoa não ditou. Comece direto pelo conteúdo — só cumprimente se ela tiver cumprimentado.',
     example: 'Oi! Vi o orçamento e podemos seguir. Me manda a versão final hoje?',
     apps: ['WhatsApp'],
