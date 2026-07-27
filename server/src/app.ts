@@ -18,7 +18,7 @@ import { sendWelcomeEmail } from './email';
 import { addToWaitlist, pool } from './db';
 import { isRateLimited } from './rateLimit';
 import { isValidEmail } from './validation';
-import { requireAdmin, collectMetrics, ADMIN_PAGE } from './admin';
+import { requireAdmin, collectMetrics, collectLeads, ADMIN_PAGE } from './admin';
 
 // O app fica separado do entrypoint (index.ts) para os testes montarem as
 // rotas em memória sem abrir porta nem preparar o schema.
@@ -326,6 +326,19 @@ app.get(
   asyncRoute(async (req, res) => {
     if (!requireAdmin(req, res)) return;
     res.json(await collectMetrics());
+  }),
+);
+
+/**
+ * Lista de contatos para outreach — a ÚNICA rota que expõe e-mails de
+ * propósito. Separada de /admin/metrics para a fronteira de PII ficar
+ * explícita e testável (métricas nunca vazam e-mail; leads sempre têm).
+ */
+app.get(
+  '/admin/leads',
+  asyncRoute(async (req, res) => {
+    if (!requireAdmin(req, res)) return;
+    res.json(await collectLeads());
   }),
 );
 

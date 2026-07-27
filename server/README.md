@@ -122,11 +122,16 @@ testes montam em memória); `src/index.ts` é só o entrypoint de produção.
 
 ## Painel /admin
 
-Métricas agregadas do negócio (MRR estimado, assinantes, cadastros, uso,
-lista de espera) em `GET /admin` — pede o `ADMIN_TOKEN` na primeira visita e
-guarda no navegador. A resposta nunca inclui e-mail, texto ditado ou qualquer
-dado individual, só contagens. Sem `ADMIN_TOKEN` no ambiente o painel inteiro
-responde 503.
+Duas abas em `GET /admin` (pede o `ADMIN_TOKEN` na primeira visita e guarda
+no navegador; sem a variável no ambiente, tudo responde 503):
+
+- **Métricas** (`/admin/metrics`) — só agregados: MRR estimado, assinantes,
+  cadastros, uso, lista de espera. Nunca inclui e-mail nem dado individual
+  (tem teste garantindo).
+- **Leads** (`/admin/leads`) — a ÚNICA rota que expõe e-mails, de propósito:
+  contas (plano, cadastro, último ditado, palavras 30d) e lista de espera,
+  com botão de copiar os e-mails para outreach. A fronteira é deliberada:
+  quem quer números não precisa ver PII.
 
 ## Dois provedores de pagamento (por enquanto)
 

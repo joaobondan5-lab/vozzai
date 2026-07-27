@@ -215,6 +215,35 @@ describe('admin', () => {
     expect(res.status).toBe(200);
     expect(await res.text()).toContain('VozzAI — Métricas');
   });
+
+  it('/admin/leads exige o token igual às métricas', async () => {
+    expect((await get('/admin/leads')).status).toBe(401);
+    expect((await get('/admin/leads', { 'x-admin-token': 'errado' })).status).toBe(401);
+  });
+
+  it('/admin/leads lista contas e lista de espera com e-mail — a única rota com PII', async () => {
+    await signup('lead-conta@vozzai.com.br');
+    await pool.query(`UPDATE users SET plan = 'pro' WHERE email = 'lead-conta@vozzai.com.br'`);
+    await pool.query(`INSERT INTO usage (user_id, seconds, words) VALUES (1, 30, 420)`);
+    await post('/waitlist', { email: 'lead-espera@vozzai.com.br' });
+
+    const { status, data } = await get('/admin/leads', {
+      'x-admin-token': process.env.ADMIN_TOKEN as string,
+    });
+    expect(status).toBe(200);
+
+    expect(data.users).toHaveLength(1);
+    expect(data.users[0]).toMatchObject({
+      email: 'lead-conta@vozzai.com.br',
+      plan: 'pro',
+      words30d: 420,
+    });
+    expect(data.users[0].createdAt).toBeTruthy();
+    expect(data.users[0].lastDictationAt).toBeTruthy();
+
+    expect(data.waitlist).toHaveLength(1);
+    expect(data.waitlist[0].email).toBe('lead-espera@vozzai.com.br');
+  });
 });
 
 describe('modes', () => {
