@@ -7,6 +7,7 @@ import { isValidWebhookToken } from '../src/asaas';
 import { isValidMpSignature, isMpSignatureCheckEnabled } from '../src/webhookSignature';
 import { createHmac } from 'node:crypto';
 import { MODES, resolveMode, publicModes, DEFAULT_MODE_ID } from '../src/modes';
+import { cleanup } from '../src/openai';
 import { BILLING_PLANS, resolveBillingCycle } from '../src/mercadopago';
 
 describe('quota', () => {
@@ -141,6 +142,31 @@ describe('VozzAI Modes', () => {
     expect(serialized).not.toContain('instruction');
     for (const mode of Object.values(MODES)) {
       expect(serialized).not.toContain(mode.instruction.slice(0, 30));
+    }
+  });
+
+  // Um teste com áudio real pegou o modo E-mail devolvendo "[Seu Nome]" e o
+  // WhatsApp inventando "Oi, tudo bem?". Ditado que volta com lacuna pra
+  // preencher quebra a promessa do produto, então a regra que proíbe isso
+  // precisa alcançar TODO modo — inclusive os que ainda vão ser criados.
+  it('todo modo recebe as regras contra placeholder e invenção', async () => {
+    const prompts: string[] = [];
+    vi.stubGlobal('fetch', async (_url: string, init: { body: string }) => {
+      prompts.push(JSON.parse(init.body).messages[0].content);
+      return { ok: true, json: async () => ({ choices: [{ message: { content: 'ok' } }] }) };
+    });
+
+    for (const mode of Object.values(MODES)) {
+      await cleanup('texto ditado qualquer', 'informal', mode);
+    }
+    await cleanup('texto ditado qualquer'); // sem modo: cai no Padrão
+    vi.unstubAllGlobals();
+
+    expect(prompts).toHaveLength(Object.keys(MODES).length + 1);
+    for (const prompt of prompts) {
+      expect(prompt).toContain('[Seu Nome]');   // citado como proibição, não como modelo
+      expect(prompt).toContain('PROIBIDO usar placeholder');
+      expect(prompt).toContain('Não invente saudação');
     }
   });
 });

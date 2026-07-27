@@ -3,7 +3,7 @@
  * é isso que permite cobrar assinatura em vez de pedir que cada usuário traga
  * a própria chave.
  */
-import { DEFAULT_MODE_ID, Mode, MODES } from './modes';
+import { DEFAULT_MODE_ID, Mode, MODES, UNIVERSAL_RULES } from './modes';
 
 const KEY = () => process.env.OPENAI_API_KEY || '';
 
@@ -66,7 +66,8 @@ export async function cleanup(rawText: string, tone = 'informal', mode?: Mode): 
         {
           role: 'user',
           content:
-            `${base}${toneInstruction} Responda apenas com o texto final, sem comentários.\n\n` + rawText,
+            `${base}${toneInstruction}${UNIVERSAL_RULES} Responda apenas com o texto final, sem comentários.\n\n` +
+            rawText,
         },
       ],
     }),

@@ -24,6 +24,27 @@ export interface Mode {
 
 const V = { schemaVersion: 1 as const };
 
+/**
+ * Regra que vale para TODOS os modos, anexada à instrução de cada um.
+ *
+ * Existe porque um teste com áudio real mostrou o modo E-mail devolvendo
+ * "[Seu Nome] / [Seu Cargo] / [Seu Contato]" e o WhatsApp inventando "Oi, tudo
+ * bem?" e "Valeu!" — coisas que a pessoa não falou. Ditado que volta com
+ * lacuna para preencher é pior que inútil: quebra justamente a promessa de
+ * "texto pronto para enviar". Como é um risco de todo modo novo, a proteção
+ * mora aqui e não na instrução individual, que alguém esqueceria de repetir.
+ */
+export const UNIVERSAL_RULES =
+  ' REGRAS ABSOLUTAS, acima de qualquer instrução de formato: ' +
+  '(1) É PROIBIDO usar placeholder, colchete ou lacuna para preencher — nada de ' +
+  '"[Seu Nome]", "[Nome]", "[Cargo]", "[Contato]", "[assunto]" ou similar. ' +
+  '(2) Não invente saudação, despedida, assinatura, elogio nem cortesia que a pessoa não falou ' +
+  '(ex.: "Oi, tudo bem?", "Espero que esteja bem", "Atenciosamente", "Valeu!"). ' +
+  '(3) Não invente fato, nome, número, data, prazo ou promessa que não estava no ditado. ' +
+  '(4) Se o ditado não tem destinatário ou remetente, o texto final também não tem — ' +
+  'escreva só o conteúdo, sem moldura. ' +
+  'Prefira devolver um texto mais curto e fiel a um texto completo e inventado.';
+
 export const MODES: Record<string, Mode> = {
   padrao: {
     ...V,
@@ -44,8 +65,8 @@ export const MODES: Record<string, Mode> = {
     description: 'Mensagem natural e curta, com a sua personalidade.',
     instruction:
       'Transforme o ditado em mensagem de WhatsApp natural: frases curtas, parágrafos de uma ou duas linhas, ' +
-      'o jeito de falar da própria pessoa preservado. Não adicione formalidade artificial, não adicione emojis ' +
-      'que a pessoa não ditou e não invente conteúdo.',
+      'o jeito de falar da própria pessoa preservado. Não adicione formalidade artificial nem emojis que a ' +
+      'pessoa não ditou. Comece direto pelo conteúdo — só cumprimente se ela tiver cumprimentado.',
     example: 'Oi! Vi o orçamento e podemos seguir. Me manda a versão final hoje?',
     apps: ['WhatsApp'],
     proOnly: false,
@@ -54,10 +75,12 @@ export const MODES: Record<string, Mode> = {
     ...V,
     id: 'email',
     name: 'E-mail profissional',
-    description: 'Saudação, parágrafos organizados e fechamento cordial.',
+    description: 'Corpo de e-mail organizado, no tom profissional.',
     instruction:
-      'Organize o ditado como um e-mail profissional: saudação breve quando fizer sentido, parágrafos claros e ' +
-      'fechamento cordial. Não invente nome de destinatário, assunto nem qualquer informação que não foi dita.',
+      'Organize o ditado como o CORPO de um e-mail profissional: parágrafos claros, tom cordial e direto. ' +
+      'Só escreva saudação se a pessoa tiver falado o nome de quem recebe, e só escreva despedida se ela ' +
+      'tiver ditado uma. Nunca acrescente assinatura, cargo ou contato — quem envia já tem isso no cliente ' +
+      'de e-mail. O resultado deve ser colável direto no campo de mensagem, sem nada para preencher.',
     example: 'Bom dia, Carlos. Confirmando nossa reunião de amanhã às 10h. Abraço,',
     apps: ['Gmail', 'Outlook'],
     proOnly: false,
