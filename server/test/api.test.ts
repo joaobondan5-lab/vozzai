@@ -216,6 +216,38 @@ describe('admin', () => {
   });
 });
 
+describe('webhook Asaas', () => {
+  it('rejeita sem o token configurado, ignora ainda-não-pago, ativa Pro quando confirma', async () => {
+    process.env.ASAAS_WEBHOOK_TOKEN = 'segredo-de-teste';
+    const token = await signup('assinante-pix@vozzai.com.br');
+
+    const semToken = await fetch(`${base}/webhooks/asaas`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ event: 'PAYMENT_RECEIVED', payment: { id: 'pay_1', status: 'RECEIVED', externalReference: '1' } }),
+    });
+    expect(semToken.status).toBe(401);
+
+    await fetch(`${base}/webhooks/asaas`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'asaas-access-token': 'segredo-de-teste' },
+      body: JSON.stringify({ event: 'PAYMENT_CREATED', payment: { id: 'pay_1', status: 'PENDING', externalReference: '1' } }),
+    });
+    let me = await get('/me', { authorization: `Bearer ${token}` });
+    expect(me.data.plan).toBe('free'); // pendente não vira pro
+
+    await fetch(`${base}/webhooks/asaas`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'asaas-access-token': 'segredo-de-teste' },
+      body: JSON.stringify({ event: 'PAYMENT_RECEIVED', payment: { id: 'pay_1', status: 'RECEIVED', externalReference: '1' } }),
+    });
+    me = await get('/me', { authorization: `Bearer ${token}` });
+    expect(me.data.plan).toBe('pro');
+
+    delete process.env.ASAAS_WEBHOOK_TOKEN;
+  });
+});
+
 describe('billing', () => {
   it.skipIf(!process.env.MP_ACCESS_TOKEN)(
     'cria assinatura no sandbox e devolve link de checkout',

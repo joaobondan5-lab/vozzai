@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { countWords, planOf, PLANS } from '../src/quota';
 import { normalizeEmail, hashPassword, verifyPassword } from '../src/auth';
 import { isValidEmail } from '../src/validation';
+import { isValidWebhookToken } from '../src/asaas';
 
 describe('quota', () => {
   it('countWords conta palavras separadas por espaços', () => {
@@ -64,5 +65,24 @@ describe('isValidEmail', () => {
     expect(isValidEmail('')).toBe(false);
     expect(isValidEmail(undefined)).toBe(false);
     expect(isValidEmail(123)).toBe(false);
+  });
+});
+
+describe('isValidWebhookToken (Asaas)', () => {
+  afterEach(() => {
+    delete process.env.ASAAS_WEBHOOK_TOKEN;
+  });
+
+  it('nunca aceita nada sem ASAAS_WEBHOOK_TOKEN configurado', () => {
+    delete process.env.ASAAS_WEBHOOK_TOKEN;
+    expect(isValidWebhookToken('qualquer-coisa')).toBe(false);
+    expect(isValidWebhookToken(undefined)).toBe(false);
+  });
+
+  it('só aceita o valor exato configurado', () => {
+    process.env.ASAAS_WEBHOOK_TOKEN = 'segredo-do-webhook';
+    expect(isValidWebhookToken('segredo-do-webhook')).toBe(true);
+    expect(isValidWebhookToken('segredo-errado')).toBe(false);
+    expect(isValidWebhookToken(undefined)).toBe(false);
   });
 });

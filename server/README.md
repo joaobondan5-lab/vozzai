@@ -48,8 +48,10 @@ Modelo completo em `.env.example`.
 | `PATCH /me` | Atualiza `tone` (formal/informal) e `dictionary` (até 2.000 chars). |
 | `POST /transcribe` | Recebe áudio em base64, aplica a cota e devolve o texto pronto. |
 | `POST /waitlist` | Guarda e-mail de quem ainda não tem Mac. |
-| `POST /billing/subscribe` | Cria a assinatura no Mercado Pago e devolve o link de checkout. |
-| `POST /webhooks/mercadopago` | Recebe avisos de assinatura e atualiza o plano. |
+| `POST /billing/subscribe` | Cria a assinatura no Mercado Pago (cartão) e devolve o link de checkout. |
+| `POST /billing/subscribe/pix` | Cria o checkout na Asaas (Pix automático + cartão) e devolve o link. |
+| `POST /webhooks/mercadopago` | Recebe avisos de assinatura do Mercado Pago e atualiza o plano. |
+| `POST /webhooks/asaas` | Recebe avisos de pagamento da Asaas (header `asaas-access-token`) e atualiza o plano. |
 | `GET /admin` | Painel de métricas (pede o `ADMIN_TOKEN` na primeira visita). |
 | `GET /admin/metrics` | JSON com agregados do negócio — exige header `x-admin-token`. |
 
@@ -103,7 +105,16 @@ guarda no navegador. A resposta nunca inclui e-mail, texto ditado ou qualquer
 dado individual, só contagens. Sem `ADMIN_TOKEN` no ambiente o painel inteiro
 responde 503.
 
+## Dois provedores de pagamento (por enquanto)
+
+O Mercado Pago (`/billing/subscribe`) só oferece cartão pra esta conta — Pix
+automático ainda não foi liberado por eles. A Asaas (`/billing/subscribe/pix`)
+já suporta Pix automático via checkout hospedado, então está em avaliação ao
+lado do Mercado Pago, não no lugar dele. Depois de validar em produção, um dos
+dois deve virar o único (ter dois é dívida técnica, não destino final).
+
 ## O que ainda falta
 
 - Sem recuperação de senha, sem verificação de e-mail.
 - Rate limit em memória (uma instância só); Redis se um dia escalar.
+- Integração com a Asaas só foi testada em sandbox, nunca contra a API real.

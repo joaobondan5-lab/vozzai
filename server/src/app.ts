@@ -11,7 +11,8 @@ import {
 import { usageFor, recordUsage, countWords, PLANS, planOf } from './quota';
 import { transcribe, cleanup } from './openai';
 import { syncSubscription, createSubscription } from './mercadopago';
-import { addToWaitlist } from './db';
+import { createCheckout, isValidWebhookToken, syncFromWebhook } from './asaas';
+import { addToWaitlist, pool } from './db';
 import { isRateLimited } from './rateLimit';
 import { isValidEmail } from './validation';
 import { requireAdmin, collectMetrics, ADMIN_PAGE } from './admin';
@@ -212,6 +213,40 @@ app.post(
       console.error('[vozza] erro ao criar assinatura:', err);
       res.status(502).json({ error: 'Não consegui iniciar a assinatura agora. Tente de novo.' });
     }
+  }),
+);
+
+/**
+ * Cria a assinatura Pro via checkout hospedado da Asaas (Pix automático +
+ * cartão). Em avaliação ao lado do Mercado Pago — ver server/README.md.
+ */
+app.post(
+  '/billing/subscribe/pix',
+  asyncRoute(async (req, res) => {
+    const user = await requireUser(req, res);
+    if (!user) return;
+
+    try {
+      const checkoutUrl = await createCheckout(user.id, user.email);
+      res.json({ checkoutUrl });
+    } catch (err) {
+      console.error('[vozza] erro ao criar checkout Asaas:', err);
+      res.status(502).json({ error: 'Não consegui iniciar a assinatura agora. Tente de novo.' });
+    }
+  }),
+);
+
+/** Asaas avisa aqui quando um pagamento muda de status. Autenticado por token estático. */
+app.post(
+  '/webhooks/asaas',
+  asyncRoute(async (req, res) => {
+    if (!isValidWebhookToken(req.header('asaas-access-token'))) {
+      return void res.sendStatus(401);
+    }
+    res.status(200).json({ received: true }); // responde rápido; processa depois
+    syncFromWebhook(req.body, pool).catch((err) => {
+      console.error('[vozza] webhook Asaas falhou:', err);
+    });
   }),
 );
 
