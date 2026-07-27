@@ -8,3 +8,7 @@ release/
 *.log
 .DS_Store
 .claude/
+
+# Inventário operacional: mesmo sem segredos, lista contas e infraestrutura.
+# Fica local e no seu backup, não no repositório.
+docs/vozzai-inventario.xlsx
