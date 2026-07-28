@@ -14,6 +14,11 @@ export interface HistoryEntry {
   words: number;
   /** true = colado no cursor; false = ficou só na área de transferência */
   inserted: boolean;
+  /**
+   * Transcrição antes da limpeza. Opcional porque ditados gravados antes
+   * desta versão não têm — a interface precisa aguentar a ausência.
+   */
+  raw?: string;
 }
 
 const MAX_ENTRIES = 50;
@@ -36,13 +41,16 @@ export class HistoryStore {
     fs.writeFileSync(this.file, JSON.stringify(entries, null, 2), 'utf-8');
   }
 
-  add(text: string, words: number, inserted: boolean): HistoryEntry {
+  add(text: string, words: number, inserted: boolean, raw?: string): HistoryEntry {
     const entry: HistoryEntry = {
       id: randomUUID(),
       text,
       createdAt: new Date().toISOString(),
       words,
       inserted,
+      // Só guarda o original quando ele diz algo que o texto final não diz.
+      // Iguais, seria o mesmo texto duas vezes em disco à toa.
+      ...(raw && raw.trim() !== text.trim() ? { raw } : {}),
     };
     const entries = [entry, ...this.read()].slice(0, MAX_ENTRIES);
     this.write(entries);

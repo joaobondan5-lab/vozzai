@@ -29,6 +29,7 @@ import { pasteAtCursor } from './paste';
 import { DictationMachine } from './state';
 import { HistoryStore } from './history';
 import { CLIENT_MODES } from './modes';
+import { initOverlay, syncOverlay, setOverlayLevel, showOverlayDiff, destroyOverlay } from './overlay';
 
 let config: VozzaConfig;
 let recorderWindow: BrowserWindow | null = null;
@@ -42,6 +43,8 @@ let history: HistoryStore;
 
 /** Última transcrição em memória — existe mesmo com o histórico desativado. */
 let lastTranscription: string | null = null;
+/** Original do último ditado, quando a limpeza mudou alguma coisa. */
+let lastRaw: string | null = null;
 /** Áudio do último ditado que falhou por rede/servidor, guardado só em memória para "tentar de novo". */
 let pendingAudio: string | null = null;
 /** Índice do último aviso de cota mostrado (0 = nenhum), para não repetir a cada ditado. */
@@ -200,6 +203,11 @@ function updateTray(): void {
     },
     { type: 'separator' },
     { label: 'Copiar última transcrição', enabled: Boolean(lastTranscription), click: copyLast },
+    {
+      label: 'Copiar original (sem edição)',
+      enabled: Boolean(lastRaw),
+      click: copyLastRaw,
+    },
     { label: 'Inserir última de novo', enabled: Boolean(lastTranscription), click: insertLastAgain },
     { label: 'Histórico…', click: openHistory },
     { type: 'separator' },
@@ -310,15 +318,21 @@ async function handleAudio(audioBase64: string): Promise<void> {
   }
 
   const text = result.text || '';
+  const raw = (result.raw || '').trim();
   machine.to('inserting');
   updateTray();
 
   lastTranscription = text;
+  lastRaw = raw && raw !== text.trim() ? raw : null;
   const pasteResult = await pasteAtCursor(text);
   if (config.historyEnabled) {
-    history.add(text, countWords(text), pasteResult === 'pasted');
+    history.add(text, countWords(text), pasteResult === 'pasted', raw);
     historyWindow?.webContents.send('history-changed');
   }
+  // O painel mostra o antes → depois no fim: é a única hora em que a pessoa
+  // vê o que o VozzAI fez por ela — e a única chance de ela perceber, na
+  // hora, se a limpeza mudou o sentido de alguma coisa.
+  showOverlayDiff(lastRaw, text);
   if (pasteResult === 'clipboard-only') {
     // Sinal importante: a transcrição funcionou, mas o texto não entrou no
     // app de destino. É o tipo de falha que o usuário sente e não reporta.
@@ -367,6 +381,16 @@ function copyLast(): void {
   notify('VozzAI', 'Última transcrição copiada.');
 }
 
+/**
+ * Copia a transcrição crua. Existe para os casos em que o original é que
+ * vale: citação literal, ata, "foi exatamente isso que ele disse".
+ */
+function copyLastRaw(): void {
+  if (!lastRaw) return;
+  clipboard.writeText(lastRaw);
+  notify('VozzAI', 'Original copiado — sem nenhuma edição.');
+}
+
 function insertLastAgain(): void {
   const text = lastTranscription;
   if (!text) return;
@@ -399,13 +423,15 @@ app.whenReady().then(() => {
   history = new HistoryStore(path.join(app.getPath('userData'), 'vozza-history.json'));
 
   createRecorderWindow();
+  initOverlay(); // carrega o painel escondido: o 1º ditado não espera nada
 
   tray = new Tray(nativeImage.createEmpty());
   tray.setToolTip('VozzAI — ditado por voz');
 
-  machine.onChange(() => {
+  machine.onChange((state) => {
     syncEscapeShortcut();
     updateTray();
+    syncOverlay(state); // painel flutuante: o retorno visual que a bandeja não dá
   });
   updateTray();
 
@@ -573,12 +599,19 @@ app.whenReady().then(() => {
     notify('VozzAI — erro ao gravar', message);
   });
 
+  ipcMain.on('mic-level', (_event, level: number) => {
+    setOverlayLevel(typeof level === 'number' ? level : 0);
+  });
+
   ipcMain.on('audio-recorded', (_event, audioBase64: string) => {
     // A máquina já está em 'processing' (stopAndProcess) — aqui só processa.
     void handleAudio(audioBase64);
   });
 });
 
-app.on('will-quit', () => globalShortcut.unregisterAll());
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
+  destroyOverlay();
+});
 // Mantém o app vivo na barra de menu mesmo sem janelas abertas.
 app.on('window-all-closed', () => {});

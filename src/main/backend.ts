@@ -133,6 +133,8 @@ export function trackEvent(
 
 export interface TranscribeResult {
   text?: string;
+  /** Transcrição antes da limpeza — alimenta o "antes → depois". */
+  raw?: string;
   error?: string;
   /** true = erro de rede/servidor; vale a pena tentar de novo com o mesmo áudio. */
   retryable?: boolean;
@@ -159,12 +161,17 @@ export async function transcribeViaBackend(
     return { error: (err as Error).message, retryable: true };
   }
 
-  const data = (await res.json()) as { text?: string; error?: string; usage?: UsageStatus };
+  const data = (await res.json()) as {
+    text?: string;
+    raw?: string;
+    error?: string;
+    usage?: UsageStatus;
+  };
   if (res.status === 402) {
     return { error: data.error || 'Você atingiu o limite do plano.', quotaExceeded: true, usage: data.usage };
   }
   if (!res.ok) {
     return { error: data.error || 'Não consegui transcrever agora.', retryable: res.status >= 500 };
   }
-  return { text: data.text, usage: data.usage };
+  return { text: data.text, raw: data.raw, usage: data.usage };
 }

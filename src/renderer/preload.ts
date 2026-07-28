@@ -5,5 +5,7 @@ contextBridge.exposeInMainWorld('vozza', {
   onStop: (cb: () => void) => ipcRenderer.on('stop-recording', cb),
   onCancel: (cb: () => void) => ipcRenderer.on('cancel-recording', cb),
   sendAudio: (base64: string) => ipcRenderer.send('audio-recorded', base64),
+  /** Volume do microfone, 0…1 — alimenta as barras do painel. Nunca áudio. */
+  sendLevel: (level: number) => ipcRenderer.send('mic-level', level),
   reportError: (message: string) => ipcRenderer.send('recording-error', message),
 });

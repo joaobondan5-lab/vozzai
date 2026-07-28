@@ -282,7 +282,14 @@ app.post(
       const finalText = await cleanup(text, user.tone, resolution.mode);
       const words = countWords(finalText);
       await recordUsage(user.id, seconds, words);
-      res.json({ text: finalText, usage: await usageFor(user.id, user.plan) });
+      // `raw` é a transcrição antes da limpeza. Volta pro cliente por três
+      // motivos: mostra à pessoa o que o VozzAI fez por ela (o valor é
+      // invisível quando só se vê o resultado), deixa ela pegar o original
+      // quando é o original que importa (citação, ata), e — o que mais
+      // importa — expõe na hora quando a limpeza mudou o sentido, em vez de
+      // o erro sair silencioso. Não é dado novo: é o texto dela, que já
+      // estava aqui e era descartado.
+      res.json({ text: finalText, raw: text, usage: await usageFor(user.id, user.plan) });
       void track('dictation_ok', {
         userId: user.id,
         props: { mode: resolution.mode.id, words_bucket: wordsBucket(words) },

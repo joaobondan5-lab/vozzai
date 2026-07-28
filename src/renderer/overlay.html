@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>VozzAI</title>
+<style>
+  /* A janela é transparente: só a "pílula" abaixo é visível. Nada de fundo
+     no html/body, senão aparece um retângulo preto por cima do app do usuário. */
+  html, body {
+    margin: 0; padding: 0; background: transparent; overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+    -webkit-user-select: none; cursor: default;
+  }
+
+  .pill {
+    margin: 8px; padding: 14px 18px 12px;
+    border-radius: 18px;
+    background: rgba(22, 22, 26, 0.86);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+    color: #fff;
+    opacity: 0; transform: translateY(8px) scale(0.97);
+    transition: opacity .18s ease, transform .18s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .pill.on { opacity: 1; transform: none; }
+
+  .top { display: flex; align-items: center; gap: 9px; }
+
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #ff453a; flex: none; }
+  /* O pulso é o sinal de "vivo agora" — some fora do estado de gravação,
+     senão vira enfeite e para de significar alguma coisa. */
+  .recording .dot { animation: pulse 1.4s ease-in-out infinite; }
+  .processing .dot { background: #ffd60a; animation: pulse 1s ease-in-out infinite; }
+  .inserting  .dot { background: #ffd60a; }
+  .done       .dot { background: #32d74b; animation: none; }
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.82); } }
+
+  .label { font-size: 13px; font-weight: 590; letter-spacing: -.01em; flex: 1; }
+  .timer { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55);
+           font-variant-numeric: tabular-nums; }
+  .done .timer, .processing .timer, .inserting .timer { opacity: .5; }
+
+  /* Barras do microfone: a prova de que ele está captando a PESSOA, e não só
+     de que o app acha que está gravando. É a diferença entre "ligado" e
+     "te ouvindo" — e é o que o usuário pediu ao dizer "saber que está
+     acontecendo". */
+  .bars { display: flex; align-items: center; justify-content: center;
+          gap: 3px; height: 26px; margin-top: 10px; }
+  .bars i { display: block; width: 3px; height: 3px; border-radius: 2px;
+            background: rgba(255,255,255,.85); transition: height .07s linear; }
+  .processing .bars i, .inserting .bars i {
+    background: rgba(255,255,255,.3); animation: breathe 1.2s ease-in-out infinite;
+  }
+  .done .bars i { background: rgba(50,215,75,.5); height: 3px !important; animation: none; }
+  @keyframes breathe { 0%,100% { height: 4px; } 50% { height: 14px; } }
+
+  .hint { margin-top: 9px; text-align: center; font-size: 10.5px;
+          color: rgba(255,255,255,.42); letter-spacing: .01em; }
+  kbd { font: inherit; color: rgba(255,255,255,.65); }
+
+  /* ---- Antes → depois ----
+     A única hora em que a pessoa vê o que o VozzAI fez por ela: normalmente
+     ela só recebe o texto limpo e acha que falou bonito. Também é a chance
+     de perceber na hora se a limpeza mudou o sentido de alguma coisa. */
+  .diff { display: none; margin-top: 12px; }
+  .showing-diff .bars, .showing-diff .hint { display: none; }
+  .showing-diff .diff { display: block; }
+
+  .diff h6 { margin: 0 0 3px; font-size: 9.5px; font-weight: 600;
+             text-transform: uppercase; letter-spacing: .06em;
+             color: rgba(255,255,255,.38); }
+  .diff p { margin: 0; font-size: 11.5px; line-height: 1.42;
+            /* 3 linhas e reticências: o painel não pode crescer sem limite
+               nem empurrar o "copiar original" para fora da tela. */
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+            overflow: hidden; }
+  .diff .said   p { color: rgba(255,255,255,.5); }
+  .diff .wrote  p { color: #fff; }
+  .diff .wrote { margin-top: 9px; padding-top: 9px;
+                 border-top: 1px solid rgba(255,255,255,.1); }
+  .diff .foot { margin-top: 10px; text-align: center; font-size: 10px;
+                color: rgba(255,255,255,.36); }
+</style>
+</head>
+<body>
+  <div class="pill recording" id="pill">
+    <div class="top">
+      <span class="dot"></span>
+      <span class="label" id="label">Ouvindo você…</span>
+      <span class="timer" id="timer">0:00</span>
+    </div>
+    <div class="bars" id="bars"></div>
+    <div class="hint" id="hint"><kbd>⌘⇧Espaço</kbd> para inserir · <kbd>esc</kbd> cancela</div>
+    <div class="diff" id="diff">
+      <div class="said"><h6>Você falou</h6><p id="diffRaw"></p></div>
+      <div class="wrote"><h6>VozzAI escreveu</h6><p id="diffFinal"></p></div>
+      <div class="foot">Original em <strong>Copiar original</strong>, no menu 🎙️</div>
+    </div>
+  </div>
+
+<script>
+  const BAR_COUNT = 21;
+  const pill = document.getElementById('pill');
+  const label = document.getElementById('label');
+  const timerEl = document.getElementById('timer');
+  const hint = document.getElementById('hint');
+  const barsEl = document.getElementById('bars');
+
+  const bars = [];
+  for (let i = 0; i < BAR_COUNT; i++) {
+    const b = document.createElement('i');
+    // Atraso distinto por barra: no estado "processando" elas respiram em
+    // onda, em vez de piscarem todas juntas feito alarme.
+    b.style.animationDelay = `${(i % 7) * 0.09}s`;
+    barsEl.appendChild(b);
+    bars.push(b);
+  }
+
+  // Histórico de volume: a barra mais nova entra pela direita e as antigas
+  // caminham pra esquerda. Dá a sensação de forma de onda correndo, que é
+  // o que faz a pessoa reconhecer na hora que a própria voz está entrando.
+  let history = new Array(BAR_COUNT).fill(0);
+  let startedAt = 0;
+  let tick = null;
+  let current = 'recording';
+
+  function renderBars() {
+    for (let i = 0; i < BAR_COUNT; i++) {
+      const v = history[i];
+      // Raiz quadrada: fala normal fica visível sem precisar gritar. Linear
+      // deixaria quase tudo rente ao chão.
+      bars[i].style.height = `${3 + Math.sqrt(Math.min(v, 1)) * 21}px`;
+    }
+  }
+
+  function startTimer() {
+    startedAt = Date.now();
+    timerEl.textContent = '0:00';
+    if (tick) clearInterval(tick);
+    tick = setInterval(() => {
+      const s = Math.floor((Date.now() - startedAt) / 1000);
+      timerEl.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    }, 250);
+  }
+
+  function stopTimer() { if (tick) { clearInterval(tick); tick = null; } }
+
+  const VIEWS = {
+    recording:  { label: 'Ouvindo você…',      hint: '<kbd>⌘⇧Espaço</kbd> para inserir · <kbd>esc</kbd> cancela' },
+    processing: { label: 'Transcrevendo…',     hint: 'Só um instante' },
+    inserting:  { label: 'Inserindo o texto…', hint: 'Não mexa no cursor' },
+    done:       { label: 'Pronto',             hint: '' },
+  };
+
+  window.vozzaOverlay.onState((state) => {
+    const view = VIEWS[state];
+    if (!view) return;
+
+    current = state;
+    pill.className = `pill on ${state}`; // sai do modo diff sozinho: a classe é reescrita
+    label.textContent = view.label;
+    hint.innerHTML = view.hint;
+
+    if (state === 'recording') {
+      history = new Array(BAR_COUNT).fill(0);
+      renderBars();
+      startTimer();
+    } else {
+      stopTimer();
+      if (state === 'done') { history = new Array(BAR_COUNT).fill(0); renderBars(); }
+    }
+  });
+
+  window.vozzaOverlay.onLevel((level) => {
+    // Só desenha durante a gravação. O medidor demora alguns quadros pra
+    // parar depois do stop, e sem esta guarda as barras continuavam dançando
+    // sob "Transcrevendo…" e "Pronto" — o painel existe pra dizer a verdade
+    // sobre o estado, então ele não pode contradizer o próprio rótulo.
+    if (current !== 'recording') return;
+    history.push(level);
+    history.shift();
+    renderBars();
+  });
+
+  // textContent, nunca innerHTML: é texto ditado por uma pessoa, e ele passa
+  // por transcrição e limpeza automáticas. Nada disso é confiável como HTML.
+  window.vozzaOverlay.onDiff(({ raw, final }) => {
+    current = 'done';
+    stopTimer();
+    document.getElementById('diffRaw').textContent = raw;
+    document.getElementById('diffFinal').textContent = final;
+    label.textContent = 'Pronto — texto inserido';
+    pill.className = 'pill on done showing-diff';
+  });
+</script>
+</body>
+</html>
