@@ -21,9 +21,10 @@ Data: 26/07/2026 · baseline antes da rodada de evolução P0/P1.
 - **Backend**: Node/Express + Postgres no Railway
   (`vozzai-production.up.railway.app`). OpenAI Whisper (`whisper-1`) transcreve;
   `gpt-4o-mini` limpa/pontua. Cota por palavras medida **no servidor**.
-- **Billing**: Mercado Pago Preapproval (cartão) funcionando em produção;
-  Asaas (checkout hospedado, Pix automático) implementado e deployado, ainda
-  sem credenciais — rota inerte, aguardando sandbox.
+- **Billing**: Mercado Pago Preapproval (cartão) funcionando em produção,
+  mensal e anual. *(Atualizado em 28/jul/2026: a integração com a Asaas, citada
+  na versão original desta auditoria, foi removida sem nunca ter sido usada —
+  ver "Pagamento" no server/README.md.)*
 - **Extensão Chrome**: MV3, offscreen recording, injeção sob demanda
   (activeTab). v0.1.3 em análise na Web Store.
 - **Landing**: HTML único em `web/`, servido com o domínio vozzai.com.br;
@@ -99,6 +100,8 @@ Data: 26/07/2026 · baseline antes da rodada de evolução P0/P1.
 - **Billing**: dois provedores em paralelo (MP + Asaas) é dívida técnica
   declarada; downgrade/cancelamento depende de webhook — sem re-verificação
   periódica, um webhook perdido deixa plano errado para sempre.
+  *(Ambos resolvidos depois: reconciliação horária em 27/jul e remoção da
+  Asaas em 28/jul. Mantido como registro do que a auditoria encontrou.)*
 - **Perda de dados**: config sobrescrita sem backup; sem export/exclusão de
   conta self-service (LGPD atendida hoje só via canal manual).
 

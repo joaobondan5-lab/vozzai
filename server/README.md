@@ -51,9 +51,7 @@ Modelo completo em `.env.example`.
 | `POST /transcribe` | Recebe áudio em base64 e `mode` opcional, aplica a cota e devolve o texto pronto. Modo Pro sem plano Pro = 403, antes de qualquer chamada paga. |
 | `POST /waitlist` | Guarda e-mail de quem ainda não tem Mac. |
 | `POST /billing/subscribe` | Cria a assinatura no Mercado Pago (cartão) e devolve o link de checkout. |
-| `POST /billing/subscribe/pix` | Cria o checkout na Asaas (Pix automático + cartão) e devolve o link. |
 | `POST /webhooks/mercadopago` | Recebe avisos de assinatura do Mercado Pago e atualiza o plano. |
-| `POST /webhooks/asaas` | Recebe avisos de pagamento da Asaas (header `asaas-access-token`) e atualiza o plano. |
 | `GET /admin` | Painel de métricas (pede o `ADMIN_TOKEN` na primeira visita). |
 | `GET /admin/metrics` | JSON com agregados do negócio — exige header `x-admin-token`. |
 
@@ -83,10 +81,9 @@ protege a margem sem atrapalhar o uso normal.
   resincroniza o plano com o estado real — uma falha numa assinatura não
   impede as outras. Roda só em produção (`src/index.ts`), não durante os
   testes (`src/app.ts`).
-- **Webhooks autenticados**: Asaas exige o token estático (comparação em tempo
-  constante); Mercado Pago valida a assinatura `x-signature` (HMAC-SHA256)
-  quando `MP_WEBHOOK_SECRET` está configurado — e, com ou sem secret, nunca
-  confia no corpo: consulta a API antes de mudar plano.
+- **Webhook autenticado**: o Mercado Pago valida a assinatura `x-signature`
+  (HMAC-SHA256) quando `MP_WEBHOOK_SECRET` está configurado — e, com ou sem
+  secret, nunca confia no corpo: consulta a API antes de mudar plano.
 - **CORS com lista de origens** (vozzai.com.br, previews Vercel, localhost,
   extensão de Chrome) em vez de refletir qualquer origem; headers `nosniff`,
   `X-Frame-Options: DENY` e `Referrer-Policy: no-referrer` em toda resposta.
@@ -188,16 +185,21 @@ então o tempo de fala é inferido das palavras (≈150 ppm) e somado ao custo d
 tokens do gpt-4o-mini. Serve para ordem de grandeza e margem, não para
 contabilidade. Cotação do dólar via `USD_BRL_RATE` (padrão 5,4).
 
-## Dois provedores de pagamento (por enquanto)
+## Pagamento: só Mercado Pago
 
-O Mercado Pago (`/billing/subscribe`) só oferece cartão pra esta conta — Pix
-automático ainda não foi liberado por eles. A Asaas (`/billing/subscribe/pix`)
-já suporta Pix automático via checkout hospedado, então está em avaliação ao
-lado do Mercado Pago, não no lugar dele. Depois de validar em produção, um dos
-dois deve virar o único (ter dois é dívida técnica, não destino final).
+Cartão, mensal (R$29,90) ou anual (R$249), via `/billing/subscribe`.
+
+Houve uma integração com a Asaas aqui, avaliada por causa do Pix automático,
+que o Mercado Pago não libera pra esta conta. Foi removida em 28/jul/2026 sem
+nunca ter sido usada: o `/checkouts` da Asaas recusa Pix em cobrança
+recorrente ("CREDIT_CARD é o único método permitido para operações
+RECURRENT"), e Pix Automático de verdade exige outra API
+(`/pix/automatic/authorizations`) e conta PJ. Ou seja, ela não resolvia o
+único problema que justificava tê-la — e dois provedores em paralelo é dívida
+técnica. Se o Pix voltar à mesa, começar por ali, não pelo checkout.
 
 ## O que ainda falta
 
 - Sem recuperação de senha, sem verificação de e-mail.
 - Rate limit em memória (uma instância só); Redis se um dia escalar.
-- Integração com a Asaas só foi testada em sandbox, nunca contra a API real.
+- Sem Pix: só cartão. Ver a seção de pagamento acima.

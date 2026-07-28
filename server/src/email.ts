@@ -1,6 +1,6 @@
 /**
  * E-mails transacionais via Resend (https://resend.com), por HTTP direto —
- * sem SDK, mesmo padrão das integrações MP/Asaas.
+ * sem SDK, mesmo padrão da integração com o Mercado Pago.
  *
  * Regra de ouro: e-mail NUNCA quebra o fluxo que o disparou. Sem
  * RESEND_API_KEY, ou com a API fora do ar, o envio vira um log e a vida

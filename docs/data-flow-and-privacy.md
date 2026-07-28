@@ -44,5 +44,5 @@ só devolve agregados (contagens), nunca e-mail ou conteúdo.
 - Sem verificação de e-mail e sem recuperação de senha.
 - Token de sessão em arquivo JSON plano (não Keychain) — melhoria futura.
 - Subprocessadores: OpenAI (transcrição/organização), Railway (hospedagem/BD),
-  Vercel (site), Mercado Pago e Asaas (pagamento). A política de privacidade
+  Vercel (site) e Mercado Pago (pagamento). A política de privacidade
   pública deve listá-los.

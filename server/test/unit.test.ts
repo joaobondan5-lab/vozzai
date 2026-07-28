@@ -3,7 +3,6 @@ import { sendEmail, sendWelcomeEmail } from '../src/email';
 import { countWords, planOf, PLANS } from '../src/quota';
 import { normalizeEmail, hashPassword, verifyPassword } from '../src/auth';
 import { isValidEmail } from '../src/validation';
-import { isValidWebhookToken } from '../src/asaas';
 import { isValidMpSignature, isMpSignatureCheckEnabled } from '../src/webhookSignature';
 import { createHmac } from 'node:crypto';
 import { MODES, resolveMode, publicModes, DEFAULT_MODE_ID } from '../src/modes';
@@ -316,21 +315,3 @@ describe('assinatura de webhook do Mercado Pago', () => {
   });
 });
 
-describe('isValidWebhookToken (Asaas)', () => {
-  afterEach(() => {
-    delete process.env.ASAAS_WEBHOOK_TOKEN;
-  });
-
-  it('nunca aceita nada sem ASAAS_WEBHOOK_TOKEN configurado', () => {
-    delete process.env.ASAAS_WEBHOOK_TOKEN;
-    expect(isValidWebhookToken('qualquer-coisa')).toBe(false);
-    expect(isValidWebhookToken(undefined)).toBe(false);
-  });
-
-  it('só aceita o valor exato configurado', () => {
-    process.env.ASAAS_WEBHOOK_TOKEN = 'segredo-do-webhook';
-    expect(isValidWebhookToken('segredo-do-webhook')).toBe(true);
-    expect(isValidWebhookToken('segredo-errado')).toBe(false);
-    expect(isValidWebhookToken(undefined)).toBe(false);
-  });
-});
