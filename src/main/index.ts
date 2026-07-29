@@ -25,7 +25,7 @@ import {
   TranscribeResult,
   UsageStatus,
 } from './backend';
-import { pasteAtCursor } from './paste';
+import { pasteAtCursor, captureFrontmostApp, activateApp } from './paste';
 import { DictationMachine } from './state';
 import { HistoryStore } from './history';
 import { CLIENT_MODES } from './modes';
@@ -45,6 +45,9 @@ let history: HistoryStore;
 let lastTranscription: string | null = null;
 /** Original do último ditado, quando a limpeza mudou alguma coisa. */
 let lastRaw: string | null = null;
+/** App em primeiro plano quando o ditado começou — ver captureFrontmostApp(). */
+let dictationTargetApp: string | null = null;
+let capturingTarget = false;
 /** Áudio do último ditado que falhou por rede/servidor, guardado só em memória para "tentar de novo". */
 let pendingAudio: string | null = null;
 /** Índice do último aviso de cota mostrado (0 = nenhum), para não repetir a cada ditado. */
@@ -220,7 +223,7 @@ function updateTray(): void {
 
 /* ============ Fluxo do ditado ============ */
 
-function toggleRecording(): void {
+async function toggleRecording(): Promise<void> {
   if (!recorderWindow) return;
   if (!config.authToken) {
     notify('VozzAI', 'Crie sua conta ou entre primeiro.');
@@ -230,6 +233,15 @@ function toggleRecording(): void {
   }
 
   if (machine.current === 'idle') {
+    if (capturingTarget) return; // atalho apertado 2x rápido demais — ignora o repique
+    capturingTarget = true;
+    // Precisa capturar ANTES de iniciar: mostrar o painel ativa o VozzAI de
+    // verdade (ver overlay.ts), o que tira o foco de quem for o app de
+    // destino. Sem isso, o Cmd+V do fim tenta colar no próprio VozzAI.
+    dictationTargetApp = await captureFrontmostApp();
+    capturingTarget = false;
+    if (machine.current !== 'idle') return; // mudou de estado enquanto capturava (ex.: cancelado)
+
     if (!machine.to('recording')) return;
     trackEvent(config.authToken, 'dictation_started', { mode: config.mode });
     recorderWindow.webContents.send('start-recording');
@@ -324,6 +336,8 @@ async function handleAudio(audioBase64: string): Promise<void> {
 
   lastTranscription = text;
   lastRaw = raw && raw !== text.trim() ? raw : null;
+  // Devolve o foco pro app de destino antes de colar — ver captureFrontmostApp().
+  if (dictationTargetApp) await activateApp(dictationTargetApp);
   const pasteResult = await pasteAtCursor(text);
   if (config.historyEnabled) {
     history.add(text, countWords(text), pasteResult === 'pasted', raw);
