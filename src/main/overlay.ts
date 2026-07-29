@@ -1,4 +1,4 @@
-import { BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import { DictationState } from './state';
 
@@ -28,8 +28,18 @@ const WIDTH = 296;
 const HEIGHT = 104;
 /** Altura quando mostra o "antes → depois", que precisa de duas linhas de texto. */
 const HEIGHT_DIFF = 214;
-/** Distância do fim da tela: acima do Dock, longe do campo de texto. */
-const MARGIN_BOTTOM = 96;
+/**
+ * Posição vertical como fração da tela usável, medida do topo.
+ *
+ * A primeira versão ancorava no rodapé, perto do Dock — e um teste real
+ * mostrou o problema: numa fala curta (poucos segundos), o painel aparece e
+ * some numa área que a pessoa raramente olha enquanto digita. Ficou
+ * praticamente invisível na prática, mesmo renderizando certinho (confirmado
+ * por captura da própria janela). Perto do topo, abaixo da barra de menu, é
+ * a mesma faixa onde o macOS mostra os próprios avisos (volume, Não
+ * Perturbe) — o lugar que o olho já verifica por hábito.
+ */
+const TOP_FRACTION = 0.14;
 /** Quanto o antes → depois fica na tela. Tempo de ler sem virar estorvo. */
 const DIFF_MS = 5_200;
 
@@ -77,6 +87,10 @@ function create(): BrowserWindow {
     },
   });
 
+  // 'screen-saver' é o nível mais alto do macOS — precisa dele pra cobrir
+  // app em tela cheia (ver item 3 do cabeçalho). Não exige nada de especial;
+  // quem impedia a janela de aparecer era a falta de ativação do processo
+  // (ver o app.focus() em syncOverlay(), que é a causa raiz de verdade).
   w.setAlwaysOnTop(true, 'screen-saver');
   w.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   w.setIgnoreMouseEvents(true); // ver (2)
@@ -102,15 +116,13 @@ export function initOverlay(): void {
   if (!win) win = create();
 }
 
-/** Centraliza embaixo, no monitor onde o cursor está — não no monitor principal. */
+/** Centraliza no topo, no monitor onde o cursor está — não no monitor principal. */
 function reposition(w: BrowserWindow, height = HEIGHT): void {
   const display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
   const { x, y, width, height: areaHeight } = display.workArea;
   w.setBounds({
     x: Math.round(x + (width - WIDTH) / 2),
-    // Ancorado pelo rodapé: ao crescer para o antes → depois, o painel sobe
-    // em vez de avançar sobre o Dock.
-    y: Math.round(y + areaHeight - height - MARGIN_BOTTOM),
+    y: Math.round(y + areaHeight * TOP_FRACTION),
     width: WIDTH,
     height,
   });
@@ -146,6 +158,17 @@ export function syncOverlay(state: DictationState): void {
   }
   if (!win) win = create();
   if (!win.isVisible()) {
+    // Sem isto, o painel simplesmente não aparece na tela real — mesmo
+    // relatando `isVisible()=true` e bounds corretos. Comprovado por captura
+    // real da tela (não capturePage(), que só prova que o Chromium desenhou,
+    // não que o WindowServer compôs): um app menu-bar-only (sem janela
+    // regular própria) perde a ativação assim que outro app fica em primeiro
+    // plano por um tempo — testado e confirmado: funcionava logo após abrir,
+    // falhava de novo minutos depois, com o usuário trabalhando em outro app.
+    // Por isso a chamada mora AQUI, a cada exibição, e não só na subida do
+    // app. app.focus({steal:true}) força a ativação sem abrir nada visível —
+    // diferente de app.dock.show(), não muda a política do Dock.
+    app.focus({ steal: true });
     reposition(win); // a cada ditado: a pessoa pode ter trocado de monitor
     win.showInactive(); // ver (1): mostrar SEM tomar o foco
   }
