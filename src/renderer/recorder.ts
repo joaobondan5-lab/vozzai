@@ -8,11 +8,32 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
-let mediaRecorder: MediaRecorder | null = null;
+/**
+ * Uma gravação em curso. O `cancelled` mora AQUI e não no módulo por um
+ * motivo concreto: com um flag compartilhado, começar um ditado novo zerava
+ * a marca do ditado anterior, e o `onstop` atrasado do que foi cancelado
+ * acabava enviando o áudio assim mesmo — texto que a pessoa mandou descartar
+ * aparecia colado no documento dela.
+ */
+interface Session {
+  recorder: MediaRecorder;
+  stream: MediaStream;
+  cancelled: boolean;
+}
+
+let session: Session | null = null;
 let chunks: Blob[] = [];
-// Cancelar (Esc) para o gravador do mesmo jeito, mas descarta o áudio em vez
-// de enviar — sem isso, todo "deixa pra lá" viraria uma transcrição cobrada.
-let cancelled = false;
+
+/**
+ * Pedido de parar/cancelar que chegou enquanto o microfone ainda abria.
+ *
+ * `getUserMedia` leva de 20 ms a vários SEGUNDOS (na primeira vez o macOS
+ * mostra o pedido de permissão) — e é exatamente nessa janela que a pessoa
+ * aperta o atalho de novo achando que não funcionou. Antes disso o `stop`
+ * caía no vazio e a gravação nascia logo depois, sem ninguém pra pará-la:
+ * microfone ligado indefinidamente e o app travado em "transcrevendo".
+ */
+let pendingStop: 'stop' | 'cancel' | null = null;
 
 /* ---- Medidor de volume ----
  * Alimenta as barras do painel flutuante. O ponto não é decorar: é provar que
@@ -57,36 +78,64 @@ function stopLevelMeter(): void {
 }
 
 async function startRecording(): Promise<void> {
+  if (session) return; // já há gravação em curso — ignora pedido duplicado
+  pendingStop = null;
+
+  let stream: MediaStream;
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    chunks = [];
-    cancelled = false;
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = (e: BlobEvent) => chunks.push(e.data);
-    mediaRecorder.onstop = async () => {
-      stopLevelMeter();
-      stream.getTracks().forEach((t) => t.stop());
-      if (cancelled) return;
-      const blob = new Blob(chunks, { type: 'audio/webm' });
-      const buffer = await blob.arrayBuffer();
-      (window as any).vozza.sendAudio(arrayBufferToBase64(buffer));
-    };
-    mediaRecorder.start();
-    startLevelMeter(stream);
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   } catch (err) {
     stopLevelMeter();
     (window as any).vozza.reportError(`Não consegui acessar o microfone: ${String(err)}`);
+    return;
   }
+
+  // Mandaram parar enquanto o microfone abria: desiste sem gravar nada e
+  // avisa o processo principal — senão ele fica esperando pra sempre um
+  // áudio que nunca vai chegar.
+  if (pendingStop) {
+    pendingStop = null;
+    stream.getTracks().forEach((t) => t.stop());
+    (window as any).vozza.abortRecording();
+    return;
+  }
+
+  const active: Session = {
+    recorder: new MediaRecorder(stream),
+    stream,
+    cancelled: false,
+  };
+  session = active;
+  chunks = [];
+
+  active.recorder.ondataavailable = (e: BlobEvent) => chunks.push(e.data);
+  active.recorder.onstop = async () => {
+    stopLevelMeter();
+    active.stream.getTracks().forEach((t) => t.stop());
+    if (session === active) session = null;
+    if (active.cancelled) return; // Esc: descarta em vez de transcrever (e cobrar)
+    const blob = new Blob(chunks, { type: 'audio/webm' });
+    const buffer = await blob.arrayBuffer();
+    (window as any).vozza.sendAudio(arrayBufferToBase64(buffer));
+  };
+
+  active.recorder.start();
+  startLevelMeter(stream);
 }
 
-function stopRecording(): void {
-  mediaRecorder?.stop();
+/** Encerra a gravação. Se ela ainda não nasceu, deixa o pedido marcado. */
+function finishRecording(kind: 'stop' | 'cancel'): void {
+  if (!session) {
+    pendingStop = kind; // ver startRecording()
+    return;
+  }
+  if (kind === 'cancel') session.cancelled = true;
+  // `stop()` num recorder já inativo lança InvalidStateError.
+  if (session.recorder.state !== 'inactive') session.recorder.stop();
 }
 
-function cancelRecording(): void {
-  cancelled = true;
-  mediaRecorder?.stop();
-}
+const stopRecording = () => finishRecording('stop');
+const cancelRecording = () => finishRecording('cancel');
 
 (window as any).vozza.onStart(startRecording);
 (window as any).vozza.onStop(stopRecording);

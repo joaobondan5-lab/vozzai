@@ -30,10 +30,25 @@
     .subMsg { font-size: 12px; color: #D93A1D; margin-top: 8px; min-height: 14px; }
     .hint { font-size: 11px; color: #8B909B; margin-top: 14px; border-top: 1px solid #eee; padding-top: 10px; }
     .toggle { text-align: center; font-size: 12px; color: #1B34C4; cursor: pointer; margin-top: 4px; }
+    /* Ditado que não coube na aba (chrome://, PDF, Web Store): fica aqui
+       pra pessoa copiar, em vez de sumir depois de já ter sido cobrado. */
+    #pending { display: none; border: 1px solid #DBD9D2; border-radius: 8px;
+               padding: 10px; margin-bottom: 12px; background: #FBFAF7; }
+    #pending h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+                  color: #5B606B; margin: 0 0 6px; }
+    #pendingText { font-size: 12.5px; line-height: 1.45; max-height: 88px;
+                   overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
   </style>
 </head>
 <body>
   <h1>🎙️ VozzAI</h1>
+
+  <div id="pending">
+    <h2>Ditado guardado</h2>
+    <div id="pendingText"></div>
+    <button id="copyPendingBtn" style="width:100%; margin-top:8px;">Copiar texto</button>
+    <button class="ghost" id="dismissPendingBtn" style="width:100%">Descartar</button>
+  </div>
 
   <div id="loggedOut">
     <input id="email" type="email" placeholder="seu@email.com.br" autocomplete="username" />

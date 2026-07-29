@@ -16,7 +16,7 @@ import { isMpSignatureCheckEnabled, isValidMpSignature } from './webhookSignatur
 import { track, isValidClientEvent, normalizePlatform, wordsBucket } from './events';
 import { sendWelcomeEmail } from './email';
 import { addToWaitlist, pool } from './db';
-import { isRateLimited } from './rateLimit';
+import { isRateLimited, clientIp } from './rateLimit';
 import { isValidEmail } from './validation';
 import { requireAdmin, collectMetrics, collectLeads, ADMIN_PAGE } from './admin';
 import { collectDashboard } from './analytics';
@@ -75,6 +75,11 @@ function asyncRoute(
   };
 }
 
+/** Ver clientIp(): `req.ip` atrás do proxy do Railway é igual pra todo mundo. */
+function ipOf(req: express.Request): string {
+  return clientIp(req.header('x-forwarded-for'), req.ip);
+}
+
 function bearer(req: express.Request): string | undefined {
   const header = req.header('authorization') || '';
   return header.startsWith('Bearer ') ? header.slice(7) : undefined;
@@ -119,7 +124,7 @@ app.post(
     if (!isValidClientEvent(name)) return void res.sendStatus(204);
 
     // Rate limit generoso por IP: evita flood sem atrapalhar uso normal.
-    if (isRateLimited(`events:${req.ip}`, 300)) return void res.sendStatus(204);
+    if (isRateLimited(`events:${ipOf(req)}`, 300)) return void res.sendStatus(204);
 
     const user = await userForToken(bearer(req));
     void track(name, {
@@ -134,7 +139,7 @@ app.post(
 app.post(
   '/waitlist',
   asyncRoute(async (req, res) => {
-    if (isRateLimited(`waitlist:${req.ip}`)) {
+    if (isRateLimited(`waitlist:${ipOf(req)}`)) {
       return void res.status(429).json({ error: 'Muitas tentativas. Espere um pouco e tente de novo.' });
     }
 
@@ -153,7 +158,7 @@ app.post(
 app.post(
   '/auth/signup',
   asyncRoute(async (req, res) => {
-    if (isRateLimited(`signup:${req.ip}`)) {
+    if (isRateLimited(`signup:${ipOf(req)}`)) {
       return void res.status(429).json({ error: 'Muitas tentativas. Espere um pouco e tente de novo.' });
     }
 
@@ -181,7 +186,7 @@ app.post(
 app.post(
   '/auth/login',
   asyncRoute(async (req, res) => {
-    if (isRateLimited(`login:${req.ip}`)) {
+    if (isRateLimited(`login:${ipOf(req)}`)) {
       return void res.status(429).json({ error: 'Muitas tentativas. Espere um pouco e tente de novo.' });
     }
 
@@ -281,7 +286,21 @@ app.post(
       );
       const finalText = await cleanup(text, user.tone, resolution.mode);
       const words = countWords(finalText);
-      await recordUsage(user.id, seconds, words);
+
+      // A partir daqui a OpenAI JÁ foi paga e o texto existe. Se a
+      // contabilidade falhar (Postgres fora do ar, lento), devolver 502 seria
+      // o pior desfecho: o cliente trata 5xx como "tente de novo" e repete a
+      // chamada sozinho — pagando a transcrição uma segunda vez e jogando
+      // fora um texto que estava pronto. Então a falha é registrada e o
+      // ditado é entregue; `usage` fica sem valor e o cliente já lida com isso.
+      let usage;
+      try {
+        await recordUsage(user.id, seconds, words);
+        usage = await usageFor(user.id, user.plan);
+      } catch (err) {
+        console.error('[vozza] falhei ao contabilizar o uso (texto entregue assim mesmo):', err);
+      }
+
       // `raw` é a transcrição antes da limpeza. Volta pro cliente por três
       // motivos: mostra à pessoa o que o VozzAI fez por ela (o valor é
       // invisível quando só se vê o resultado), deixa ela pegar o original
@@ -289,7 +308,7 @@ app.post(
       // importa — expõe na hora quando a limpeza mudou o sentido, em vez de
       // o erro sair silencioso. Não é dado novo: é o texto dela, que já
       // estava aqui e era descartado.
-      res.json({ text: finalText, raw: text, usage: await usageFor(user.id, user.plan) });
+      res.json({ text: finalText, raw: text, usage });
       void track('dictation_ok', {
         userId: user.id,
         props: { mode: resolution.mode.id, words_bucket: wordsBucket(words) },

@@ -16,9 +16,19 @@ export type PasteResult = 'pasted' | 'clipboard-only';
 export function captureFrontmostApp(): Promise<string | null> {
   return new Promise((resolve) => {
     if (process.platform !== 'darwin') return resolve(null);
+    // Timeout curto: esta leitura acontece com a gravação JÁ em curso, e nada
+    // pode segurar o ditado. Se o osascript travar, seguimos sem o destino —
+    // o texto ainda vai para a área de transferência, que é a degradação certa.
+    let done = false;
+    const finish = (value: string | null) => {
+      if (done) return;
+      done = true;
+      resolve(value);
+    };
+    setTimeout(() => finish(null), 1_500);
     exec(
       `osascript -e 'tell application "System Events" to name of first application process whose frontmost is true'`,
-      (err, stdout) => resolve(err ? null : stdout.trim() || null),
+      (err, stdout) => finish(err ? null : stdout.trim() || null),
     );
   });
 }
@@ -67,7 +77,14 @@ export function pasteAtCursor(text: string): Promise<PasteResult> {
       return;
     }
 
-    const previous = clipboard.readText();
+    // Só dá pra restaurar o que é texto. Se a pessoa tinha uma IMAGEM ou um
+    // arquivo copiado, `readText()` devolve '' — e restaurar isso apagaria o
+    // que ela tinha. Nesse caso é melhor não mexer: ela fica com o texto
+    // ditado na área de transferência, que é uma troca honesta, em vez de
+    // perder o print que ia colar depois sem nem perceber.
+    const previousText = clipboard.readText();
+    const canRestore = previousText !== '' || clipboard.availableFormats().length === 0;
+
     clipboard.writeText(text);
 
     exec(
@@ -77,11 +94,13 @@ export function pasteAtCursor(text: string): Promise<PasteResult> {
           resolve('clipboard-only');
           return;
         }
-        // Devolve o que o usuário tinha copiado antes, depois que o Cmd+V
-        // já foi processado pelo app de destino.
-        setTimeout(() => {
-          if (clipboard.readText() === text) clipboard.writeText(previous);
-        }, 600);
+        if (canRestore) {
+          // Devolve o que o usuário tinha copiado antes, depois que o Cmd+V
+          // já foi processado pelo app de destino.
+          setTimeout(() => {
+            if (clipboard.readText() === text) clipboard.writeText(previousText);
+          }, 600);
+        }
         resolve('pasted');
       },
     );

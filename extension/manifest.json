@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VozzAI — ditado por voz com IA",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Fale e o texto aparece onde você estiver digitando no navegador.",
   "permissions": ["storage", "offscreen", "tabs", "activeTab", "scripting"],
   "host_permissions": ["https://vozzai-production.up.railway.app/*"],

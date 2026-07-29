@@ -4,6 +4,7 @@ import { countWords, planOf, PLANS } from '../src/quota';
 import { normalizeEmail, hashPassword, verifyPassword } from '../src/auth';
 import { isValidEmail } from '../src/validation';
 import { isValidMpSignature, isMpSignatureCheckEnabled } from '../src/webhookSignature';
+import { clientIp } from '../src/rateLimit';
 import { createHmac } from 'node:crypto';
 import { MODES, resolveMode, publicModes, DEFAULT_MODE_ID } from '../src/modes';
 import { cleanup } from '../src/openai';
@@ -125,6 +126,15 @@ describe('VozzAI Modes', () => {
   it('modo desconhecido é 400, não fallback silencioso', () => {
     const r = resolveMode('haiku', 'pro');
     expect(r).toMatchObject({ ok: false, status: 400 });
+  });
+
+  it('nome herdado do protótipo não passa por modo válido', () => {
+    // `MODES['constructor']` devolve a função Object — truthy. Com acesso
+    // direto isso passava na validação e o prompt seguia pra OpenAI com a
+    // instrução `undefined`: chamada paga pra devolver lixo.
+    for (const herdado of ['constructor', 'toString', 'valueOf', 'hasOwnProperty', '__proto__']) {
+      expect(resolveMode(herdado, 'pro')).toMatchObject({ ok: false, status: 400 });
+    }
   });
 
   it('plano free não usa modo Pro (403), plano pro usa tudo', () => {
@@ -315,3 +325,33 @@ describe('assinatura de webhook do Mercado Pago', () => {
   });
 });
 
+
+describe('clientIp — IP real atrás do proxy', () => {
+  // Sem isso, `req.ip` devolvia o IP do proxy do Railway (igual para todos) e
+  // cada limite "por IP" virava um balde global: 11 logins errados de
+  // qualquer pessoa travavam o cadastro e o login de TODO MUNDO por 15 min.
+  it('usa o IP do cliente quando o proxy encaminha um só', () => {
+    expect(clientIp('203.0.113.7', '10.0.0.1')).toBe('203.0.113.7');
+  });
+
+  it('pega a ÚLTIMA entrada da cadeia — a que o cliente não consegue forjar', () => {
+    // Quem manda o próprio X-Forwarded-For só injeta lixo ANTES do valor que
+    // o proxy acrescenta. Confiar na primeira entrada deixaria qualquer um
+    // trocar de "IP" a cada requisição e escapar do limite para sempre.
+    expect(clientIp('1.1.1.1, 2.2.2.2, 203.0.113.7', '10.0.0.1')).toBe('203.0.113.7');
+    expect(clientIp('eu-sou-outro-ip, 203.0.113.7', '10.0.0.1')).toBe('203.0.113.7');
+  });
+
+  it('tolera espaços, entradas vazias e cabeçalho ausente', () => {
+    expect(clientIp('  1.1.1.1 ,  , 203.0.113.7  ', '10.0.0.1')).toBe('203.0.113.7');
+    expect(clientIp(undefined, '10.0.0.1')).toBe('10.0.0.1');
+    expect(clientIp('', '10.0.0.1')).toBe('10.0.0.1');
+    expect(clientIp(undefined, undefined)).toBe('desconhecido');
+  });
+
+  it('IPs diferentes não compartilham balde', () => {
+    const a = clientIp('203.0.113.7', '10.0.0.1');
+    const b = clientIp('198.51.100.4', '10.0.0.1');
+    expect(a).not.toBe(b);
+  });
+});

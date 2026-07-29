@@ -134,3 +134,35 @@ async function showLoggedIn(token, email) {
     usageEl.textContent = '';
   }
 }
+
+/* ---- Ditado guardado ----
+ * Quando a aba não aceita content script (chrome://, Web Store, visualizador
+ * de PDF), não há como inserir o texto nela. Em vez de perder um ditado que
+ * já consumiu cota, o background guarda aqui e acende o selo no ícone.
+ */
+const pendingBox = document.getElementById('pending');
+const pendingTextEl = document.getElementById('pendingText');
+
+async function showPendingText() {
+  const { vozzaPendingText } = await chrome.storage.local.get('vozzaPendingText');
+  if (!vozzaPendingText) return;
+  pendingTextEl.textContent = vozzaPendingText; // textContent: é texto ditado, nunca HTML
+  pendingBox.style.display = 'block';
+}
+
+async function clearPending() {
+  await chrome.storage.local.remove('vozzaPendingText');
+  await chrome.action.setBadgeText({ text: '' });
+  pendingBox.style.display = 'none';
+}
+
+document.getElementById('copyPendingBtn').addEventListener('click', async () => {
+  await navigator.clipboard.writeText(pendingTextEl.textContent);
+  const btn = document.getElementById('copyPendingBtn');
+  btn.textContent = 'Copiado ✓';
+  setTimeout(() => clearPending(), 700);
+});
+
+document.getElementById('dismissPendingBtn').addEventListener('click', clearPending);
+
+void showPendingText();

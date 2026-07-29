@@ -161,12 +161,22 @@ export async function transcribeViaBackend(
     return { error: (err as Error).message, retryable: true };
   }
 
-  const data = (await res.json()) as {
-    text?: string;
-    raw?: string;
-    error?: string;
-    usage?: UsageStatus;
-  };
+  // O corpo nem sempre é JSON: quando o Railway está reiniciando (deploy,
+  // cold start, OOM) ele devolve uma página HTML de erro. Sem esta proteção
+  // o res.json() lançava SyntaxError, a exceção subia por handleAudio — que
+  // não trata nada — e a máquina de estados ficava presa em "processing"
+  // PARA SEMPRE: painel travado na tela (alwaysOnTop e atravessa clique,
+  // então nem dá pra fechar), atalho morto e o ditado perdido sem retry.
+  let data: { text?: string; raw?: string; error?: string; usage?: UsageStatus };
+  try {
+    data = (await res.json()) as typeof data;
+  } catch {
+    return {
+      error: 'O servidor respondeu de um jeito inesperado. Tente de novo em instantes.',
+      retryable: true, // guarda o áudio: quase sempre é servidor reiniciando
+    };
+  }
+
   if (res.status === 402) {
     return { error: data.error || 'Você atingiu o limite do plano.', quotaExceeded: true, usage: data.usage };
   }

@@ -197,7 +197,12 @@ export type ModeResolution =
 /** Valida o modo pedido contra o plano — a única porta de entrada para usar um modo. */
 export function resolveMode(requested: unknown, plan: PlanName): ModeResolution {
   const id = typeof requested === 'string' && requested.trim() ? requested.trim() : DEFAULT_MODE_ID;
-  const mode = MODES[id];
+  // hasOwnProperty, e não `MODES[id]` direto: um objeto literal herda
+  // "constructor", "toString", "valueOf" e "__proto__" do protótipo. Com o
+  // acesso direto, `mode: "constructor"` devolvia a função Object — truthy,
+  // logo passava na validação — e o prompt ia pra OpenAI com a instrução
+  // `undefined`, cobrando uma chamada pra devolver lixo.
+  const mode = Object.prototype.hasOwnProperty.call(MODES, id) ? MODES[id] : undefined;
   if (!mode) {
     return { ok: false, status: 400, error: `Modo de escrita desconhecido: "${id}".` };
   }

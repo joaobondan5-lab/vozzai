@@ -289,11 +289,46 @@ function retryPendingAudio(): void {
   const audio = pendingAudio;
   if (!audio || !machine.to('processing')) return;
   pendingAudio = null;
+  // O destino guardado é de quando o ditado começou — muitas vezes há
+  // bastante tempo, já que o retry é manual. Trazer o Chrome de volta pra
+  // frente porque a pessoa ditou lá vinte minutos atrás, enquanto ela agora
+  // escreve no Notion, é pior do que não fazer nada: cola no lugar errado.
+  // Sem destino, o texto vai pra onde o cursor estiver agora.
+  dictationTargetApp = null;
   updateTray();
   void handleAudio(audio);
 }
 
+/**
+ * Envelope de segurança do ditado.
+ *
+ * Tudo aqui dentro pode falhar (rede, disco, permissão, resposta estranha do
+ * servidor), e uma exceção que escape deixa a máquina presa em "processing"
+ * PARA SEMPRE — com o painel congelado por cima de tudo, sem poder fechar
+ * (ele é alwaysOnTop e atravessa clique), atalho morto e o ditado perdido.
+ * A única saída seria sair pela bandeja e reabrir.
+ *
+ * Por isso o `finally`: aconteça o que acontecer, a máquina volta ao repouso.
+ */
 async function handleAudio(audioBase64: string): Promise<void> {
+  try {
+    await runDictation(audioBase64);
+  } catch (err) {
+    console.error('[vozza] falha inesperada ao processar o ditado:', err);
+    // O áudio não se perde: fica guardado pro "Tentar transcrever de novo".
+    pendingAudio = audioBase64;
+    tellOnboarding('ob-dictation-failed', 'Erro inesperado.');
+    notify(
+      'VozzAI — algo deu errado',
+      'Seu ditado está guardado. Use "Tentar transcrever de novo" no menu 🎙️.',
+    );
+  } finally {
+    machine.reset();
+    updateTray();
+  }
+}
+
+async function runDictation(audioBase64: string): Promise<void> {
   // Toque acidental no atalho: um webm de fração de segundo tem ~1-2 KB.
   // Não vale uma chamada paga à API pra transcrever silêncio.
   if (audioBase64.length < 4_000) {
@@ -611,6 +646,14 @@ app.whenReady().then(() => {
     machine.reset();
     tellOnboarding('ob-dictation-failed', message);
     notify('VozzAI — erro ao gravar', message);
+  });
+
+  // A pessoa apertou o atalho de novo enquanto o microfone ainda abria.
+  // Não é erro nem ditado: só volta ao repouso, em silêncio.
+  ipcMain.on('recording-aborted', () => {
+    clearRecordingTimer();
+    machine.reset();
+    updateTray();
   });
 
   ipcMain.on('mic-level', (_event, level: number) => {
