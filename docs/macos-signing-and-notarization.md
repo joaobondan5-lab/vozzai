@@ -1,10 +1,14 @@
 # VozzAI — assinatura e notarização do macOS
 
-Estado em 26/07/2026: **pipeline pronta, aguardando a Apple**. A conta Apple
-Developer (individual, US$ 99/ano) foi comprada em 26/07; a ativação leva até
-2 dias úteis. Até lá, todo build sai **não assinado** e o Gatekeeper mostra o
-aviso de "desenvolvedor não identificado" — e a landing continua dizendo isso
-honestamente na seção de download.
+Estado em 30/07/2026: **pipeline pronta, checkout da Apple ainda não concluído**.
+A inscrição no Apple Developer Program (individual, US$ 99/ano) foi iniciada em
+26/07, mas o pagamento nunca foi finalizado — em 30/07 a página de enrollment
+ainda mostrava "Continue to payment" em aberto, apesar de um e-mail de "Order
+Acknowledgement" recebido em 29/07 (que confirma só a solicitação, não o
+pagamento). Enquanto o checkout não for concluído de verdade, a ativação (até
+2 dias úteis, por e-mail) nem começa a contar. Até lá, todo build sai **não
+assinado** e o Gatekeeper mostra o aviso de "desenvolvedor não identificado" —
+e a landing continua dizendo isso honestamente na seção de download.
 
 ## O que já está pronto no repositório
 
