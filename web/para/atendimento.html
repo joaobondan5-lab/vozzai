@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>VozzAI para atendimento — responda o cliente falando</title>
+<meta name="description" content="Responda cliente no WhatsApp, no ticket e no e-mail falando: o texto sai pontuado e pronto para enviar. Ditado por voz com IA em português do Brasil." />
+<link rel="canonical" href="https://www.vozzai.com.br/para/atendimento.html" />
+<meta name="theme-color" content="#2F6BFF" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0E1013" media="(prefers-color-scheme: dark)" />
+
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="VozzAI" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:url" content="https://www.vozzai.com.br/para/atendimento.html" />
+<meta property="og:title" content="VozzAI para atendimento — responda o cliente falando" />
+<meta property="og:description" content="Fale a resposta e a VozzAI escreve pontuada e educada, dentro do WhatsApp, do ticket ou do e-mail em que você já está." />
+<meta property="og:image" content="https://www.vozzai.com.br/og.png" />
+<meta property="og:image:alt" content="VozzAI — ditado por voz com IA em português brasileiro" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="VozzAI para atendimento — responda o cliente falando" />
+<meta name="twitter:description" content="Fale a resposta e a VozzAI escreve pontuada e educada, dentro do WhatsApp, do ticket ou do e-mail em que você já está." />
+<meta name="twitter:image" content="https://www.vozzai.com.br/og.png" />
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/vozzai.css" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Funciona no WhatsApp Web?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim. No Mac, o aplicativo insere o texto em qualquer campo de texto do sistema, inclusive o WhatsApp Web no navegador e o WhatsApp Desktop. Se você trabalha só no navegador, a extensão de Chrome faz o mesmo dentro da aba."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "O texto sai pronto para enviar ou preciso revisar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sai pronto para enviar, mas leia antes. A VozzAI não inventa informação que você não falou — ela pontua, tira as hesitações e ajusta o formato. Quem responde pelo cliente continua sendo você."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "E se o cliente falar um nome de produto que a VozzAI não conhece?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cadastre no dicionário pessoal: nome de produto, código interno, nome de empresa, apelido usado no seu setor. A partir daí ela escreve do jeito certo sem você corrigir."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "As conversas dos meus clientes ficam guardadas em algum lugar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "O áudio é usado para gerar o texto e descartado: não é gravado em disco nem no servidor. O texto ditado também não é armazenado no nosso servidor — o histórico dos últimos ditados fica apenas no seu computador. No servidor guardamos só a contagem de palavras, para aplicar o limite do plano."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Meu computador do trabalho é Windows. Dá para usar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "O aplicativo é de Mac; a versão para Windows está em desenvolvimento e há lista de espera na página inicial. Hoje, em Windows, o caminho é a extensão de Chrome — ela funciona nos campos de texto das abas do navegador, que é onde a maior parte do atendimento acontece."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  /* ---- Estilos desta página. Tokens e componentes base em /vozzai.css ---- */
+
+  .nav {
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-in { display: flex; align-items: center; gap: 20px; min-height: 64px; }
+  .logo {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--f-display); font-weight: 700; font-size: 19px;
+    letter-spacing: -.02em; color: var(--ink); text-decoration: none;
+  }
+  .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue); }
+  .logo .ai { color: var(--blue); }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 550;
+    padding: 6px 0; border-bottom: 2px solid transparent;
+  }
+  .nav-links a:hover { color: var(--ink); border-bottom-color: var(--blue); }
+  .nav-cta { display: flex; align-items: center; gap: 10px; }
+  .burger { display: none; }
+
+  @media (max-width: 980px) {
+    .nav-links, .desktop-only { display: none; }
+    .burger {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; min-width: 44px; margin-left: auto;
+      background: none; border: 1px solid var(--line); border-radius: var(--r-sm);
+      color: var(--ink); font-size: 19px; cursor: pointer;
+    }
+    .nav[data-open="true"] .nav-links {
+      display: flex; flex-direction: column; gap: 0;
+      position: absolute; left: 0; right: 0; top: 100%;
+      background: var(--surface); border-bottom: 1px solid var(--line);
+      padding: 4px var(--pad-page) 14px; box-shadow: var(--shadow);
+    }
+    .nav[data-open="true"] .nav-links a {
+      padding: 15px 0; border-bottom: 1px solid var(--line); font-size: 17px;
+    }
+  }
+
+  /* ---- Hero ---- */
+  .hero { padding: clamp(36px, 5.5vw, 72px) 0 clamp(24px, 4vw, 44px); }
+  .hero h1 span { color: var(--blue); }
+  .hero .lede { margin-top: 18px; max-width: 54ch; }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .reassure {
+    margin-top: 16px; font-size: 14.5px; color: var(--faint);
+    display: flex; flex-wrap: wrap; gap: 8px 14px;
+  }
+  .platforms {
+    margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; font-size: 14.5px;
+  }
+  .plat { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); }
+  .plat b { color: var(--ink); font-weight: 650; }
+  .live-dot { color: var(--green); font-weight: 700; }
+
+  /* ---- Antes e depois ---- */
+  .ab-pair { display: grid; gap: 16px; }
+  @media (min-width: 800px) { .ab-pair { grid-template-columns: 1fr auto 1fr; align-items: start; } }
+  .ab-arrow { display: grid; place-items: center; color: var(--blue); font-size: 26px; font-weight: 700; }
+  .ab-box { padding-left: 16px; }
+  /* Rótulo de coluna, não título de seção — por isso é <p>, e não <h4>:
+     assim a hierarquia de heading da página continua h1 → h2 → h3. */
+  .ab-box .ab-who {
+    font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 10px;
+  }
+  .ab-box p { font-size: 16.5px; line-height: 1.62; }
+  .ab-box p + p { margin-top: .75em; }
+  .ab-box .ab-who + p { margin-top: 0; }
+  .ab-said { border-left: 3px solid var(--line); }
+  .ab-said p { color: var(--muted); }
+  .ab-wrote { border-left: 3px solid var(--blue); }
+  .ab-mode {
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);
+    font-size: 14px; color: var(--faint);
+  }
+  .ab-mode b { color: var(--ink); font-weight: 650; }
+
+  /* ---- FAQ ---- */
+  details.faq { border-bottom: 1px solid var(--line); }
+  details.faq summary {
+    cursor: pointer; padding: 19px 0; font-size: 17.5px; font-weight: 650;
+    list-style: none; display: flex; gap: 14px; align-items: center; min-height: 44px;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after { content: "+"; margin-left: auto; color: var(--blue); font-size: 25px; font-weight: 400; line-height: 1; }
+  details.faq[open] summary::after { content: "\2013"; }
+  details.faq p { padding: 0 0 20px; color: var(--muted); max-width: 68ch; }
+
+  /* ---- Faixa final ---- */
+  .final { background: var(--ink); color: var(--bg); border-radius: var(--r-xl); padding: clamp(32px, 5vw, 64px); text-align: center; }
+  .final h2 { color: var(--bg); }
+  .final p { color: color-mix(in srgb, var(--bg) 72%, transparent); margin: 16px auto 28px; max-width: 46ch; }
+  .final .btn { --btn-bg: var(--bg); --btn-fg: var(--ink); }
+  .final .btn:hover { --btn-bg: #fff; }
+  .final .btn.ghost { --btn-bg: transparent; --btn-fg: var(--bg); border-color: color-mix(in srgb, var(--bg) 34%, transparent); }
+  .final .btn.ghost:hover { --btn-bg: color-mix(in srgb, var(--bg) 12%, transparent); }
+
+  /* ---- Rodapé ---- */
+  .ft { border-top: 1px solid var(--line); padding: 48px 0 40px; font-size: 14.5px; color: var(--muted); }
+  .ft-grid { display: grid; gap: 28px; margin-bottom: 32px; }
+  @media (min-width: 740px) { .ft-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr; } }
+  /* Mesmo visual do rodapé da index. Aqui as colunas são <h3> e não <h4>
+     para a página não pular de h2 direto para h4. */
+  .ft h3 { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
+  .ft ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+  .ft a { color: var(--muted); text-decoration: none; }
+  .ft a:hover { color: var(--ink); text-decoration: underline; }
+
+  /* ---- Trilha de volta para a index ---- */
+  .crumb { font-size: 14px; color: var(--faint); padding-top: 18px; }
+  .crumb a { color: var(--muted); text-decoration: none; }
+  .crumb a:hover { color: var(--ink); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="VozzAI, página inicial">
+      <span class="dot" aria-hidden="true"></span>Vozz<span class="ai">AI</span>
+    </a>
+
+    <nav class="nav-links" id="navLinks" aria-label="Navegação principal">
+      <a href="/#como">Como funciona</a>
+      <a href="/#casos">Casos de uso</a>
+      <a href="/#recursos">Recursos</a>
+      <a href="/#precos">Preços</a>
+      <a href="/#privacidade">Segurança</a>
+    </nav>
+
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="navLinks" aria-label="Abrir menu">☰</button>
+
+    <div class="nav-cta">
+      <a class="btn ghost small desktop-only" href="/#precos">Entrar</a>
+      <a class="btn small" href="#baixar" data-ev="cta_header">Baixar grátis</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <p class="crumb wrap"><a href="/">VozzAI</a> → <a href="/#casos">Casos de uso</a> → Atendimento</p>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Para atendimento</p>
+      <h1>Você já sabe a resposta. O que atrasa é <span>digitar ela de novo</span>.</h1>
+      <p class="lede">Fale a resposta como você falaria no telefone e a VozzAI escreve pontuada, educada e pronta para enviar — no WhatsApp, no ticket ou no e-mail em que você já está com o cursor.</p>
+
+      <div class="hero-ctas">
+        <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+        <a class="btn ghost" href="/#como">Ver como a VozzAI funciona</a>
+      </div>
+
+      <p class="reassure">
+        <span>macOS 12 ou mais recente</span>
+        <span aria-hidden="true">·</span>
+        <span>Sem cartão</span>
+        <span aria-hidden="true">·</span>
+        <span>2.000 palavras por semana no plano grátis</span>
+      </p>
+
+      <div class="platforms">
+        <span class="plat"><b>Mac</b> <span class="live-dot" aria-hidden="true">●</span> disponível</span>
+        <span class="plat"><b>Chrome</b> <span class="live-dot" aria-hidden="true">●</span> extensão disponível</span>
+        <span class="plat"><b>Windows</b> <span class="tag soon">Em breve</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="dor">
+    <div class="wrap">
+      <p class="eyebrow">A dor</p>
+      <h2>O gargalo do atendimento não é saber, é escrever.</h2>
+      <p class="lede prose" style="margin-top:14px">Quem atende sabe de cabeça o prazo, a política de troca e o que fazer com o pedido travado. O tempo vai embora entre pensar a resposta e terminar de digitá-la.</p>
+
+      <div class="grid g3" style="margin-top:32px">
+        <div class="card">
+          <h3>A mesma pergunta, o dia inteiro</h3>
+          <p style="margin-top:9px;color:var(--muted)">Prazo de entrega, forma de pagamento, como pedir troca. Você responde a mesma coisa desde a manhã e cada vez sai com palavras um pouco piores.</p>
+        </div>
+        <div class="card">
+          <h3>A fila cresce enquanto você capricha</h3>
+          <p style="margin-top:9px;color:var(--muted)">Enquanto você escreve uma resposta bem-feita, chegam mais três conversas. No fim do dia você responde curto — e o cliente sente na resposta.</p>
+        </div>
+        <div class="card">
+          <h3>Cliente irritado exige texto calibrado</h3>
+          <p style="margin-top:9px;color:var(--muted)">A resposta que desarma a reclamação é escolhida palavra por palavra. A que sai rápido no teclado é seca demais e vira reclamação nova.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="antes-depois" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Antes e depois</p>
+      <h2>Como sai o texto que você já fala.</h2>
+      <p class="lede prose" style="margin-top:14px">Estes são exemplos de fala crua — com hesitação, repetição e mudança de ideia no meio — e o texto que a VozzAI entrega. Ela não acrescenta informação que você não falou.</p>
+
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>oi então é assim o seu pedido ele já ele saiu do nosso estoque ontem tá então deve chegar aí até sexta se não chegar até sexta você me chama aqui que eu vejo com a transportadora</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Olá! Seu pedido já saiu do nosso estoque ontem e deve chegar até sexta-feira. Se não chegar até lá, me chame aqui que eu verifico com a transportadora.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>WhatsApp</b> · Grátis. Tom de conversa, frase curta, sem parecer carta.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>olha dona Marta eu entendo a sua situação viu é… realmente não era pra ter vindo com defeito não desculpa aí ó o que eu vou fazer eu vou abrir a troca aqui pra senhora agora e a gente manda um novo assim que o produto sair daí a senhora não paga frete nenhum de nada disso tá</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Dona Marta, entendo a sua situação e sinto muito que o produto tenha chegado com defeito. Vou abrir a troca agora mesmo: assim que o produto sair daí, enviamos um novo. A senhora não paga frete em nenhuma das etapas.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Atendimento (Pro)</b> · Mantém o pedido de desculpas e o compromisso que você assumiu, sem o excesso de “tá” e “viu”.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>bom dia é sobre o protocolo cinco quatro sete dois então a gente conseguiu localizar o pagamento aqui sim ele caiu no dia dezoito só que ele entrou sem o número do pedido por isso não bateu automático eu já vinculei aqui e o pedido volta a andar hoje qualquer coisa é… responde esse e-mail mesmo</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Bom dia. Sobre o protocolo 5472: localizamos o pagamento, creditado no dia 18. Ele entrou sem o número do pedido, por isso não houve a conciliação automática.</p>
+            <p>Já fiz o vínculo manualmente e o pedido volta a andar hoje. Qualquer dúvida, é só responder este e-mail.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>E-mail profissional</b> · Grátis. Número de protocolo e data saem como você falou, já em algarismo.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>ó anota aí no chamado cliente ligou duas vezes hoje quer quer saber do reembolso eu falei pra ele que o prazo é de cinco dias úteis contando do dia vinte e dois e ele pediu pra alguém do financeiro confirmar por e-mail</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Cliente ligou duas vezes hoje para saber do reembolso. Informado prazo de 5 dias úteis a contar do dia 22. Cliente pediu confirmação do financeiro por e-mail.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Objetivo</b> · Grátis. Nota interna sem rodeio — a repetição “quer quer” some sozinha.</p>
+      </div>
+
+      <p style="margin-top:22px;font-size:14.5px;color:var(--faint);max-width:62ch">
+        No fim de cada ditado a VozzAI mostra o antes e o depois — se preferir o
+        original sem ajuste nenhum, ele está ali para copiar.
+      </p>
+    </div>
+  </section>
+
+  <section id="onde">
+    <div class="wrap">
+      <p class="eyebrow">Onde isso entra no seu dia</p>
+      <h2>Nos aplicativos em que o atendimento já acontece.</h2>
+      <p class="lede prose" style="margin-top:14px">A VozzAI não é um lugar onde você escreve para depois copiar. No Mac ela insere o texto onde o seu cursor está; no navegador, a extensão de Chrome faz o mesmo dentro da aba.</p>
+
+      <div class="grid g3" style="margin-top:32px">
+        <div class="card">
+          <h3>WhatsApp Web e Desktop</h3>
+          <p style="margin-top:9px;color:var(--muted)">O campo de mensagem é campo de texto como qualquer outro. Você aperta o atalho, fala e o texto entra ali.</p>
+        </div>
+        <div class="card">
+          <h3>Sistema de tickets</h3>
+          <p style="margin-top:9px;color:var(--muted)">Resposta ao cliente e nota interna do chamado, nos campos de texto do navegador.</p>
+        </div>
+        <div class="card">
+          <h3>Gmail e Outlook</h3>
+          <p style="margin-top:9px;color:var(--muted)">Corpo de e-mail em parágrafos, para o cliente que prefere e-mail a mensagem.</p>
+        </div>
+        <div class="card">
+          <h3>Instagram e Facebook no navegador</h3>
+          <p style="margin-top:9px;color:var(--muted)">Direct e comentário, com o mesmo tom que você usa no WhatsApp.</p>
+        </div>
+        <div class="card">
+          <h3>CRM e planilha</h3>
+          <p style="margin-top:9px;color:var(--muted)">Registro do contato, histórico e observação — falado em segundos em vez de digitado.</p>
+        </div>
+        <div class="card">
+          <h3>Slack e Teams</h3>
+          <p style="margin-top:9px;color:var(--muted)">Repassar o caso para o time sem escrever um parágrafo com uma mão só.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="modos" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Qual modo usar</p>
+      <h2>Cinco modos cobrem quase todo o seu dia.</h2>
+      <p class="lede prose" style="margin-top:14px">É o mesmo áudio: o modo decide o formato do texto. Você troca no painel a qualquer momento.</p>
+
+      <div class="grid g2" style="margin-top:32px">
+        <div class="card">
+          <h3>WhatsApp</h3>
+          <p style="margin-top:9px;color:var(--muted)">O padrão de quem atende por mensagem: frase curta, tom de conversa, sem formalidade de ofício.</p>
+        </div>
+        <div class="card">
+          <h3>Atendimento <span class="tag">Pro</span></h3>
+          <p style="margin-top:9px;color:var(--muted)">Para o caso delicado: resposta clara e educada, com o compromisso que você assumiu escrito de forma inequívoca.</p>
+        </div>
+        <div class="card">
+          <h3>E-mail profissional</h3>
+          <p style="margin-top:9px;color:var(--muted)">Quando a resposta tem protocolo, prazo e etapas — sai organizada em parágrafos, pronta para colar.</p>
+        </div>
+        <div class="card">
+          <h3>Objetivo</h3>
+          <p style="margin-top:9px;color:var(--muted)">Para nota interna e registro no chamado: só os fatos, frases curtas, nenhuma gentileza sobrando.</p>
+        </div>
+        <div class="card">
+          <h3>Transcrição fiel</h3>
+          <p style="margin-top:9px;color:var(--muted)">Quando o texto precisa sair exatamente como você falou, sem nenhum ajuste — só pontuação e maiúsculas.</p>
+        </div>
+        <div class="card">
+          <h3>Dicionário pessoal</h3>
+          <p style="margin-top:9px;color:var(--muted)">Não é modo, é ajuste: cadastre nome de produto, código e nome de empresa para a VozzAI acertar sempre.</p>
+        </div>
+      </div>
+
+      <p style="margin-top:22px;font-size:14.5px;color:var(--faint);max-width:62ch">
+        Padrão, WhatsApp, E-mail profissional, Objetivo e Transcrição fiel estão no
+        plano grátis. Atendimento, Vendas, Jurídico, Desenvolvedor e Conteúdo
+        fazem parte do Pro.
+      </p>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap prose" style="max-width:820px">
+      <p class="eyebrow">Perguntas frequentes</p>
+      <h2>Perguntas de quem atende.</h2>
+
+      <div style="margin-top:28px">
+      <details class="faq">
+        <summary>Funciona no WhatsApp Web?</summary>
+        <p>Sim. No Mac, o aplicativo insere o texto em qualquer campo de texto do sistema, inclusive o WhatsApp Web no navegador e o WhatsApp Desktop. Se você trabalha só no navegador, a extensão de Chrome faz o mesmo dentro da aba.</p>
+      </details>
+      <details class="faq">
+        <summary>O texto sai pronto para enviar ou preciso revisar?</summary>
+        <p>Sai pronto para enviar, mas leia antes. A VozzAI não inventa informação que você não falou — ela pontua, tira as hesitações e ajusta o formato. Quem responde pelo cliente continua sendo você.</p>
+      </details>
+      <details class="faq">
+        <summary>E se o cliente falar um nome de produto que a VozzAI não conhece?</summary>
+        <p>Cadastre no dicionário pessoal: nome de produto, código interno, nome de empresa, apelido usado no seu setor. A partir daí ela escreve do jeito certo sem você corrigir.</p>
+      </details>
+      <details class="faq">
+        <summary>As conversas dos meus clientes ficam guardadas em algum lugar?</summary>
+        <p>O áudio é usado para gerar o texto e descartado: não é gravado em disco nem no servidor. O texto ditado também não é armazenado no nosso servidor — o histórico dos últimos ditados fica apenas no seu computador. No servidor guardamos só a contagem de palavras, para aplicar o limite do plano.</p>
+      </details>
+      <details class="faq">
+        <summary>Meu computador do trabalho é Windows. Dá para usar?</summary>
+        <p>O aplicativo é de Mac; a versão para Windows está em desenvolvimento e há lista de espera na página inicial. Hoje, em Windows, o caminho é a extensão de Chrome — ela funciona nos campos de texto das abas do navegador, que é onde a maior parte do atendimento acontece.</p>
+      </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="baixar">
+    <div class="wrap">
+      <div class="final">
+        <h2>Responda falando, no ritmo da fila.</h2>
+        <p>Instale, aperte o atalho e fale a próxima resposta. O plano grátis dá 2.000 palavras por semana, sem cartão.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
+          <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+          <a class="btn ghost" href="https://chromewebstore.google.com/detail/hfopblagabjnlkigjnafamfabefdilfe" data-ev="download_chrome">Instalar no Chrome</a>
+        </div>
+        <p style="margin-top:22px;font-size:14px">macOS 12 ou mais recente · Sem cartão · Pro por R$ 29,90 por mês ou R$ 249 por ano</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-grid">
+      <div>
+        <a class="logo" href="/" style="font-size:17px"><span class="dot" aria-hidden="true"></span>Vozz<span class="ai">AI</span></a>
+        <p style="margin-top:12px;max-width:34ch">
+          Ditado por voz com IA para português brasileiro. Você fala, a VozzAI escreve.
+        </p>
+      </div>
+      <div>
+        <h3>Produto</h3>
+        <ul>
+          <li><a href="/#como">Como funciona</a></li>
+          <li><a href="/#modos">Modos de escrita</a></li>
+          <li><a href="/#recursos">Recursos</a></li>
+          <li><a href="/#precos">Preços</a></li>
+          <li><a href="/#faq">Perguntas frequentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Para quem</h3>
+        <ul>
+          <li><a href="/para/atendimento.html">Atendimento</a></li>
+          <li><a href="/para/advogados.html">Advogados</a></li>
+          <li><a href="/para/vendas.html">Vendas</a></li>
+          <li><a href="/para/criadores.html">Criadores</a></li>
+          <li><a href="/para/desenvolvedores.html">Desenvolvedores</a></li>
+          <li><a href="/para/fundadores.html">Fundadores</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Legal e suporte</h3>
+        <ul>
+          <li><a href="/#privacidade">Privacidade e segurança</a></li>
+          <li><a href="/privacy.html">Política de privacidade</a></li>
+          <li><a href="/termos.html">Termos de uso</a></li>
+          <li><a href="/uso-justo.html">Uso justo</a></li>
+          <li><a href="mailto:joaobondan5@gmail.com">Falar com a gente</a></li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:13.5px;color:var(--faint)">© 2026 VozzAI · Feito no Brasil</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var API = 'https://vozzai-production.up.railway.app';
+
+  /* ---------- Telemetria de funil ----------
+     Só o nome do passo. Nenhum conteúdo, nenhum dado pessoal — o servidor
+     tem allowlist de nomes e descarta o que não conhece. */
+  function track(name) {
+    try {
+      fetch(API + '/events', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name: name, platform: 'web' }),
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-ev]');
+    if (el) track(el.getAttribute('data-ev'));
+  });
+
+  /* ---------- Menu do celular ---------- */
+  var nav = document.getElementById('nav');
+  var burger = document.getElementById('burger');
+  burger.addEventListener('click', function () {
+    var open = nav.getAttribute('data-open') === 'true';
+    nav.setAttribute('data-open', String(!open));
+    burger.setAttribute('aria-expanded', String(!open));
+    burger.setAttribute('aria-label', open ? 'Abrir menu' : 'Fechar menu');
+  });
+  document.getElementById('navLinks').addEventListener('click', function (e) {
+    if (e.target.tagName === 'A') {
+      nav.setAttribute('data-open', 'false');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>VozzAI para advogados — dite peças, e-mails e notas</title>
+<meta name="description" content="Dite petição, e-mail e andamento com artigo, prazo e valor preservados. Ditado por voz com IA em português do Brasil, no seu Mac e no navegador." />
+<link rel="canonical" href="https://www.vozzai.com.br/para/advogados.html" />
+<meta name="theme-color" content="#2F6BFF" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0E1013" media="(prefers-color-scheme: dark)" />
+
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="VozzAI" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:url" content="https://www.vozzai.com.br/para/advogados.html" />
+<meta property="og:title" content="VozzAI para advogados — dite peças, e-mails e notas" />
+<meta property="og:description" content="Fale a peça como você já dita para o gravador e receba o texto formal, com art., prazo e valores escritos do jeito certo." />
+<meta property="og:image" content="https://www.vozzai.com.br/og.png" />
+<meta property="og:image:alt" content="VozzAI — ditado por voz com IA em português brasileiro" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="VozzAI para advogados — dite peças, e-mails e notas" />
+<meta name="twitter:description" content="Fale a peça como você já dita para o gravador e receba o texto formal, com art., prazo e valores escritos do jeito certo." />
+<meta name="twitter:image" content="https://www.vozzai.com.br/og.png" />
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/vozzai.css" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "A VozzAI escreve a peça por mim?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Não. Ela não redige, não pesquisa jurisprudência e não completa raciocínio: transforma o que você falou em texto formatado. A tese, a estratégia e a revisão continuam suas."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ela acerta artigo, prazo e número de processo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "O modo Jurídico preserva números, datas e referências como você as falou e escreve na forma usual — “art. 434 do CPC”, “15 (quinze) dias”, “R$ 42.500,00”. Mesmo assim, confira todo número antes de protocolar: a conferência é sua."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Funciona dentro do PJe e do e-SAJ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nos campos de texto comuns desses sistemas, sim: no Mac o aplicativo insere onde o cursor está, e no navegador a extensão de Chrome faz o mesmo. Editores embutidos que não se comportam como campo de texto padrão podem não aceitar a inserção — nesse caso o texto fica na área de transferência para você colar."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "O conteúdo sigiloso do meu cliente fica gravado?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "O áudio é descartado depois de gerar o texto, não fica em disco nem no servidor. O texto não é armazenado no nosso servidor: o histórico fica só no seu computador e apagar ali apaga de verdade. No servidor guardamos apenas a contagem de palavras. Ainda assim, quem decide o que dita é você — vale o mesmo critério que você já aplica a qualquer serviço em nuvem."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Preciso de internet para ditar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim. O áudio é transcrito e organizado em servidor. Se a conexão cair no meio do ditado, o áudio fica guardado no seu computador e você tenta de novo quando ela voltar."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  /* ---- Estilos desta página. Tokens e componentes base em /vozzai.css ---- */
+
+  .nav {
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-in { display: flex; align-items: center; gap: 20px; min-height: 64px; }
+  .logo {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--f-display); font-weight: 700; font-size: 19px;
+    letter-spacing: -.02em; color: var(--ink); text-decoration: none;
+  }
+  .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue); }
+  .logo .ai { color: var(--blue); }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 550;
+    padding: 6px 0; border-bottom: 2px solid transparent;
+  }
+  .nav-links a:hover { color: var(--ink); border-bottom-color: var(--blue); }
+  .nav-cta { display: flex; align-items: center; gap: 10px; }
+  .burger { display: none; }
+
+  @media (max-width: 980px) {
+    .nav-links, .desktop-only { display: none; }
+    .burger {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; min-width: 44px; margin-left: auto;
+      background: none; border: 1px solid var(--line); border-radius: var(--r-sm);
+      color: var(--ink); font-size: 19px; cursor: pointer;
+    }
+    .nav[data-open="true"] .nav-links {
+      display: flex; flex-direction: column; gap: 0;
+      position: absolute; left: 0; right: 0; top: 100%;
+      background: var(--surface); border-bottom: 1px solid var(--line);
+      padding: 4px var(--pad-page) 14px; box-shadow: var(--shadow);
+    }
+    .nav[data-open="true"] .nav-links a {
+      padding: 15px 0; border-bottom: 1px solid var(--line); font-size: 17px;
+    }
+  }
+
+  /* ---- Hero ---- */
+  .hero { padding: clamp(36px, 5.5vw, 72px) 0 clamp(24px, 4vw, 44px); }
+  .hero h1 span { color: var(--blue); }
+  .hero .lede { margin-top: 18px; max-width: 54ch; }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .reassure {
+    margin-top: 16px; font-size: 14.5px; color: var(--faint);
+    display: flex; flex-wrap: wrap; gap: 8px 14px;
+  }
+  .platforms {
+    margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; font-size: 14.5px;
+  }
+  .plat { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); }
+  .plat b { color: var(--ink); font-weight: 650; }
+  .live-dot { color: var(--green); font-weight: 700; }
+
+  /* ---- Antes e depois ---- */
+  .ab-pair { display: grid; gap: 16px; }
+  @media (min-width: 800px) { .ab-pair { grid-template-columns: 1fr auto 1fr; align-items: start; } }
+  .ab-arrow { display: grid; place-items: center; color: var(--blue); font-size: 26px; font-weight: 700; }
+  .ab-box { padding-left: 16px; }
+  /* Rótulo de coluna, não título de seção — por isso é <p>, e não <h4>:
+     assim a hierarquia de heading da página continua h1 → h2 → h3. */
+  .ab-box .ab-who {
+    font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 10px;
+  }
+  .ab-box p { font-size: 16.5px; line-height: 1.62; }
+  .ab-box p + p { margin-top: .75em; }
+  .ab-box .ab-who + p { margin-top: 0; }
+  .ab-said { border-left: 3px solid var(--line); }
+  .ab-said p { color: var(--muted); }
+  .ab-wrote { border-left: 3px solid var(--blue); }
+  .ab-mode {
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);
+    font-size: 14px; color: var(--faint);
+  }
+  .ab-mode b { color: var(--ink); font-weight: 650; }
+
+  /* ---- FAQ ---- */
+  details.faq { border-bottom: 1px solid var(--line); }
+  details.faq summary {
+    cursor: pointer; padding: 19px 0; font-size: 17.5px; font-weight: 650;
+    list-style: none; display: flex; gap: 14px; align-items: center; min-height: 44px;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after { content: "+"; margin-left: auto; color: var(--blue); font-size: 25px; font-weight: 400; line-height: 1; }
+  details.faq[open] summary::after { content: "\2013"; }
+  details.faq p { padding: 0 0 20px; color: var(--muted); max-width: 68ch; }
+
+  /* ---- Faixa final ---- */
+  .final { background: var(--ink); color: var(--bg); border-radius: var(--r-xl); padding: clamp(32px, 5vw, 64px); text-align: center; }
+  .final h2 { color: var(--bg); }
+  .final p { color: color-mix(in srgb, var(--bg) 72%, transparent); margin: 16px auto 28px; max-width: 46ch; }
+  .final .btn { --btn-bg: var(--bg); --btn-fg: var(--ink); }
+  .final .btn:hover { --btn-bg: #fff; }
+  .final .btn.ghost { --btn-bg: transparent; --btn-fg: var(--bg); border-color: color-mix(in srgb, var(--bg) 34%, transparent); }
+  .final .btn.ghost:hover { --btn-bg: color-mix(in srgb, var(--bg) 12%, transparent); }
+
+  /* ---- Rodapé ---- */
+  .ft { border-top: 1px solid var(--line); padding: 48px 0 40px; font-size: 14.5px; color: var(--muted); }
+  .ft-grid { display: grid; gap: 28px; margin-bottom: 32px; }
+  @media (min-width: 740px) { .ft-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr; } }
+  /* Mesmo visual do rodapé da index. Aqui as colunas são <h3> e não <h4>
+     para a página não pular de h2 direto para h4. */
+  .ft h3 { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
+  .ft ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+  .ft a { color: var(--muted); text-decoration: none; }
+  .ft a:hover { color: var(--ink); text-decoration: underline; }
+
+  /* ---- Trilha de volta para a index ---- */
+  .crumb { font-size: 14px; color: var(--faint); padding-top: 18px; }
+  .crumb a { color: var(--muted); text-decoration: none; }
+  .crumb a:hover { color: var(--ink); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="VozzAI, página inicial">
+      <span class="dot" aria-hidden="true"></span>Vozz<span class="ai">AI</span>
+    </a>
+
+    <nav class="nav-links" id="navLinks" aria-label="Navegação principal">
+      <a href="/#como">Como funciona</a>
+      <a href="/#casos">Casos de uso</a>
+      <a href="/#recursos">Recursos</a>
+      <a href="/#precos">Preços</a>
+      <a href="/#privacidade">Segurança</a>
+    </nav>
+
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="navLinks" aria-label="Abrir menu">☰</button>
+
+    <div class="nav-cta">
+      <a class="btn ghost small desktop-only" href="/#precos">Entrar</a>
+      <a class="btn small" href="#baixar" data-ev="cta_header">Baixar grátis</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <p class="crumb wrap"><a href="/">VozzAI</a> → <a href="/#casos">Casos de uso</a> → Advogados</p>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Para advogados</p>
+      <h1>A peça já está pronta na sua cabeça. Falta <span>sair do teclado</span>.</h1>
+      <p class="lede">Você dita para o gravador ou para o estagiário e alguém transcreve depois. A VozzAI escreve na hora, em tom formal, com artigo, prazo e valor no formato que a peça exige.</p>
+
+      <div class="hero-ctas">
+        <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+        <a class="btn ghost" href="/#como">Ver como a VozzAI funciona</a>
+      </div>
+
+      <p class="reassure">
+        <span>macOS 12 ou mais recente</span>
+        <span aria-hidden="true">·</span>
+        <span>Sem cartão</span>
+        <span aria-hidden="true">·</span>
+        <span>2.000 palavras por semana no plano grátis</span>
+      </p>
+
+      <div class="platforms">
+        <span class="plat"><b>Mac</b> <span class="live-dot" aria-hidden="true">●</span> disponível</span>
+        <span class="plat"><b>Chrome</b> <span class="live-dot" aria-hidden="true">●</span> extensão disponível</span>
+        <span class="plat"><b>Windows</b> <span class="tag soon">Em breve</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="dor">
+    <div class="wrap">
+      <p class="eyebrow">A dor</p>
+      <h2>O problema não é a tese. É o caminho até o texto.</h2>
+      <p class="lede prose" style="margin-top:14px">Advocacia é uma profissão de texto: quem escreve o dia inteiro sente o custo de cada parágrafo digitado duas vezes.</p>
+
+      <div class="grid g3" style="margin-top:32px">
+        <div class="card">
+          <h3>Você já dita — e alguém transcreve depois</h3>
+          <p style="margin-top:9px;color:var(--muted)">O áudio vira uma tarefa de outra pessoa e volta horas depois, com “cento e trinta e quatro” escrito em palavra e sem a pontuação que o período pedia.</p>
+        </div>
+        <div class="card">
+          <h3>Ditado comum erra o que não pode errar</h3>
+          <p style="margin-top:9px;color:var(--muted)">Artigo, inciso, número de processo, valor, prazo. Basta um número escrito por extenso no lugar errado para a revisão custar mais que a redação.</p>
+        </div>
+        <div class="card">
+          <h3>O e-mail do cliente fica para as 22h</h3>
+          <p style="margin-top:9px;color:var(--muted)">Explicar uma decisão em linguagem que o cliente entenda é trabalho de escrita. Sobra para o fim do dia, quando você já gastou a atenção nas peças.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="antes-depois" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Antes e depois</p>
+      <h2>Fala de escritório, texto de peça.</h2>
+      <p class="lede prose" style="margin-top:14px">Exemplos de ditado real, com hesitação e correção no meio da frase, e o que a VozzAI entrega. Ela não redige por você e não pesquisa: formata o que você falou.</p>
+
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>ó escreve aí que a gente impugna o valor da causa porque ele foi fixado em dez mil e o contrato ali fala de quarenta e dois mil e quinhentos então tem que retificar isso pelo artigo duzentos e noventa e três do CPC</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Impugna-se o valor da causa, fixado em R$ 10.000,00, tendo em vista que o contrato prevê o montante de R$ 42.500,00, devendo ser retificado nos termos do art. 293 do CPC.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Jurídico (Pro)</b> · Valor em algarismo, artigo abreviado, período fechado — os números são os que você falou.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>então pede a juntada do comprovante de pagamento ali pelo artigo quatrocentos e trinta e quatro do CPC e pede prazo de quinze dias pra manifestação da parte contrária</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Requer-se a juntada do comprovante de pagamento, nos termos do art. 434 do CPC, concedendo-se o prazo de 15 (quinze) dias para manifestação da parte contrária.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Jurídico (Pro)</b> · Prazo em algarismo e por extenso, como a praxe pede.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>oi doutor Ricardo bom dia é… então saiu a decisão ontem e ela foi parcialmente favorável pra gente tá o juiz acolheu o pedido principal mas negou os danos morais eu acho que vale a pena a gente recorrer dessa parte só que o prazo é de quinze dias então eu preciso da sua confirmação até quarta pra eu conseguir protocolar com calma</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Bom dia, Dr. Ricardo.</p>
+            <p>A decisão saiu ontem e foi parcialmente favorável: o juízo acolheu o pedido principal e negou os danos morais. Na minha avaliação, vale recorrer quanto a essa parte.</p>
+            <p>O prazo é de 15 dias, então preciso da sua confirmação até quarta-feira para protocolar com tranquilidade.</p>
+            <p>Fico à disposição.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>E-mail profissional</b> · Grátis. O tratamento que você usou fica: “doutor Ricardo” não vira só “Ricardo”.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>anota aí no andamento liguei pro cliente às quinze e vinte ele confirmou que recebeu a intimação no dia dez então o prazo dele começa dia onze e cai no dia vinte e cinco eu já pedi os documentos por e-mail e ele falou que manda até segunda</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Contato telefônico com o cliente às 15h20. Cliente confirmou o recebimento da intimação no dia 10; prazo iniciado em 11, com termo final em 25. Documentos solicitados por e-mail; cliente informou que os enviará até segunda-feira.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Objetivo</b> · Grátis. Andamento em duas linhas, com horário e datas em algarismo.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>cláusula sétima o contratante se obriga a comunicar por escrito qualquer alteração de endereço no prazo de cinco dias úteis sob pena de não recebendo presumirem-se válidas as comunicações enviadas ao endereço anterior</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Cláusula sétima. O contratante se obriga a comunicar por escrito qualquer alteração de endereço no prazo de cinco dias úteis, sob pena de, não recebendo, presumirem-se válidas as comunicações enviadas ao endereço anterior.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Transcrição fiel</b> · Grátis. Nenhuma palavra trocada: só pontuação e maiúsculas. Para cláusula que não pode ser reescrita.</p>
+      </div>
+
+      <p style="margin-top:22px;font-size:14.5px;color:var(--faint);max-width:62ch">
+        No fim de cada ditado a VozzAI mostra o antes e o depois — se preferir o
+        original sem ajuste nenhum, ele está ali para copiar.
+      </p>
+    </div>
+  </section>
+
+  <section id="onde">
+    <div class="wrap">
+      <p class="eyebrow">Onde isso entra no seu dia</p>
+      <h2>Onde o texto do escritório é escrito.</h2>
+      <p class="lede prose" style="margin-top:14px">A VozzAI insere o texto onde o cursor já está — não é um editor separado nem um plugin do seu sistema de gestão.</p>
+
+      <div class="grid g3" style="margin-top:32px">
+        <div class="card">
+          <h3>Word e Documentos Google</h3>
+          <p style="margin-top:9px;color:var(--muted)">A peça, o parecer e o contrato, ditados parágrafo por parágrafo em vez de digitados.</p>
+        </div>
+        <div class="card">
+          <h3>Sistemas de peticionamento no navegador</h3>
+          <p style="margin-top:9px;color:var(--muted)">Nos campos de texto comuns de PJe, e-SAJ e Projudi, pela extensão de Chrome ou pelo aplicativo de Mac.</p>
+        </div>
+        <div class="card">
+          <h3>Gmail e Outlook</h3>
+          <p style="margin-top:9px;color:var(--muted)">E-mail para cliente, para a parte contrária e para o correspondente, em tom formal.</p>
+        </div>
+        <div class="card">
+          <h3>Sistema de gestão do escritório</h3>
+          <p style="margin-top:9px;color:var(--muted)">Andamento, anotação de audiência e registro de contato, falados em segundos.</p>
+        </div>
+        <div class="card">
+          <h3>WhatsApp do cliente</h3>
+          <p style="margin-top:9px;color:var(--muted)">Aviso curto e claro, sem virar uma petição de duas linhas.</p>
+        </div>
+        <div class="card">
+          <h3>Notion, Notas e Obsidian</h3>
+          <p style="margin-top:9px;color:var(--muted)">Banco de teses, roteiro de sustentação, ideia que surgiu lendo o processo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="modos" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Qual modo usar</p>
+      <h2>Jurídico para a peça, E-mail para o cliente.</h2>
+      <p class="lede prose" style="margin-top:14px">O mesmo áudio pode virar texto formal ou nota de duas linhas. Quem escolhe é você, no painel, antes de falar.</p>
+
+      <div class="grid g2" style="margin-top:32px">
+        <div class="card">
+          <h3>Jurídico <span class="tag">Pro</span></h3>
+          <p style="margin-top:9px;color:var(--muted)">Tom formal, termos técnicos preservados e números, datas e referências escritos com fidelidade ao que você falou.</p>
+        </div>
+        <div class="card">
+          <h3>E-mail profissional</h3>
+          <p style="margin-top:9px;color:var(--muted)">Para o cliente e para o correspondente: parágrafos organizados, sem juridiquês desnecessário.</p>
+        </div>
+        <div class="card">
+          <h3>Objetivo</h3>
+          <p style="margin-top:9px;color:var(--muted)">Andamento, anotação de audiência, recado para o time. Só os fatos, sem frase de cortesia.</p>
+        </div>
+        <div class="card">
+          <h3>Transcrição fiel</h3>
+          <p style="margin-top:9px;color:var(--muted)">Cláusula contratual, citação e trecho que precisa sair exatamente como você falou. Nenhuma palavra alterada.</p>
+        </div>
+        <div class="card">
+          <h3>Padrão</h3>
+          <p style="margin-top:9px;color:var(--muted)">Quando você só quer o texto limpo e pontuado, no seu jeito de falar, para editar depois.</p>
+        </div>
+        <div class="card">
+          <h3>Dicionário pessoal</h3>
+          <p style="margin-top:9px;color:var(--muted)">Nome de parte, comarca, vara, escritório e termo que você repete todo dia — cadastrado uma vez, acertado sempre.</p>
+        </div>
+      </div>
+
+      <p style="margin-top:22px;font-size:14.5px;color:var(--faint);max-width:62ch">
+        Padrão, WhatsApp, E-mail profissional, Objetivo e Transcrição fiel estão no
+        plano grátis. Atendimento, Vendas, Jurídico, Desenvolvedor e Conteúdo
+        fazem parte do Pro.
+      </p>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap prose" style="max-width:820px">
+      <p class="eyebrow">Perguntas frequentes</p>
+      <h2>Perguntas de quem advoga.</h2>
+
+      <div style="margin-top:28px">
+      <details class="faq">
+        <summary>A VozzAI escreve a peça por mim?</summary>
+        <p>Não. Ela não redige, não pesquisa jurisprudência e não completa raciocínio: transforma o que você falou em texto formatado. A tese, a estratégia e a revisão continuam suas.</p>
+      </details>
+      <details class="faq">
+        <summary>Ela acerta artigo, prazo e número de processo?</summary>
+        <p>O modo Jurídico preserva números, datas e referências como você as falou e escreve na forma usual — “art. 434 do CPC”, “15 (quinze) dias”, “R$ 42.500,00”. Mesmo assim, confira todo número antes de protocolar: a conferência é sua.</p>
+      </details>
+      <details class="faq">
+        <summary>Funciona dentro do PJe e do e-SAJ?</summary>
+        <p>Nos campos de texto comuns desses sistemas, sim: no Mac o aplicativo insere onde o cursor está, e no navegador a extensão de Chrome faz o mesmo. Editores embutidos que não se comportam como campo de texto padrão podem não aceitar a inserção — nesse caso o texto fica na área de transferência para você colar.</p>
+      </details>
+      <details class="faq">
+        <summary>O conteúdo sigiloso do meu cliente fica gravado?</summary>
+        <p>O áudio é descartado depois de gerar o texto, não fica em disco nem no servidor. O texto não é armazenado no nosso servidor: o histórico fica só no seu computador e apagar ali apaga de verdade. No servidor guardamos apenas a contagem de palavras. Ainda assim, quem decide o que dita é você — vale o mesmo critério que você já aplica a qualquer serviço em nuvem.</p>
+      </details>
+      <details class="faq">
+        <summary>Preciso de internet para ditar?</summary>
+        <p>Sim. O áudio é transcrito e organizado em servidor. Se a conexão cair no meio do ditado, o áudio fica guardado no seu computador e você tenta de novo quando ela voltar.</p>
+      </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="baixar">
+    <div class="wrap">
+      <div class="final">
+        <h2>Dite a próxima peça em vez de digitá-la.</h2>
+        <p>Instale, escolha o modo Jurídico e fale. O plano grátis dá 2.000 palavras por semana, sem cartão.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
+          <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+          <a class="btn ghost" href="https://chromewebstore.google.com/detail/hfopblagabjnlkigjnafamfabefdilfe" data-ev="download_chrome">Instalar no Chrome</a>
+        </div>
+        <p style="margin-top:22px;font-size:14px">macOS 12 ou mais recente · Sem cartão · Pro por R$ 29,90 por mês ou R$ 249 por ano</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-grid">
+      <div>
+        <a class="logo" href="/" style="font-size:17px"><span class="dot" aria-hidden="true"></span>Vozz<span class="ai">AI</span></a>
+        <p style="margin-top:12px;max-width:34ch">
+          Ditado por voz com IA para português brasileiro. Você fala, a VozzAI escreve.
+        </p>
+      </div>
+      <div>
+        <h3>Produto</h3>
+        <ul>
+          <li><a href="/#como">Como funciona</a></li>
+          <li><a href="/#modos">Modos de escrita</a></li>
+          <li><a href="/#recursos">Recursos</a></li>
+          <li><a href="/#precos">Preços</a></li>
+          <li><a href="/#faq">Perguntas frequentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Para quem</h3>
+        <ul>
+          <li><a href="/para/atendimento.html">Atendimento</a></li>
+          <li><a href="/para/advogados.html">Advogados</a></li>
+          <li><a href="/para/vendas.html">Vendas</a></li>
+          <li><a href="/para/criadores.html">Criadores</a></li>
+          <li><a href="/para/desenvolvedores.html">Desenvolvedores</a></li>
+          <li><a href="/para/fundadores.html">Fundadores</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Legal e suporte</h3>
+        <ul>
+          <li><a href="/#privacidade">Privacidade e segurança</a></li>
+          <li><a href="/privacy.html">Política de privacidade</a></li>
+          <li><a href="/termos.html">Termos de uso</a></li>
+          <li><a href="/uso-justo.html">Uso justo</a></li>
+          <li><a href="mailto:joaobondan5@gmail.com">Falar com a gente</a></li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:13.5px;color:var(--faint)">© 2026 VozzAI · Feito no Brasil</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var API = 'https://vozzai-production.up.railway.app';
+
+  /* ---------- Telemetria de funil ----------
+     Só o nome do passo. Nenhum conteúdo, nenhum dado pessoal — o servidor
+     tem allowlist de nomes e descarta o que não conhece. */
+  function track(name) {
+    try {
+      fetch(API + '/events', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name: name, platform: 'web' }),
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-ev]');
+    if (el) track(el.getAttribute('data-ev'));
+  });
+
+  /* ---------- Menu do celular ---------- */
+  var nav = document.getElementById('nav');
+  var burger = document.getElementById('burger');
+  burger.addEventListener('click', function () {
+    var open = nav.getAttribute('data-open') === 'true';
+    nav.setAttribute('data-open', String(!open));
+    burger.setAttribute('aria-expanded', String(!open));
+    burger.setAttribute('aria-label', open ? 'Abrir menu' : 'Fechar menu');
+  });
+  document.getElementById('navLinks').addEventListener('click', function (e) {
+    if (e.target.tagName === 'A') {
+      nav.setAttribute('data-open', 'false');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
+</body>
+</html>
