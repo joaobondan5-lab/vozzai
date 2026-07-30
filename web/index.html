@@ -320,6 +320,14 @@
   .case-row p { margin-top: 5px; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
   .case-row .go { margin-top: 8px; display: inline-block; color: var(--blue); font-weight: 650; font-size: 14px; }
 
+  /* ---- Privacidade: lista em duas colunas, não seis cards iguais ---- */
+  .privacy-list { margin-top: 32px; }
+  @media (min-width: 780px) { .privacy-list { columns: 2; column-gap: 48px; } }
+  .privacy-row { padding: 20px 0; border-bottom: 1px solid var(--line); break-inside: avoid; }
+  .privacy-list .privacy-row:last-child, .privacy-list .privacy-row:nth-last-child(2) { border-bottom: 0; }
+  .privacy-row h3 { font-size: 17px; }
+  .privacy-row p { margin-top: 8px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+
   /* ---- Preços ---- */
   .price-grid { display: grid; gap: 18px; align-items: start; }
   @media (min-width: 840px) { .price-grid { grid-template-columns: 1fr 1.12fr; } }
@@ -820,51 +828,51 @@
         Sem letra miúda. Isto é exatamente o que o produto faz hoje.
       </p>
 
-      <div class="grid g2" style="margin-top:32px">
-        <div class="card">
+      <div class="privacy-list">
+        <div class="privacy-row">
           <h3>O microfone só liga quando você aperta o atalho</h3>
-          <p style="margin-top:10px;color:var(--muted)">
+          <p>
             Não existe escuta contínua nem palavra de ativação. Enquanto você não
             apertar, o microfone está desligado — e o macOS mostra o indicador
             laranja sempre que qualquer aplicativo o usa, inclusive a VozzAI.
           </p>
         </div>
-        <div class="card">
+        <div class="privacy-row">
           <h3>O áudio não é guardado</h3>
-          <p style="margin-top:10px;color:var(--muted)">
+          <p>
             A gravação é enviada, transcrita e descartada. Não é salva no seu
             computador nem no nosso servidor. Se você cancelar com <kbd>esc</kbd>,
             o áudio é descartado antes de sair da sua máquina.
           </p>
         </div>
-        <div class="card">
+        <div class="privacy-row">
           <h3>O texto ditado não fica no nosso servidor</h3>
-          <p style="margin-top:10px;color:var(--muted)">
+          <p>
             Guardamos apenas a <strong>contagem de palavras</strong>, que é o que
             aplica o limite do seu plano. O conteúdo do que você ditou não é
             armazenado no banco de dados.
           </p>
         </div>
-        <div class="card">
+        <div class="privacy-row">
           <h3>O histórico é local e você apaga</h3>
-          <p style="margin-top:10px;color:var(--muted)">
+          <p>
             Os últimos ditados ficam num arquivo no seu computador, para você
             copiar de novo se precisar. Apagar no aplicativo apaga de verdade —
             não existe cópia na nuvem.
           </p>
         </div>
-        <div class="card">
+        <div class="privacy-row">
           <h3>Quem processa o áudio</h3>
-          <p style="margin-top:10px;color:var(--muted)">
+          <p>
             A transcrição e a organização do texto usam a API da OpenAI, por
             conexão criptografada. Dados enviados pela API não são usados para
             treinar os modelos deles. Nosso servidor fica na Railway, com banco
             de dados privado.
           </p>
         </div>
-        <div class="card">
+        <div class="privacy-row">
           <h3>Nada é enviado sozinho</h3>
-          <p style="margin-top:10px;color:var(--muted)">
+          <p>
             A VozzAI insere o texto e para aí. Ela nunca aperta enviar por você —
             revisar e mandar é sempre a sua decisão.
           </p>
@@ -916,9 +924,9 @@
           <span class="plan-flag">Recomendado</span>
           <h3>Pro</h3>
           <div class="amount">
-            <b id="priceAmount">R$ 249</b><span id="priceUnit">por ano</span>
+            <b id="priceAmount">R$ 20,75</b><span id="priceUnit">por mês</span>
           </div>
-          <p style="color:var(--muted);font-size:15px" id="priceNote">Equivale a R$ 20,75 por mês — duas mensalidades de economia.</p>
+          <p style="color:var(--muted);font-size:15px" id="priceNote">Cobrado R$ 249 por ano — equivalente a duas mensalidades de economia frente ao mensal.</p>
           <ul>
             <li><strong>120.000 palavras por mês</strong> — cerca de 13 horas de fala</li>
             <li>Tudo do plano grátis</li>
@@ -1157,10 +1165,10 @@
   function setCycle(annual) {
     bAnnual.setAttribute('aria-pressed', String(annual));
     bMonthly.setAttribute('aria-pressed', String(!annual));
-    amount.textContent = annual ? 'R$ 249' : 'R$ 29,90';
-    unit.textContent = annual ? 'por ano' : 'por mês';
+    amount.textContent = annual ? 'R$ 20,75' : 'R$ 29,90';
+    unit.textContent = 'por mês';
     note.textContent = annual
-      ? 'Equivale a R$ 20,75 por mês — duas mensalidades de economia.'
+      ? 'Cobrado R$ 249 por ano — equivalente a duas mensalidades de economia frente ao mensal.'
       : 'Cobrado todo mês. Cancela quando quiser.';
   }
   bAnnual.addEventListener('click', function () { setCycle(true); });
