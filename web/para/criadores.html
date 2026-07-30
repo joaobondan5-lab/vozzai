@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>VozzAI para criadores — roteiro e legenda falando</title>
+<meta name="description" content="Roteiro, legenda, título e briefing do editor saem falando, com a sua voz preservada. Ditado por voz com IA em português do Brasil para Mac e Chrome." />
+<link rel="canonical" href="https://www.vozzai.com.br/para/criadores.html" />
+<meta name="theme-color" content="#2F6BFF" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0E1013" media="(prefers-color-scheme: dark)" />
+
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="VozzAI" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:url" content="https://www.vozzai.com.br/para/criadores.html" />
+<meta property="og:title" content="VozzAI para criadores — roteiro e legenda falando" />
+<meta property="og:description" content="Você fala bem na câmera e trava na tela branca. Fale a legenda e o roteiro; a VozzAI escreve mantendo a sua voz." />
+<meta property="og:image" content="https://www.vozzai.com.br/og.png" />
+<meta property="og:image:alt" content="VozzAI — ditado por voz com IA em português brasileiro" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="VozzAI para criadores — roteiro e legenda falando" />
+<meta name="twitter:description" content="Você fala bem na câmera e trava na tela branca. Fale a legenda e o roteiro; a VozzAI escreve mantendo a sua voz." />
+<meta name="twitter:image" content="https://www.vozzai.com.br/og.png" />
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/vozzai.css" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "A VozzAI cria conteúdo por mim?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Não. Ela não gera ideia, não escreve no seu lugar e não inventa informação: transforma o que você falou em texto organizado. O modo Conteúdo formata sem trocar a sua voz pela de um redator qualquer."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "O texto sai com cara de IA?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Depende do modo. Conteúdo e Padrão mantêm as suas palavras e o seu ritmo; Transcrição fiel não troca palavra nenhuma, só pontua. Se você fala com gíria, a gíria fica — o que sai é a hesitação, a repetição e o gaguejo."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Dá para ditar ideia solta agora e organizar depois?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim. Os últimos ditados ficam no histórico, salvo no seu próprio computador, e você copia de lá quando for montar o roteiro. Apagar ali apaga de verdade."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Funciona no meu celular?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Não. Hoje a VozzAI é aplicativo de Mac e extensão de Chrome. A versão para Windows está em desenvolvimento; de celular, ainda não."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Para quem posta todo dia, vale o Pro?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "O grátis são 2.000 palavras por semana, boas para testar em algumas legendas. Se você escreve roteiro e descrição todo dia, o Pro sai por R$ 29,90 por mês ou R$ 249 por ano, com 120.000 palavras por mês e o modo Conteúdo liberado."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  /* ---- Estilos desta página. Tokens e componentes base em /vozzai.css ---- */
+
+  .nav {
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-in { display: flex; align-items: center; gap: 20px; min-height: 64px; }
+  .logo {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--f-display); font-weight: 700; font-size: 19px;
+    letter-spacing: -.02em; color: var(--ink); text-decoration: none;
+  }
+  .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue); }
+  .logo .ai { color: var(--blue); }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 550;
+    padding: 6px 0; border-bottom: 2px solid transparent;
+  }
+  .nav-links a:hover { color: var(--ink); border-bottom-color: var(--blue); }
+  .nav-cta { display: flex; align-items: center; gap: 10px; }
+  .burger { display: none; }
+
+  @media (max-width: 980px) {
+    .nav-links, .desktop-only { display: none; }
+    .burger {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; min-width: 44px; margin-left: auto;
+      background: none; border: 1px solid var(--line); border-radius: var(--r-sm);
+      color: var(--ink); font-size: 19px; cursor: pointer;
+    }
+    .nav[data-open="true"] .nav-links {
+      display: flex; flex-direction: column; gap: 0;
+      position: absolute; left: 0; right: 0; top: 100%;
+      background: var(--surface); border-bottom: 1px solid var(--line);
+      padding: 4px var(--pad-page) 14px; box-shadow: var(--shadow);
+    }
+    .nav[data-open="true"] .nav-links a {
+      padding: 15px 0; border-bottom: 1px solid var(--line); font-size: 17px;
+    }
+  }
+
+  /* ---- Hero ---- */
+  .hero { padding: clamp(36px, 5.5vw, 72px) 0 clamp(24px, 4vw, 44px); }
+  .hero h1 span { color: var(--blue); }
+  .hero .lede { margin-top: 18px; max-width: 54ch; }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .reassure {
+    margin-top: 16px; font-size: 14.5px; color: var(--faint);
+    display: flex; flex-wrap: wrap; gap: 8px 14px;
+  }
+  .platforms {
+    margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; font-size: 14.5px;
+  }
+  .plat { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); }
+  .plat b { color: var(--ink); font-weight: 650; }
+  .live-dot { color: var(--green); font-weight: 700; }
+
+  /* ---- Antes e depois ---- */
+  .ab-pair { display: grid; gap: 16px; }
+  @media (min-width: 800px) { .ab-pair { grid-template-columns: 1fr auto 1fr; align-items: start; } }
+  .ab-arrow { display: grid; place-items: center; color: var(--blue); font-size: 26px; font-weight: 700; }
+  .ab-box { padding-left: 16px; }
+  /* Rótulo de coluna, não título de seção — por isso é <p>, e não <h4>:
+     assim a hierarquia de heading da página continua h1 → h2 → h3. */
+  .ab-box .ab-who {
+    font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 10px;
+  }
+  .ab-box p { font-size: 16.5px; line-height: 1.62; }
+  .ab-box p + p { margin-top: .75em; }
+  .ab-box .ab-who + p { margin-top: 0; }
+  .ab-said { border-left: 3px solid var(--line); }
+  .ab-said p { color: var(--muted); }
+  .ab-wrote { border-left: 3px solid var(--blue); }
+  .ab-mode {
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);
+    font-size: 14px; color: var(--faint);
+  }
+  .ab-mode b { color: var(--ink); font-weight: 650; }
+
+  /* ---- FAQ ---- */
+  details.faq { border-bottom: 1px solid var(--line); }
+  details.faq summary {
+    cursor: pointer; padding: 19px 0; font-size: 17.5px; font-weight: 650;
+    list-style: none; display: flex; gap: 14px; align-items: center; min-height: 44px;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after { content: "+"; margin-left: auto; color: var(--blue); font-size: 25px; font-weight: 400; line-height: 1; }
+  details.faq[open] summary::after { content: "\2013"; }
+  details.faq p { padding: 0 0 20px; color: var(--muted); max-width: 68ch; }
+
+  /* ---- Faixa final ---- */
+  .final { background: var(--ink); color: var(--bg); border-radius: var(--r-xl); padding: clamp(32px, 5vw, 64px); text-align: center; }
+  .final h2 { color: var(--bg); }
+  .final p { color: color-mix(in srgb, var(--bg) 72%, transparent); margin: 16px auto 28px; max-width: 46ch; }
+  .final .btn { --btn-bg: var(--bg); --btn-fg: var(--ink); }
+  .final .btn:hover { --btn-bg: #fff; }
+  .final .btn.ghost { --btn-bg: transparent; --btn-fg: var(--bg); border-color: color-mix(in srgb, var(--bg) 34%, transparent); }
+  .final .btn.ghost:hover { --btn-bg: color-mix(in srgb, var(--bg) 12%, transparent); }
+
+  /* ---- Rodapé ---- */
+  .ft { border-top: 1px solid var(--line); padding: 48px 0 40px; font-size: 14.5px; color: var(--muted); }
+  .ft-grid { display: grid; gap: 28px; margin-bottom: 32px; }
+  @media (min-width: 740px) { .ft-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr; } }
+  /* Mesmo visual do rodapé da index. Aqui as colunas são <h3> e não <h4>
+     para a página não pular de h2 direto para h4. */
+  .ft h3 { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
+  .ft ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+  .ft a { color: var(--muted); text-decoration: none; }
+  .ft a:hover { color: var(--ink); text-decoration: underline; }
+
+  /* ---- Trilha de volta para a index ---- */
+  .crumb { font-size: 14px; color: var(--faint); padding-top: 18px; }
+  .crumb a { color: var(--muted); text-decoration: none; }
+  .crumb a:hover { color: var(--ink); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="VozzAI, página inicial">
+      <span class="dot" aria-hidden="true"></span>Vozz<span class="ai">AI</span>
+    </a>
+
+    <nav class="nav-links" id="navLinks" aria-label="Navegação principal">
+      <a href="/#como">Como funciona</a>
+      <a href="/#casos">Casos de uso</a>
+      <a href="/#recursos">Recursos</a>
+      <a href="/#precos">Preços</a>
+      <a href="/#privacidade">Segurança</a>
+    </nav>
+
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="navLinks" aria-label="Abrir menu">☰</button>
+
+    <div class="nav-cta">
+      <a class="btn ghost small desktop-only" href="/#precos">Entrar</a>
+      <a class="btn small" href="#baixar" data-ev="cta_header">Baixar grátis</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <p class="crumb wrap"><a href="/">VozzAI</a> → <a href="/#casos">Casos de uso</a> → Criadores</p>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Para criadores de conteúdo</p>
+      <h1>Você fala bem na câmera. Na <span>tela branca</span>, trava.</h1>
+      <p class="lede">Gancho, roteiro, legenda, título e o briefing do editor: tudo isso é texto, e texto é o que atrasa a publicação. Fale como você fala no vídeo e a VozzAI escreve mantendo a sua voz.</p>
+
+      <div class="hero-ctas">
+        <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+        <a class="btn ghost" href="/#como">Ver como a VozzAI funciona</a>
+      </div>
+
+      <p class="reassure">
+        <span>macOS 12 ou mais recente</span>
+        <span aria-hidden="true">·</span>
+        <span>Sem cartão</span>
+        <span aria-hidden="true">·</span>
+        <span>2.000 palavras por semana no plano grátis</span>
+      </p>
+
+      <div class="platforms">
+        <span class="plat"><b>Mac</b> <span class="live-dot" aria-hidden="true">●</span> disponível</span>
+        <span class="plat"><b>Chrome</b> <span class="live-dot" aria-hidden="true">●</span> extensão disponível</span>
+        <span class="plat"><b>Windows</b> <span class="tag soon">Em breve</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="dor">
+    <div class="wrap">
+      <p class="eyebrow">A dor</p>
+      <h2>A ideia é boa falada. Escrita, ela esfria.</h2>
+      <p class="lede prose" style="margin-top:14px">Criar conteúdo é um trabalho de fala que cobra um imposto em digitação: cada peça gravada gera legenda, título, descrição e briefing.</p>
+
+      <div class="grid g3" style="margin-top:32px">
+        <div class="card">
+          <h3>A ideia nasce na rua e morre no caminho</h3>
+          <p style="margin-top:9px;color:var(--muted)">O gancho aparece andando ou no banho. Quando você senta na frente do computador, sobrou uma versão morna do que era bom.</p>
+        </div>
+        <div class="card">
+          <h3>A legenda quebra o ritmo da produção</h3>
+          <p style="margin-top:9px;color:var(--muted)">Gravou três vídeos e agora faltam três legendas, três títulos e três descrições. É a etapa que faz o lote parado esperar semanas.</p>
+        </div>
+        <div class="card">
+          <h3>Escrevendo devagar, você se autocensura</h3>
+          <p style="margin-top:9px;color:var(--muted)">Falando você arrisca a frase. Digitando você apaga, reescreve, ameniza — e o texto perde justamente o que fazia você parecer você.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="antes-depois" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Antes e depois</p>
+      <h2>A sua voz sai voz, não texto de marca.</h2>
+      <p class="lede prose" style="margin-top:14px">Fala crua, com “é…”, gíria e mudança de ideia no meio, e o que a VozzAI entrega. A gíria que é sua fica; o vício de fala sai.</p>
+
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>então ó a ideia do vídeo é assim eu começo falando que ninguém te conta que o primeiro ano é caro né depois eu mostro os três erros que eu cometi que foi comprar equipamento antes de ter público é… contratar edição muito cedo e o terceiro é querer postar todo dia e no final eu falo o que eu faria diferente hoje</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Roteiro do vídeo</p>
+            <p>Abertura: ninguém te conta que o primeiro ano é caro.</p>
+            <p>Três erros que eu cometi: 1) comprei equipamento antes de ter público; 2) contratei edição muito cedo; 3) quis postar todos os dias.</p>
+            <p>Fechamento: o que eu faria diferente hoje.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Conteúdo (Pro)</b> · Vira estrutura numerada sem trocar as suas palavras pelas de um redator genérico.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>legenda assim ó a sua mesa não tá bagunçada porque você é desorganizado tá bagunçada porque cada coisa ali não tem um lugar definido é… quando tudo tem lugar arrumar deixa de ser tarefa e vira dois minutos salva esse post pra quando você for arrumar a sua</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>A sua mesa não está bagunçada porque você é desorganizado. Está bagunçada porque cada coisa ali não tem um lugar definido.</p>
+            <p>Quando tudo tem lugar, arrumar deixa de ser tarefa e vira dois minutos.</p>
+            <p>Salva esse post para quando for arrumar a sua.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Conteúdo (Pro)</b> · Quebra em blocos que funcionam no feed e mantém a chamada que você falou.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>quero que você aja como um editor e me dê três títulos pra esse vídeo sobre organização de mesa cada um com no máximo sessenta caracteres sem usar dois pontos e sem promessa exagerada</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Aja como um editor. Dê três títulos para este vídeo sobre organização de mesa. Cada título com no máximo 60 caracteres. Não use dois-pontos e evite promessas exageradas.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Objetivo</b> · Grátis. Prompt limpo para colar no assistente que você já usa — falar um prompt longo é bem mais rápido que digitá-lo.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>ó Tiago no vídeo de quinta corta os primeiros oito segundos que eu enrolei ali e põe a legenda queimada só nos trechos que eu falo número tá e o final aquele plano da mesa deixa três segundos mais longo que eu vou pôr o call ali</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Tiago, no vídeo de quinta: corta os primeiros oito segundos, que ficaram arrastados. Coloca legenda queimada apenas nos trechos em que eu falo números. E o final, aquele plano da mesa, deixa três segundos mais longo — vou colocar a chamada ali.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>WhatsApp</b> · Grátis. Briefing do editor sem áudio de cinco minutos para ele ouvir duas vezes.</p>
+      </div>
+
+      <p style="margin-top:22px;font-size:14.5px;color:var(--faint);max-width:62ch">
+        No fim de cada ditado a VozzAI mostra o antes e o depois — se preferir o
+        original sem ajuste nenhum, ele está ali para copiar.
+      </p>
+    </div>
+  </section>
+
+  <section id="onde">
+    <div class="wrap">
+      <p class="eyebrow">Onde isso entra no seu dia</p>
+      <h2>Nos lugares onde o conteúdo é escrito.</h2>
+      <p class="lede prose" style="margin-top:14px">A VozzAI não é um editor de texto: ela escreve onde o seu cursor está. No Mac, em qualquer aplicativo; no navegador, pela extensão de Chrome.</p>
+
+      <div class="grid g3" style="margin-top:32px">
+        <div class="card">
+          <h3>Instagram e TikTok no navegador</h3>
+          <p style="margin-top:9px;color:var(--muted)">Legenda e primeiro comentário, ditados na hora de publicar em vez de escritos no celular.</p>
+        </div>
+        <div class="card">
+          <h3>YouTube Studio</h3>
+          <p style="margin-top:9px;color:var(--muted)">Título, descrição e capítulos — a parte que sempre fica para depois e derruba o alcance.</p>
+        </div>
+        <div class="card">
+          <h3>Notion, Notas e Obsidian</h3>
+          <p style="margin-top:9px;color:var(--muted)">Banco de ideias e ganchos. Falar a ideia inteira demora menos do que digitar meia.</p>
+        </div>
+        <div class="card">
+          <h3>Documentos Google e Word</h3>
+          <p style="margin-top:9px;color:var(--muted)">Roteiro completo, ditado em blocos, do jeito que você vai falar na câmera.</p>
+        </div>
+        <div class="card">
+          <h3>Assistentes de IA no navegador</h3>
+          <p style="margin-top:9px;color:var(--muted)">Prompt longo com contexto de verdade — o tipo que você não digita porque dá preguiça.</p>
+        </div>
+        <div class="card">
+          <h3>WhatsApp e Telegram</h3>
+          <p style="margin-top:9px;color:var(--muted)">Briefing do editor, alinhamento com a marca e resposta de proposta de publi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="modos" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Qual modo usar</p>
+      <h2>Conteúdo para publicar, Objetivo para pedir.</h2>
+      <p class="lede prose" style="margin-top:14px">O modo define se a fala sai como texto seu, pronto para publicar, ou como instrução curta para outra pessoa (ou para uma IA).</p>
+
+      <div class="grid g2" style="margin-top:32px">
+        <div class="card">
+          <h3>Conteúdo <span class="tag">Pro</span></h3>
+          <p style="margin-top:9px;color:var(--muted)">Legenda, roteiro e lista de tópicos mantendo a sua voz. É o modo de quem publica com a própria cara.</p>
+        </div>
+        <div class="card">
+          <h3>Padrão</h3>
+          <p style="margin-top:9px;color:var(--muted)">Texto limpo e pontuado, fiel ao seu jeito de falar. Bom para primeiro rascunho que você vai lapidar.</p>
+        </div>
+        <div class="card">
+          <h3>Objetivo</h3>
+          <p style="margin-top:9px;color:var(--muted)">Prompt para assistente de IA, briefing e pedido: frases curtas, sem redundância.</p>
+        </div>
+        <div class="card">
+          <h3>WhatsApp</h3>
+          <p style="margin-top:9px;color:var(--muted)">Recado para editor, designer e parceria — tom de conversa, sem virar e-mail.</p>
+        </div>
+        <div class="card">
+          <h3>E-mail profissional</h3>
+          <p style="margin-top:9px;color:var(--muted)">Proposta de publi, negociação com marca e envio de mídia kit em parágrafos organizados.</p>
+        </div>
+        <div class="card">
+          <h3>Transcrição fiel</h3>
+          <p style="margin-top:9px;color:var(--muted)">Para o banco de ideias: a frase exatamente como saiu, sem nenhum ajuste que possa apagar o achado.</p>
+        </div>
+      </div>
+
+      <p style="margin-top:22px;font-size:14.5px;color:var(--faint);max-width:62ch">
+        Padrão, WhatsApp, E-mail profissional, Objetivo e Transcrição fiel estão no
+        plano grátis. Atendimento, Vendas, Jurídico, Desenvolvedor e Conteúdo
+        fazem parte do Pro.
+      </p>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap prose" style="max-width:820px">
+      <p class="eyebrow">Perguntas frequentes</p>
+      <h2>Perguntas de quem cria.</h2>
+
+      <div style="margin-top:28px">
+      <details class="faq">
+        <summary>A VozzAI cria conteúdo por mim?</summary>
+        <p>Não. Ela não gera ideia, não escreve no seu lugar e não inventa informação: transforma o que você falou em texto organizado. O modo Conteúdo formata sem trocar a sua voz pela de um redator qualquer.</p>
+      </details>
+      <details class="faq">
+        <summary>O texto sai com cara de IA?</summary>
+        <p>Depende do modo. Conteúdo e Padrão mantêm as suas palavras e o seu ritmo; Transcrição fiel não troca palavra nenhuma, só pontua. Se você fala com gíria, a gíria fica — o que sai é a hesitação, a repetição e o gaguejo.</p>
+      </details>
+      <details class="faq">
+        <summary>Dá para ditar ideia solta agora e organizar depois?</summary>
+        <p>Sim. Os últimos ditados ficam no histórico, salvo no seu próprio computador, e você copia de lá quando for montar o roteiro. Apagar ali apaga de verdade.</p>
+      </details>
+      <details class="faq">
+        <summary>Funciona no meu celular?</summary>
+        <p>Não. Hoje a VozzAI é aplicativo de Mac e extensão de Chrome. A versão para Windows está em desenvolvimento; de celular, ainda não.</p>
+      </details>
+      <details class="faq">
+        <summary>Para quem posta todo dia, vale o Pro?</summary>
+        <p>O grátis são 2.000 palavras por semana, boas para testar em algumas legendas. Se você escreve roteiro e descrição todo dia, o Pro sai por R$ 29,90 por mês ou R$ 249 por ano, com 120.000 palavras por mês e o modo Conteúdo liberado.</p>
+      </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="baixar">
+    <div class="wrap">
+      <div class="final">
+        <h2>Fale a legenda em vez de encarar o cursor piscando.</h2>
+        <p>Instale, aperte o atalho e fale a próxima ideia. O plano grátis dá 2.000 palavras por semana, sem cartão.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
+          <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+          <a class="btn ghost" href="https://chromewebstore.google.com/detail/hfopblagabjnlkigjnafamfabefdilfe" data-ev="download_chrome">Instalar no Chrome</a>
+        </div>
+        <p style="margin-top:22px;font-size:14px">macOS 12 ou mais recente · Sem cartão · Pro por R$ 29,90 por mês ou R$ 249 por ano</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-grid">
+      <div>
+        <a class="logo" href="/" style="font-size:17px"><span class="dot" aria-hidden="true"></span>Vozz<span class="ai">AI</span></a>
+        <p style="margin-top:12px;max-width:34ch">
+          Ditado por voz com IA para português brasileiro. Você fala, a VozzAI escreve.
+        </p>
+      </div>
+      <div>
+        <h3>Produto</h3>
+        <ul>
+          <li><a href="/#como">Como funciona</a></li>
+          <li><a href="/#modos">Modos de escrita</a></li>
+          <li><a href="/#recursos">Recursos</a></li>
+          <li><a href="/#precos">Preços</a></li>
+          <li><a href="/#faq">Perguntas frequentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Para quem</h3>
+        <ul>
+          <li><a href="/para/atendimento.html">Atendimento</a></li>
+          <li><a href="/para/advogados.html">Advogados</a></li>
+          <li><a href="/para/vendas.html">Vendas</a></li>
+          <li><a href="/para/criadores.html">Criadores</a></li>
+          <li><a href="/para/desenvolvedores.html">Desenvolvedores</a></li>
+          <li><a href="/para/fundadores.html">Fundadores</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Legal e suporte</h3>
+        <ul>
+          <li><a href="/#privacidade">Privacidade e segurança</a></li>
+          <li><a href="/privacy.html">Política de privacidade</a></li>
+          <li><a href="/termos.html">Termos de uso</a></li>
+          <li><a href="/uso-justo.html">Uso justo</a></li>
+          <li><a href="mailto:joaobondan5@gmail.com">Falar com a gente</a></li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:13.5px;color:var(--faint)">© 2026 VozzAI · Feito no Brasil</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var API = 'https://vozzai-production.up.railway.app';
+
+  /* ---------- Telemetria de funil ----------
+     Só o nome do passo. Nenhum conteúdo, nenhum dado pessoal — o servidor
+     tem allowlist de nomes e descarta o que não conhece. */
+  function track(name) {
+    try {
+      fetch(API + '/events', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name: name, platform: 'web' }),
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-ev]');
+    if (el) track(el.getAttribute('data-ev'));
+  });
+
+  /* ---------- Menu do celular ---------- */
+  var nav = document.getElementById('nav');
+  var burger = document.getElementById('burger');
+  burger.addEventListener('click', function () {
+    var open = nav.getAttribute('data-open') === 'true';
+    nav.setAttribute('data-open', String(!open));
+    burger.setAttribute('aria-expanded', String(!open));
+    burger.setAttribute('aria-label', open ? 'Abrir menu' : 'Fechar menu');
+  });
+  document.getElementById('navLinks').addEventListener('click', function (e) {
+    if (e.target.tagName === 'A') {
+      nav.setAttribute('data-open', 'false');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
+</body>
+</html>

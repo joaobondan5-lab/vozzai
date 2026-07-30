@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>VozzAI para fundadores — pense falando, escreva já</title>
+<meta name="description" content="Decisão, briefing, update de investidor e resposta difícil saem falando, entre duas reuniões. Ditado por voz com IA em português do Brasil no Mac." />
+<link rel="canonical" href="https://www.vozzai.com.br/para/fundadores.html" />
+<meta name="theme-color" content="#2F6BFF" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0E1013" media="(prefers-color-scheme: dark)" />
+
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="VozzAI" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:url" content="https://www.vozzai.com.br/para/fundadores.html" />
+<meta property="og:title" content="VozzAI para fundadores — pense falando, escreva já" />
+<meta property="og:description" content="Você pensa falando e o teclado atrasa a decisão. Fale o raciocínio e receba o texto que o time e o investidor conseguem ler." />
+<meta property="og:image" content="https://www.vozzai.com.br/og.png" />
+<meta property="og:image:alt" content="VozzAI — ditado por voz com IA em português brasileiro" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="VozzAI para fundadores — pense falando, escreva já" />
+<meta name="twitter:description" content="Você pensa falando e o teclado atrasa a decisão. Fale o raciocínio e receba o texto que o time e o investidor conseguem ler." />
+<meta name="twitter:image" content="https://www.vozzai.com.br/og.png" />
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/vozzai.css" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Serve para pensar em voz alta e organizar depois?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim. Use Transcrição fiel para guardar o raciocínio sem nenhum ajuste, ou Objetivo para já sair estruturado. Os últimos ditados ficam no histórico, salvo no seu próprio computador."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "E se eu mudar de ideia no meio da frase?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fica a versão final, não as duas. A VozzAI entende a correção — “na porta 3001, não, na 3003” sai como 3003 — e remove hesitação, repetição e gaguejo."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Meu time precisa instalar algo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cada pessoa instala no próprio Mac ou usa a extensão de Chrome, com a sua própria conta. Hoje o plano é individual: não existe plano de equipe com faturamento único."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Assunto estratégico meu fica armazenado em algum servidor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "O áudio é descartado depois de gerar o texto e o texto não é armazenado no nosso servidor — o histórico fica só no seu computador. No servidor guardamos apenas a contagem de palavras, para aplicar o limite do plano."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quanto custa e dá para cancelar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "O grátis são 2.000 palavras por semana. O Pro sai por R$ 29,90 por mês ou R$ 249 por ano, com 120.000 palavras por mês e os dez modos. A cobrança é pelo Mercado Pago e pode ser cancelada por lá quando quiser, sem multa — o acesso Pro continua até o fim do período pago."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  /* ---- Estilos desta página. Tokens e componentes base em /vozzai.css ---- */
+
+  .nav {
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-in { display: flex; align-items: center; gap: 20px; min-height: 64px; }
+  .logo {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--f-display); font-weight: 700; font-size: 19px;
+    letter-spacing: -.02em; color: var(--ink); text-decoration: none;
+  }
+  .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue); }
+  .logo .ai { color: var(--blue); }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 550;
+    padding: 6px 0; border-bottom: 2px solid transparent;
+  }
+  .nav-links a:hover { color: var(--ink); border-bottom-color: var(--blue); }
+  .nav-cta { display: flex; align-items: center; gap: 10px; }
+  .burger { display: none; }
+
+  @media (max-width: 980px) {
+    .nav-links, .desktop-only { display: none; }
+    .burger {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; min-width: 44px; margin-left: auto;
+      background: none; border: 1px solid var(--line); border-radius: var(--r-sm);
+      color: var(--ink); font-size: 19px; cursor: pointer;
+    }
+    .nav[data-open="true"] .nav-links {
+      display: flex; flex-direction: column; gap: 0;
+      position: absolute; left: 0; right: 0; top: 100%;
+      background: var(--surface); border-bottom: 1px solid var(--line);
+      padding: 4px var(--pad-page) 14px; box-shadow: var(--shadow);
+    }
+    .nav[data-open="true"] .nav-links a {
+      padding: 15px 0; border-bottom: 1px solid var(--line); font-size: 17px;
+    }
+  }
+
+  /* ---- Hero ---- */
+  .hero { padding: clamp(36px, 5.5vw, 72px) 0 clamp(24px, 4vw, 44px); }
+  .hero h1 span { color: var(--blue); }
+  .hero .lede { margin-top: 18px; max-width: 54ch; }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .reassure {
+    margin-top: 16px; font-size: 14.5px; color: var(--faint);
+    display: flex; flex-wrap: wrap; gap: 8px 14px;
+  }
+  .platforms {
+    margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; font-size: 14.5px;
+  }
+  .plat { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); }
+  .plat b { color: var(--ink); font-weight: 650; }
+  .live-dot { color: var(--green); font-weight: 700; }
+
+  /* ---- Antes e depois ---- */
+  .ab-pair { display: grid; gap: 16px; }
+  @media (min-width: 800px) { .ab-pair { grid-template-columns: 1fr auto 1fr; align-items: start; } }
+  .ab-arrow { display: grid; place-items: center; color: var(--blue); font-size: 26px; font-weight: 700; }
+  .ab-box { padding-left: 16px; }
+  /* Rótulo de coluna, não título de seção — por isso é <p>, e não <h4>:
+     assim a hierarquia de heading da página continua h1 → h2 → h3. */
+  .ab-box .ab-who {
+    font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 10px;
+  }
+  .ab-box p { font-size: 16.5px; line-height: 1.62; }
+  .ab-box p + p { margin-top: .75em; }
+  .ab-box .ab-who + p { margin-top: 0; }
+  .ab-said { border-left: 3px solid var(--line); }
+  .ab-said p { color: var(--muted); }
+  .ab-wrote { border-left: 3px solid var(--blue); }
+  .ab-mode {
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);
+    font-size: 14px; color: var(--faint);
+  }
+  .ab-mode b { color: var(--ink); font-weight: 650; }
+
+  /* ---- FAQ ---- */
+  details.faq { border-bottom: 1px solid var(--line); }
+  details.faq summary {
+    cursor: pointer; padding: 19px 0; font-size: 17.5px; font-weight: 650;
+    list-style: none; display: flex; gap: 14px; align-items: center; min-height: 44px;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after { content: "+"; margin-left: auto; color: var(--blue); font-size: 25px; font-weight: 400; line-height: 1; }
+  details.faq[open] summary::after { content: "\2013"; }
+  details.faq p { padding: 0 0 20px; color: var(--muted); max-width: 68ch; }
+
+  /* ---- Faixa final ---- */
+  .final { background: var(--ink); color: var(--bg); border-radius: var(--r-xl); padding: clamp(32px, 5vw, 64px); text-align: center; }
+  .final h2 { color: var(--bg); }
+  .final p { color: color-mix(in srgb, var(--bg) 72%, transparent); margin: 16px auto 28px; max-width: 46ch; }
+  .final .btn { --btn-bg: var(--bg); --btn-fg: var(--ink); }
+  .final .btn:hover { --btn-bg: #fff; }
+  .final .btn.ghost { --btn-bg: transparent; --btn-fg: var(--bg); border-color: color-mix(in srgb, var(--bg) 34%, transparent); }
+  .final .btn.ghost:hover { --btn-bg: color-mix(in srgb, var(--bg) 12%, transparent); }
+
+  /* ---- Rodapé ---- */
+  .ft { border-top: 1px solid var(--line); padding: 48px 0 40px; font-size: 14.5px; color: var(--muted); }
+  .ft-grid { display: grid; gap: 28px; margin-bottom: 32px; }
+  @media (min-width: 740px) { .ft-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr; } }
+  /* Mesmo visual do rodapé da index. Aqui as colunas são <h3> e não <h4>
+     para a página não pular de h2 direto para h4. */
+  .ft h3 { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
+  .ft ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+  .ft a { color: var(--muted); text-decoration: none; }
+  .ft a:hover { color: var(--ink); text-decoration: underline; }
+
+  /* ---- Trilha de volta para a index ---- */
+  .crumb { font-size: 14px; color: var(--faint); padding-top: 18px; }
+  .crumb a { color: var(--muted); text-decoration: none; }
+  .crumb a:hover { color: var(--ink); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="VozzAI, página inicial">
+      <span class="dot" aria-hidden="true"></span>Vozz<span class="ai">AI</span>
+    </a>
+
+    <nav class="nav-links" id="navLinks" aria-label="Navegação principal">
+      <a href="/#como">Como funciona</a>
+      <a href="/#casos">Casos de uso</a>
+      <a href="/#recursos">Recursos</a>
+      <a href="/#precos">Preços</a>
+      <a href="/#privacidade">Segurança</a>
+    </nav>
+
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="navLinks" aria-label="Abrir menu">☰</button>
+
+    <div class="nav-cta">
+      <a class="btn ghost small desktop-only" href="/#precos">Entrar</a>
+      <a class="btn small" href="#baixar" data-ev="cta_header">Baixar grátis</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <p class="crumb wrap"><a href="/">VozzAI</a> → <a href="/#casos">Casos de uso</a> → Fundadores</p>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Para fundadores</p>
+      <h1>Você pensa falando. O teclado <span>atrasa a decisão</span>.</h1>
+      <p class="lede">Briefing do time, decisão registrada, update do investidor, a resposta difícil que você está postergando. Fale o raciocínio inteiro e a VozzAI entrega o texto pronto para mandar.</p>
+
+      <div class="hero-ctas">
+        <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+        <a class="btn ghost" href="/#como">Ver como a VozzAI funciona</a>
+      </div>
+
+      <p class="reassure">
+        <span>macOS 12 ou mais recente</span>
+        <span aria-hidden="true">·</span>
+        <span>Sem cartão</span>
+        <span aria-hidden="true">·</span>
+        <span>2.000 palavras por semana no plano grátis</span>
+      </p>
+
+      <div class="platforms">
+        <span class="plat"><b>Mac</b> <span class="live-dot" aria-hidden="true">●</span> disponível</span>
+        <span class="plat"><b>Chrome</b> <span class="live-dot" aria-hidden="true">●</span> extensão disponível</span>
+        <span class="plat"><b>Windows</b> <span class="tag soon">Em breve</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="dor">
+    <div class="wrap">
+      <p class="eyebrow">A dor</p>
+      <h2>No começo, quem escreve tudo é você.</h2>
+      <p class="lede prose" style="margin-top:14px">Não tem redator, nem chefe de gabinete, nem alguém para transformar a sua ideia em texto. Cada frase que sai da empresa passou pelas suas mãos.</p>
+
+      <div class="grid g3" style="margin-top:32px">
+        <div class="card">
+          <h3>Trinta textos pendentes, todos seus</h3>
+          <p style="margin-top:9px;color:var(--muted)">Resposta ao investidor, briefing do dev, feedback, post, e-mail de contratação, cobrança de fornecedor. Nenhum deles alguém escreve por você.</p>
+        </div>
+        <div class="card">
+          <h3>Decisão que fica na sua cabeça não vira alinhamento</h3>
+          <p style="margin-top:9px;color:var(--muted)">Você decidiu no chuveiro e explicou por áudio picado. Duas semanas depois ninguém lembra o motivo — e a decisão volta para a mesa.</p>
+        </div>
+        <div class="card">
+          <h3>O texto importante sobra para a noite</h3>
+          <p style="margin-top:9px;color:var(--muted)">É sempre o mesmo: o que exige mais cuidado é o último da fila, escrito às 23h, quando a sua escrita já está no pior momento do dia.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="antes-depois" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Antes e depois</p>
+      <h2>Do raciocínio falado ao texto que o time lê.</h2>
+      <p class="lede prose" style="margin-top:14px">Fala real, com pausa, correção e “é…” no meio, e o texto que a VozzAI devolve. Ela organiza o que você falou; não decide nada no seu lugar.</p>
+
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>ó registra a decisão assim a gente vai adiar o lançamento do Windows pra depois do plano anual porque hoje quem paga é o pessoal de Mac e o suporte de Windows ia consumir a semana inteira e a gente revisa isso quando a lista de espera é… quando ela dobrar de tamanho</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Decisão: adiar o lançamento da versão para Windows para depois do plano anual.</p>
+            <p>Motivo: hoje a receita vem dos usuários de Mac, e dar suporte a Windows consumiria a semana inteira do time.</p>
+            <p>Quando revisar: quando a lista de espera dobrar de tamanho.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Objetivo</b> · Grátis. Decisão, motivo e gatilho de revisão separados — do jeito que se lê três meses depois.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>oi Fernanda tudo bem então update rápido do mês é… a gente cresceu menos do que eu queria em assinatura mas o uso por pessoa subiu bastante o que me diz que quem entra fica então o problema agora é topo de funil e não retenção por isso eu vou colocar o próximo mês inteiro em conteúdo e parceria e… se você tiver indicação de canal eu aceito</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Olá, Fernanda. Tudo bem?</p>
+            <p>Update rápido do mês. O crescimento em assinaturas ficou abaixo do que eu esperava, mas o uso por pessoa subiu de forma significativa — o que indica que quem entra permanece.</p>
+            <p>Leitura: o gargalo hoje é topo de funil, não retenção. Vou dedicar o próximo mês inteiro a conteúdo e parcerias.</p>
+            <p>Se você tiver indicação de algum canal, agradeço.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>E-mail profissional</b> · Grátis. Update em parágrafos, com a leitura separada do dado — e sem número que você não falou.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>ó Léo pra amanhã o mais importante é o bug do atalho que trava quando o app fica muito tempo aberto isso a gente tem que resolver antes de qualquer coisa depois se der tempo a tela de preço no celular tá quebrada mas isso pode ficar pra quinta o resto tudo pode esperar</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Léo, prioridade para amanhã: o bug do atalho que trava quando o app fica muito tempo aberto — isso vem antes de qualquer outra coisa. Se sobrar tempo, a tela de preços no celular está quebrada, mas isso pode ficar para quinta. O resto pode esperar.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>WhatsApp</b> · Grátis. Prioridade escrita, com a ordem preservada. Melhor que um áudio de dois minutos.</p>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="ab-pair">
+          <div class="ab-box ab-said">
+            <p class="ab-who">Você falou</p>
+            <p>então é… olha eu vou ser honesto com você eu não vou seguir com a parceria agora não é porque a proposta é ruim é que eu não tenho gente pra sustentar isso esse trimestre e eu prefiro te falar isso agora do que te enrolar dois meses se em janeiro isso mudar eu te procuro</p>
+          </div>
+          <div class="ab-arrow" aria-hidden="true">→</div>
+          <div class="ab-box ab-wrote">
+            <p class="ab-who">A VozzAI escreveu</p>
+            <p>Vou ser honesto com você: não vou seguir com a parceria agora. Não é por causa da proposta — é que não tenho equipe para sustentar isso neste trimestre. Prefiro te dizer isso agora do que te deixar esperando por dois meses. Se em janeiro o cenário mudar, eu te procuro.</p>
+          </div>
+        </div>
+        <p class="ab-mode">Modo <b>Padrão</b> · Grátis. Mantém a franqueza que você falou, sem o texto ficar duro nem pedir desculpa demais.</p>
+      </div>
+
+      <p style="margin-top:22px;font-size:14.5px;color:var(--faint);max-width:62ch">
+        No fim de cada ditado a VozzAI mostra o antes e o depois — se preferir o
+        original sem ajuste nenhum, ele está ali para copiar.
+      </p>
+    </div>
+  </section>
+
+  <section id="onde">
+    <div class="wrap">
+      <p class="eyebrow">Onde isso entra no seu dia</p>
+      <h2>Onde a empresa é escrita.</h2>
+      <p class="lede prose" style="margin-top:14px">A VozzAI escreve onde o seu cursor está. No Mac, em qualquer aplicativo; no navegador, pela extensão de Chrome.</p>
+
+      <div class="grid g3" style="margin-top:32px">
+        <div class="card">
+          <h3>Notion e Linear</h3>
+          <p style="margin-top:9px;color:var(--muted)">Decisão registrada, briefing de tarefa, escopo e nota de reunião — em vez de um áudio que ninguém reouve.</p>
+        </div>
+        <div class="card">
+          <h3>Slack e WhatsApp</h3>
+          <p style="margin-top:9px;color:var(--muted)">Prioridade do dia, alinhamento e feedback escrito, que fica pesquisável para o time.</p>
+        </div>
+        <div class="card">
+          <h3>Gmail e Outlook</h3>
+          <p style="margin-top:9px;color:var(--muted)">Update de investidor, negociação com fornecedor, e-mail de contratação e a resposta difícil.</p>
+        </div>
+        <div class="card">
+          <h3>Assistentes de IA</h3>
+          <p style="margin-top:9px;color:var(--muted)">O prompt longo com contexto do negócio, que rende resposta útil em vez de genérica.</p>
+        </div>
+        <div class="card">
+          <h3>Documentos Google</h3>
+          <p style="margin-top:9px;color:var(--muted)">Memo interno, roteiro de apresentação e primeiro rascunho do que virá a ser processo.</p>
+        </div>
+        <div class="card">
+          <h3>LinkedIn e redes</h3>
+          <p style="margin-top:9px;color:var(--muted)">O post que você escreveria se tivesse trinta minutos sobrando — falado em três.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="modos" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Qual modo usar</p>
+      <h2>Objetivo para decidir, E-mail para convencer.</h2>
+      <p class="lede prose" style="margin-top:14px">O mesmo raciocínio falado vira registro seco ou e-mail cuidadoso, dependendo do modo escolhido antes de falar.</p>
+
+      <div class="grid g2" style="margin-top:32px">
+        <div class="card">
+          <h3>Objetivo</h3>
+          <p style="margin-top:9px;color:var(--muted)">Decisão, prioridade e briefing: frases curtas, só os fatos. O modo de quem precisa deixar rastro sem escrever ensaio.</p>
+        </div>
+        <div class="card">
+          <h3>E-mail profissional</h3>
+          <p style="margin-top:9px;color:var(--muted)">Update de investidor, negociação e conversa delicada em parágrafos organizados.</p>
+        </div>
+        <div class="card">
+          <h3>WhatsApp</h3>
+          <p style="margin-top:9px;color:var(--muted)">Alinhamento rápido com o time no canal em que ele já está, sem tom de comunicado.</p>
+        </div>
+        <div class="card">
+          <h3>Padrão</h3>
+          <p style="margin-top:9px;color:var(--muted)">Quando o valor está no seu jeito de dizer: texto limpo e pontuado, sem reescrita.</p>
+        </div>
+        <div class="card">
+          <h3>Conteúdo <span class="tag">Pro</span></h3>
+          <p style="margin-top:9px;color:var(--muted)">Para o post e o texto público da empresa, mantendo a sua voz em vez da voz de um redator.</p>
+        </div>
+        <div class="card">
+          <h3>Transcrição fiel</h3>
+          <p style="margin-top:9px;color:var(--muted)">Pensar em voz alta e guardar palavra por palavra, para organizar depois com calma.</p>
+        </div>
+      </div>
+
+      <p style="margin-top:22px;font-size:14.5px;color:var(--faint);max-width:62ch">
+        Padrão, WhatsApp, E-mail profissional, Objetivo e Transcrição fiel estão no
+        plano grátis. Atendimento, Vendas, Jurídico, Desenvolvedor e Conteúdo
+        fazem parte do Pro.
+      </p>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap prose" style="max-width:820px">
+      <p class="eyebrow">Perguntas frequentes</p>
+      <h2>Perguntas de quem está construindo.</h2>
+
+      <div style="margin-top:28px">
+      <details class="faq">
+        <summary>Serve para pensar em voz alta e organizar depois?</summary>
+        <p>Sim. Use Transcrição fiel para guardar o raciocínio sem nenhum ajuste, ou Objetivo para já sair estruturado. Os últimos ditados ficam no histórico, salvo no seu próprio computador.</p>
+      </details>
+      <details class="faq">
+        <summary>E se eu mudar de ideia no meio da frase?</summary>
+        <p>Fica a versão final, não as duas. A VozzAI entende a correção — “na porta 3001, não, na 3003” sai como 3003 — e remove hesitação, repetição e gaguejo.</p>
+      </details>
+      <details class="faq">
+        <summary>Meu time precisa instalar algo?</summary>
+        <p>Cada pessoa instala no próprio Mac ou usa a extensão de Chrome, com a sua própria conta. Hoje o plano é individual: não existe plano de equipe com faturamento único.</p>
+      </details>
+      <details class="faq">
+        <summary>Assunto estratégico meu fica armazenado em algum servidor?</summary>
+        <p>O áudio é descartado depois de gerar o texto e o texto não é armazenado no nosso servidor — o histórico fica só no seu computador. No servidor guardamos apenas a contagem de palavras, para aplicar o limite do plano.</p>
+      </details>
+      <details class="faq">
+        <summary>Quanto custa e dá para cancelar?</summary>
+        <p>O grátis são 2.000 palavras por semana. O Pro sai por R$ 29,90 por mês ou R$ 249 por ano, com 120.000 palavras por mês e os dez modos. A cobrança é pelo Mercado Pago e pode ser cancelada por lá quando quiser, sem multa — o acesso Pro continua até o fim do período pago.</p>
+      </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="baixar">
+    <div class="wrap">
+      <div class="final">
+        <h2>Fale a decisão agora, não às onze da noite.</h2>
+        <p>Instale, aperte o atalho e fale o que está travado na sua cabeça. O plano grátis dá 2.000 palavras por semana, sem cartão.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
+          <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+          <a class="btn ghost" href="https://chromewebstore.google.com/detail/hfopblagabjnlkigjnafamfabefdilfe" data-ev="download_chrome">Instalar no Chrome</a>
+        </div>
+        <p style="margin-top:22px;font-size:14px">macOS 12 ou mais recente · Sem cartão · Pro por R$ 29,90 por mês ou R$ 249 por ano</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-grid">
+      <div>
+        <a class="logo" href="/" style="font-size:17px"><span class="dot" aria-hidden="true"></span>Vozz<span class="ai">AI</span></a>
+        <p style="margin-top:12px;max-width:34ch">
+          Ditado por voz com IA para português brasileiro. Você fala, a VozzAI escreve.
+        </p>
+      </div>
+      <div>
+        <h3>Produto</h3>
+        <ul>
+          <li><a href="/#como">Como funciona</a></li>
+          <li><a href="/#modos">Modos de escrita</a></li>
+          <li><a href="/#recursos">Recursos</a></li>
+          <li><a href="/#precos">Preços</a></li>
+          <li><a href="/#faq">Perguntas frequentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Para quem</h3>
+        <ul>
+          <li><a href="/para/atendimento.html">Atendimento</a></li>
+          <li><a href="/para/advogados.html">Advogados</a></li>
+          <li><a href="/para/vendas.html">Vendas</a></li>
+          <li><a href="/para/criadores.html">Criadores</a></li>
+          <li><a href="/para/desenvolvedores.html">Desenvolvedores</a></li>
+          <li><a href="/para/fundadores.html">Fundadores</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Legal e suporte</h3>
+        <ul>
+          <li><a href="/#privacidade">Privacidade e segurança</a></li>
+          <li><a href="/privacy.html">Política de privacidade</a></li>
+          <li><a href="/termos.html">Termos de uso</a></li>
+          <li><a href="/uso-justo.html">Uso justo</a></li>
+          <li><a href="mailto:joaobondan5@gmail.com">Falar com a gente</a></li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:13.5px;color:var(--faint)">© 2026 VozzAI · Feito no Brasil</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var API = 'https://vozzai-production.up.railway.app';
+
+  /* ---------- Telemetria de funil ----------
+     Só o nome do passo. Nenhum conteúdo, nenhum dado pessoal — o servidor
+     tem allowlist de nomes e descarta o que não conhece. */
+  function track(name) {
+    try {
+      fetch(API + '/events', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name: name, platform: 'web' }),
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-ev]');
+    if (el) track(el.getAttribute('data-ev'));
+  });
+
+  /* ---------- Menu do celular ---------- */
+  var nav = document.getElementById('nav');
+  var burger = document.getElementById('burger');
+  burger.addEventListener('click', function () {
+    var open = nav.getAttribute('data-open') === 'true';
+    nav.setAttribute('data-open', String(!open));
+    burger.setAttribute('aria-expanded', String(!open));
+    burger.setAttribute('aria-label', open ? 'Abrir menu' : 'Fechar menu');
+  });
+  document.getElementById('navLinks').addEventListener('click', function (e) {
+    if (e.target.tagName === 'A') {
+      nav.setAttribute('data-open', 'false');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
+</body>
+</html>

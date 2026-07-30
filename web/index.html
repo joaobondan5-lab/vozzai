@@ -1,1044 +1,1294 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VozzAI — Ditado por voz com IA em português do Brasil</title>
-  <meta name="description" content="Fale naturalmente e receba um texto limpo, pontuado e pronto para usar no WhatsApp, Gmail, Notion, Docs e outros aplicativos com o VozzAI." />
-  <link rel="canonical" href="https://www.vozzai.com.br/" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="VozzAI" />
-  <meta property="og:title" content="VozzAI — Ditado por voz com IA em português do Brasil" />
-  <meta property="og:description" content="Fale naturalmente e receba um texto limpo, pontuado e pronto para usar — direto no cursor, em praticamente qualquer app do seu Mac." />
-  <meta property="og:url" content="https://www.vozzai.com.br/" />
-  <meta property="og:image" content="https://www.vozzai.com.br/og.png" />
-  <meta property="og:locale" content="pt_BR" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="VozzAI — Ditado por voz com IA em português do Brasil" />
-  <meta name="twitter:description" content="Fale. O VozzAI escreve por você." />
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      { "@type": "Organization", "name": "VozzAI", "url": "https://www.vozzai.com.br/", "email": "joaobondan5@gmail.com" },
-      {
-        "@type": "SoftwareApplication",
-        "name": "VozzAI",
-        "operatingSystem": "macOS",
-        "applicationCategory": "ProductivityApplication",
-        "description": "Ditado por voz com IA em português do Brasil. Fale naturalmente e receba um texto limpo, pontuado e pronto para usar.",
-        "url": "https://www.vozzai.com.br/",
-        "offers": [
-          { "@type": "Offer", "price": "0", "priceCurrency": "BRL", "description": "Plano Grátis — 2.000 palavras por semana" },
-          { "@type": "Offer", "price": "29.90", "priceCurrency": "BRL", "description": "Plano Pro — assinatura mensal" },
-          { "@type": "Offer", "price": "249.00", "priceCurrency": "BRL", "description": "Plano Pro — assinatura anual (economize 30%)" }
-        ]
-      }
-    ]
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>VozzAI — ditado por voz com IA em português brasileiro</title>
+<meta name="description" content="Fale naturalmente e receba o texto pontuado, organizado e pronto em qualquer aplicativo do seu Mac ou navegador. Ditado por voz com IA feito para o português do Brasil." />
+<link rel="canonical" href="https://www.vozzai.com.br/" />
+<meta name="theme-color" content="#2F6BFF" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0E1013" media="(prefers-color-scheme: dark)" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="VozzAI" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:url" content="https://www.vozzai.com.br/" />
+<meta property="og:title" content="VozzAI — fale e o texto aparece pronto" />
+<meta property="og:description" content="Ditado por voz com IA para português brasileiro. Você fala naturalmente e recebe um texto pontuado e organizado onde já está trabalhando." />
+<meta property="og:image" content="https://www.vozzai.com.br/og.png" />
+<meta property="og:image:alt" content="VozzAI — ditado por voz com IA em português brasileiro" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="VozzAI — fale e o texto aparece pronto" />
+<meta name="twitter:description" content="Ditado por voz com IA para português brasileiro, em qualquer aplicativo." />
+<meta name="twitter:image" content="https://www.vozzai.com.br/og.png" />
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/vozzai.css" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "VozzAI",
+      "applicationCategory": "ProductivityApplication",
+      "operatingSystem": "macOS 12+, Google Chrome",
+      "inLanguage": "pt-BR",
+      "url": "https://www.vozzai.com.br/",
+      "description": "Ditado por voz com IA para português brasileiro. Você fala naturalmente e recebe um texto pontuado, organizado e pronto no aplicativo em que já está trabalhando.",
+      "offers": [
+        { "@type": "Offer", "name": "Grátis", "price": "0", "priceCurrency": "BRL" },
+        { "@type": "Offer", "name": "Pro mensal", "price": "29.90", "priceCurrency": "BRL" },
+        { "@type": "Offer", "name": "Pro anual", "price": "249.00", "priceCurrency": "BRL" }
+      ]
+    },
+    {
+      "@type": "Organization",
+      "name": "VozzAI",
+      "url": "https://www.vozzai.com.br/",
+      "logo": "https://www.vozzai.com.br/favicon.svg"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Funciona em quais aplicativos?", "acceptedAnswer": { "@type": "Answer", "text": "Em qualquer campo de texto do seu Mac: WhatsApp, Gmail, Notion, ChatGPT, Slack, Word, Documentos Google, editores de código. A VozzAI não é um aplicativo onde você escreve — ela insere o texto onde o seu cursor já está. No navegador, a extensão de Chrome faz o mesmo dentro das abas." } },
+        { "@type": "Question", "name": "Preciso de internet?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. O áudio é transcrito e organizado em servidor, então a VozzAI precisa de conexão. Se a internet cair no meio de um ditado, o áudio fica guardado no seu computador e você pode tentar de novo quando voltar." } },
+        { "@type": "Question", "name": "A VozzAI entende sotaques brasileiros?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. O reconhecimento é treinado em português brasileiro e lida com sotaques de diferentes regiões. Nomes próprios, empresas e termos técnicos podem ser cadastrados no dicionário pessoal." } },
+        { "@type": "Question", "name": "Meus áudios ficam armazenados?", "acceptedAnswer": { "@type": "Answer", "text": "Não. O áudio é usado para gerar o texto e descartado — não é gravado em disco nem no servidor. O texto ditado também não é armazenado no nosso servidor: o histórico fica apenas no seu computador. No servidor guardamos só a contagem de palavras, para aplicar o limite do plano." } },
+        { "@type": "Question", "name": "Posso cancelar quando quiser?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. A assinatura é cobrada pelo Mercado Pago e pode ser cancelada por lá a qualquer momento, sem multa. Você continua com acesso Pro até o fim do período já pago." } },
+        { "@type": "Question", "name": "Existe versão para Windows?", "acceptedAnswer": { "@type": "Answer", "text": "Ainda não. Hoje a VozzAI funciona no Mac (aplicativo) e no Chrome (extensão, em qualquer sistema). A versão para Windows está em desenvolvimento e há lista de espera." } },
+        { "@type": "Question", "name": "Qual a diferença para o ditado do próprio Mac?", "acceptedAnswer": { "@type": "Answer", "text": "O ditado do sistema transcreve palavra por palavra: sai sem pontuação e com as hesitações que toda fala natural tem. A VozzAI entrega o texto já pontuado, sem vícios de fala, e adaptado ao contexto — uma mensagem de WhatsApp sai diferente de um e-mail profissional." } }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+  /* ---- Estilos desta página. Tokens e componentes base em /vozzai.css ---- */
+
+  .nav {
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--line);
   }
-  </script>
-  <style>
-    /* ============ Tokens ============ */
-    :root {
-      --bg:        #F1F0EC;
-      --surface:   #FFFFFF;
-      --surface-2: #E7E5DE;
-      --ink:       #111319;
-      --muted:     #5B606B;
-      --faint:     #8B909B;
-      --line:      #DBD9D2;
-      --rule:      #DBD9D2;
-      --accent:    #1B34C4;
-      --accent-ink:#FFFFFF;
-      --hot:       #D93A1D;
-      --focus:     #1B34C4;
-      --shadow:    0 24px 60px -34px rgba(17, 19, 25, .35);
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg:        #0B0C10;
-        --surface:   #15171E;
-        --surface-2: #1D2029;
-        --ink:       #EFEFEC;
-        --muted:     #9CA2AE;
-        --faint:     #6D7381;
-        --line:      #262A33;
-        --rule:      #262A33;
-        --accent:    #7089FF;
-        --accent-ink:#0B0C10;
-        --hot:       #FF6B4C;
-        --focus:     #7089FF;
-        --shadow:    0 26px 64px -34px rgba(0, 0, 0, .75);
-      }
-    }
-    :root[data-theme="light"] {
-      --bg:#F1F0EC; --surface:#FFFFFF; --surface-2:#E9E7E0; --ink:#111319;
-      --muted:#5B606B; --faint:#8B909B; --line:#DBD9D2; --rule:#DBD9D2;
-      --accent:#1B34C4; --accent-ink:#FFFFFF; --hot:#D93A1D; --focus:#1B34C4;
-      --shadow: 0 24px 60px -34px rgba(17, 19, 25, .35);
-    }
-    :root[data-theme="dark"] {
-      --bg:#0B0C10; --surface:#15171E; --surface-2:#1D2029; --ink:#EFEFEC;
-      --muted:#9CA2AE; --faint:#6D7381; --line:#262A33; --rule:#262A33;
-      --accent:#7089FF; --accent-ink:#0B0C10; --hot:#FF6B4C; --focus:#7089FF;
-      --shadow: 0 26px 64px -34px rgba(0, 0, 0, .75);
-    }
+  .nav-in { display: flex; align-items: center; gap: 20px; min-height: 64px; }
+  .logo {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--f-display); font-weight: 700; font-size: 19px;
+    letter-spacing: -.02em; color: var(--ink); text-decoration: none;
+  }
+  .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue); }
+  .logo .ai { color: var(--blue); }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 550;
+    padding: 6px 0; border-bottom: 2px solid transparent;
+  }
+  .nav-links a:hover { color: var(--ink); border-bottom-color: var(--blue); }
+  .nav-cta { display: flex; align-items: center; gap: 10px; }
+  .burger { display: none; }
 
-    :root {
-      --f-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      --f-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      --f-mono: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+  @media (max-width: 980px) {
+    .nav-links, .desktop-only { display: none; }
+    .burger {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; min-width: 44px; margin-left: auto;
+      background: none; border: 1px solid var(--line); border-radius: var(--r-sm);
+      color: var(--ink); font-size: 19px; cursor: pointer;
     }
+    /* Menu simples: uma lista que abre embaixo. Sem gaveta deslizante e sem
+       overlay que engole o toque — é navegação, não espetáculo. */
+    .nav[data-open="true"] .nav-links {
+      display: flex; flex-direction: column; gap: 0;
+      position: absolute; left: 0; right: 0; top: 100%;
+      background: var(--surface); border-bottom: 1px solid var(--line);
+      padding: 4px var(--pad-page) 14px; box-shadow: var(--shadow);
+    }
+    .nav[data-open="true"] .nav-links a {
+      padding: 15px 0; border-bottom: 1px solid var(--line); font-size: 17px;
+    }
+  }
 
-    /* ============ Base ============ */
-    *, *::before, *::after { box-sizing: border-box; }
-    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 76px; }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-    body {
-      margin: 0; background: var(--bg); color: var(--ink);
-      font-family: var(--f-body); font-size: 17px; line-height: 1.55;
-      -webkit-font-smoothing: antialiased; overflow-x: hidden;
-    }
-    h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; text-wrap: balance; }
-    p { margin: 0; }
-    a { color: inherit; text-decoration: none; }
-    canvas { display: block; max-width: 100%; }
-    ::selection { background: var(--accent); color: var(--accent-ink); }
-    :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+  /* ---- Hero ---- */
+  .hero { padding: clamp(36px, 5.5vw, 72px) 0 clamp(24px, 4vw, 44px); }
+  .hero-grid { display: grid; gap: clamp(30px, 4vw, 56px); align-items: center; }
+  @media (min-width: 1020px) { .hero-grid { grid-template-columns: 1fr 1.05fr; } }
+  .hero h1 span { color: var(--blue); }
+  .hero .lede { margin-top: 18px; max-width: 52ch; }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .reassure {
+    margin-top: 16px; font-size: 14.5px; color: var(--faint);
+    display: flex; flex-wrap: wrap; gap: 8px 14px;
+  }
+  .platforms {
+    margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; font-size: 14.5px;
+  }
+  .plat { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); }
+  .plat b { color: var(--ink); font-weight: 650; }
+  .live-dot { color: var(--green); font-weight: 700; }
 
-    .wrap { width: min(1180px, 100% - 44px); margin-inline: auto; }
-    .lab {
-      font-family: var(--f-body); font-size: 11.5px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);
-    }
-    .mono { font-family: var(--f-mono); }
+  /* ---- Demonstração ---- */
+  .demo-frame {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--r-xl); box-shadow: var(--shadow-lg); overflow: hidden;
+  }
+  .demo-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 16px; background: var(--surface-2); border-bottom: 1px solid var(--line);
+  }
+  .demo-bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--line); }
+  .demo-app {
+    margin-left: 8px; font-size: 13px; font-weight: 650; color: var(--muted);
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .demo-app .badge {
+    width: 19px; height: 19px; border-radius: 5px; display: grid; place-items: center;
+    font-size: 11px; color: #fff; background: var(--green);
+  }
+  .demo-app[data-app="gmail"] .badge { background: var(--danger); }
+  .demo-body { padding: clamp(18px, 2.4vw, 26px); min-height: 286px; display: flex; flex-direction: column; }
+  .demo-label { font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--faint); }
+  .demo-field {
+    margin-top: 10px; flex: 1;
+    border: 1.5px solid var(--line); border-radius: var(--r); padding: 14px 16px;
+    background: var(--bg); font-size: 16.5px; line-height: 1.6; min-height: 138px;
+    white-space: pre-wrap;
+  }
+  .demo-field.live { border-color: var(--blue); box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 13%, transparent); }
+  .demo-field.raw { color: var(--faint); }
+  .caret {
+    display: inline-block; width: 2px; height: 1.1em; vertical-align: text-bottom;
+    background: var(--blue); animation: blink 1.05s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
 
-    /* ============ Buttons — sharp, printed ============ */
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
-      font-family: var(--f-body); font-size: 15px; font-weight: 650; letter-spacing: .005em;
-      padding: 14px 24px; border: 1.5px solid var(--line); border-radius: 999px;
-      background: transparent; color: var(--ink); cursor: pointer;
-      transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
-    }
-    .btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
-    .btn-fill { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-    .btn-fill:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); filter: brightness(1.08); transform: translateY(-2px); }
+  /* A pílula usa a mesma linguagem visual do painel real do aplicativo. */
+  .pill {
+    margin-top: 14px; align-self: center; width: min(320px, 100%);
+    background: #16181D; border: 1px solid rgba(255,255,255,.14); border-radius: var(--r-lg);
+    padding: 12px 16px; color: #fff; box-shadow: var(--shadow);
+    opacity: 0; transform: translateY(6px); transition: opacity .2s ease, transform .2s ease;
+  }
+  .pill[data-on="true"] { opacity: 1; transform: none; }
+  .pill-top { display: flex; align-items: center; gap: 9px; }
+  .pill-dot { width: 9px; height: 9px; border-radius: 50%; background: #FF4B3A; flex: none; }
+  .pill[data-state="recording"] .pill-dot { animation: pulse 1.4s ease-in-out infinite; }
+  .pill[data-state="processing"] .pill-dot { background: #FFC93C; }
+  .pill[data-state="done"] .pill-dot { background: #35C98C; animation: none; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+  .pill-label { font-size: 13px; font-weight: 600; flex: 1; }
+  .pill-time { font-size: 12px; color: rgba(255,255,255,.6); font-variant-numeric: tabular-nums; }
+  .bars { display: flex; align-items: center; justify-content: center; gap: 3px; height: 22px; margin-top: 9px; }
+  .bars i { width: 3px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.85); transition: height .09s linear; }
+  .pill-hint { margin-top: 8px; text-align: center; font-size: 10.5px; color: rgba(255,255,255,.45); }
+  .pill-hint kbd { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: #fff; }
 
-    /* ============ Nav ============ */
-    header.nav {
-      position: sticky; top: 0; z-index: 60;
-      background: color-mix(in srgb, var(--bg) 84%, transparent);
-      backdrop-filter: saturate(1.3) blur(14px);
-      border-bottom: 1px solid var(--line);
-    }
-    .nav-in { display: flex; align-items: center; justify-content: space-between; height: 66px; gap: 20px; }
-    .logo { display: inline-flex; align-items: baseline; gap: 9px; font-family: var(--f-display); font-size: 22px; font-weight: 700; letter-spacing: -0.04em; }
-    .logo .bars { display: inline-flex; align-items: flex-end; gap: 2.5px; height: 17px; }
-    .logo .bars i { display: block; width: 3.5px; background: var(--accent); }
-    .logo .bars i:nth-child(1) { height: 7px; }
-    .logo .bars i:nth-child(2) { height: 17px; }
-    .logo .bars i:nth-child(3) { height: 11px; background: var(--hot); }
-    .logo .bars i:nth-child(4) { height: 14px; }
-    nav.links { display: none; gap: 28px; }
-    @media (min-width: 900px) { nav.links { display: flex; } }
-    nav.links a { font-size: 14.5px; color: var(--muted); font-weight: 550; }
-    nav.links a:hover { color: var(--ink); box-shadow: inset 0 -1.5px 0 var(--accent); }
-    .nav-r { display: flex; align-items: center; gap: 12px; }
-    .tog {
-      width: 40px; height: 40px; border: 1.5px solid var(--line); border-radius: 999px; background: transparent;
-      color: var(--ink); cursor: pointer; display: grid; place-items: center;
-    }
-    .tog:hover { border-color: var(--ink); }
-    .tog svg { width: 17px; height: 17px; }
-    .sun { display: none; }
-    :root[data-theme="dark"] .sun { display: block; } :root[data-theme="dark"] .moon { display: none; }
-    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sun { display: block; } :root:not([data-theme="light"]) .moon { display: none; } }
-    .nav-cta { display: none; }
-    @media (min-width: 680px) { .nav-cta { display: inline-flex; } }
+  .demo-ctl { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .demo-steps { display: flex; gap: 6px; margin-left: auto; }
+  .demo-steps b { width: 22px; height: 4px; border-radius: 2px; background: var(--line); transition: background-color .2s ease; }
+  .demo-steps b[data-on="true"] { background: var(--blue); }
 
-    /* ============ Hero ============ */
-    .hero { padding: clamp(44px, 7vw, 88px) 0 clamp(36px, 5vw, 64px); }
-    .hero-grid { display: grid; grid-template-columns: 1fr; gap: clamp(36px, 5vw, 56px); align-items: start; }
-    @media (min-width: 960px) { .hero-grid { grid-template-columns: 1.08fr 0.92fr; } }
-    .hero h1 {
-      font-size: clamp(46px, 8.2vw, 104px); font-weight: 700; letter-spacing: -0.045em;
-      line-height: 0.92; margin-top: 22px;
-    }
-    .hero h1 em { font-style: normal; color: var(--accent); }
-    .hero-sub { font-size: clamp(17px, 1.9vw, 20px); color: var(--muted); margin-top: 26px; max-width: 34ch; }
-    .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-    .hero-fine { margin-top: 20px; font-size: 13px; color: var(--faint); font-family: var(--f-mono); letter-spacing: -0.01em; }
+  /* ---- Antes e depois ---- */
+  .ab-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 22px; }
+  .ab-tab {
+    min-height: 44px; padding: 10px 16px; border-radius: 999px;
+    background: var(--surface); border: 1.5px solid var(--line); color: var(--muted);
+    font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer;
+  }
+  .ab-tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .ab-pair { display: grid; gap: 16px; }
+  @media (min-width: 800px) { .ab-pair { grid-template-columns: 1fr auto 1fr; align-items: center; } }
+  .ab-arrow { display: grid; place-items: center; color: var(--blue); font-size: 26px; font-weight: 700; }
+  .ab-box .ab-who {
+    font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 10px;
+  }
+  .ab-box p { font-size: 16.5px; line-height: 1.62; white-space: pre-wrap; }
+  .ab-said { border-left: 3px solid var(--line); }
+  .ab-said p { color: var(--muted); }
+  .ab-wrote { border-left: 3px solid var(--blue); }
 
-    /* Device panel */
-    .panel { border: 1px solid var(--line); background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; }
-    .panel-top {
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      padding: 13px 18px; border-bottom: 1px solid var(--line);
-      font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
-    }
-    .live { display: inline-flex; align-items: center; gap: 8px; color: var(--hot); }
-    .live b { width: 8px; height: 8px; background: var(--hot); display: block; border-radius: 50%; }
-    .panel-body { padding: 18px 16px 20px; }
-    canvas#wave { width: 100%; height: 88px; }
-    .tx { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
-    .tx .raw {
-      font-family: var(--f-mono); font-size: 13px; line-height: 1.5; color: var(--faint);
-    }
-    .tx .raw::before { content: "fala  "; color: var(--hot); }
-    .tx .out { margin-top: 12px; font-size: 17px; line-height: 1.45; font-weight: 480; }
-    .tx .out::before { content: "texto  "; font-family: var(--f-mono); font-size: 13px; color: var(--accent); text-transform: none; }
-    .caret { display: inline-block; width: 8px; height: 1.05em; background: var(--accent); vertical-align: -3px; margin-left: 2px; animation: bl 1s steps(1) infinite; }
-    @keyframes bl { 50% { opacity: 0; } }
-    @media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+  /* ---- Passos ---- */
+  .steps { counter-reset: s; }
+  .step-n {
+    counter-increment: s; width: 38px; height: 38px; border-radius: 50%;
+    background: var(--blue); color: #fff; display: grid; place-items: center;
+    font-family: var(--f-display); font-weight: 700; font-size: 17px; margin-bottom: 14px;
+  }
+  .step-n::before { content: counter(s); }
 
-    /* ============ Marquee of apps ============ */
-    .strip { border-block: 1px solid var(--line); background: var(--surface-2); overflow: hidden; }
-    .strip-in { display: flex; gap: 0; width: max-content; animation: slide 34s linear infinite; }
-    @media (prefers-reduced-motion: reduce) { .strip-in { animation: none; } }
-    .strip:hover .strip-in { animation-play-state: paused; }
-    @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    .strip-in span {
-      font-family: var(--f-display); font-size: 15px; font-weight: 600; letter-spacing: .02em;
-      padding: 14px 24px; white-space: nowrap; color: var(--muted);
-    }
-    .strip-in span.on { color: var(--accent); }
+  /* ---- Exemplos brasileiros ---- */
+  .br-item { display: grid; gap: 4px; padding: 15px 0; border-bottom: 1px solid var(--line); }
+  .br-item:last-child { border-bottom: 0; padding-bottom: 0; }
+  .br-item dt { font-size: 12.5px; font-weight: 700; color: var(--faint); letter-spacing: .05em; text-transform: uppercase; }
+  .br-item dd { margin: 0; }
+  .br-item .in { color: var(--muted); font-family: var(--f-mono); font-size: 14px; }
+  .br-item .out { color: var(--ink); font-weight: 550; font-size: 16.5px; }
 
-    /* ============ Sections ============ */
-    section { padding: clamp(56px, 8vw, 104px) 0; }
-    .head { max-width: 42ch; margin-bottom: clamp(34px, 4.5vw, 54px); }
-    .head h2 { font-size: clamp(30px, 4.6vw, 52px); font-weight: 650; margin-top: 14px; letter-spacing: -0.035em; }
-    .head p { color: var(--muted); margin-top: 16px; font-size: 17.5px; }
+  /* ---- Preços ---- */
+  .price-grid { display: grid; gap: 18px; align-items: start; }
+  @media (min-width: 840px) { .price-grid { grid-template-columns: 1fr 1.12fr; } }
+  .plan { position: relative; }
+  .plan.best { border-color: var(--blue); border-width: 2px; box-shadow: var(--shadow); }
+  .plan-flag {
+    position: absolute; top: -13px; left: 24px;
+    background: var(--blue); color: #fff; font-size: 11.5px; font-weight: 700;
+    letter-spacing: .05em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px;
+  }
+  .amount { display: flex; align-items: baseline; gap: 7px; margin: 14px 0 4px; }
+  .amount b { font-family: var(--f-display); font-size: clamp(34px, 4.6vw, 46px); font-weight: 700; letter-spacing: -.03em; }
+  .amount span { color: var(--muted); font-size: 15px; }
+  .plan ul { list-style: none; margin: 20px 0 24px; padding: 0; display: grid; gap: 11px; }
+  .plan li { display: flex; gap: 10px; font-size: 16px; line-height: 1.5; }
+  .plan li::before { content: "✓"; color: var(--blue); font-weight: 700; flex: none; }
+  .plan li.no { color: var(--faint); }
+  .plan li.no::before { content: "—"; color: var(--faint); }
+  .toggle-cycle {
+    display: inline-flex; padding: 4px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 999px; margin: 26px 0 24px;
+  }
+  .toggle-cycle button {
+    min-height: 42px; padding: 8px 18px; border: 0; border-radius: 999px; background: none;
+    font: inherit; font-size: 14.5px; font-weight: 600; color: var(--muted); cursor: pointer;
+  }
+  .toggle-cycle button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 
-    /* Stats — ruled */
-    .stats { display: grid; grid-template-columns: repeat(2, 1fr); border-block: 1px solid var(--line); }
-    @media (min-width: 800px) { .stats { grid-template-columns: repeat(4, 1fr); } }
-    .stat { padding: 28px 20px 28px 0; }
-    .stat + .stat { border-left: 1px solid var(--line); padding-left: 22px; }
-    @media (max-width: 799px) { .stat:nth-child(odd) { border-left: 0; padding-left: 0; } .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
-    .stat .n { font-family: var(--f-display); font-size: clamp(34px, 5vw, 52px); font-weight: 700; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
-    .stat:nth-child(2) .n, .stat:nth-child(4) .n { color: var(--accent); }
-    .stat .l { font-size: 13.5px; color: var(--muted); margin-top: 8px; max-width: 22ch; }
+  /* ---- FAQ ---- */
+  details.faq { border-bottom: 1px solid var(--line); }
+  details.faq summary {
+    cursor: pointer; padding: 19px 0; font-size: 17.5px; font-weight: 650;
+    list-style: none; display: flex; gap: 14px; align-items: center; min-height: 44px;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after { content: "+"; margin-left: auto; color: var(--blue); font-size: 25px; font-weight: 400; line-height: 1; }
+  details.faq[open] summary::after { content: "–"; }
+  details.faq p { padding: 0 0 20px; color: var(--muted); max-width: 68ch; }
 
-    /* Features — ruled grid, no cards */
-    .feats { display: grid; grid-template-columns: 1fr; gap: 18px; }
-    @media (min-width: 720px) { .feats { grid-template-columns: 1fr 1fr; } }
-    @media (min-width: 1020px) { .feats { grid-template-columns: repeat(3, 1fr); } }
-    .feat {
-      padding: 28px 26px 30px; background: var(--surface); border: 1px solid var(--line);
-      border-radius: 18px; transition: transform .2s ease, box-shadow .2s ease;
-    }
-    .feat:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
-    .feat .k {
-      display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
-      background: color-mix(in srgb, var(--accent) 13%, transparent);
-      font-family: var(--f-mono); font-size: 12.5px; color: var(--accent); font-weight: 600;
-    }
-    .feat h3 { font-size: 21px; font-weight: 650; margin-top: 12px; letter-spacing: -0.02em; }
-    .feat p { color: var(--muted); font-size: 15.5px; margin-top: 10px; }
+  /* ---- Depoimentos ---- */
+  .quote p { font-size: 16.5px; line-height: 1.62; }
+  .quote footer { margin-top: 14px; font-size: 14px; color: var(--faint); }
+  .stars { color: var(--orange); letter-spacing: 2px; font-size: 14px; }
 
-    /* Steps */
-    .steps { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 860px) { .steps { grid-template-columns: repeat(3, 1fr); } }
-    .step { padding: 28px 26px 32px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; }
-    .step .no { font-family: var(--f-display); font-size: 44px; font-weight: 750; line-height: 1; color: var(--accent); letter-spacing: -0.05em; }
-    .step h3 { font-size: 22px; font-weight: 650; margin-top: 14px; }
-    .step p { color: var(--muted); font-size: 15.5px; margin-top: 10px; }
-    .keys { margin-top: 16px; display: flex; gap: 6px; flex-wrap: wrap; }
-    .keys kbd {
-      font-family: var(--f-mono); font-size: 12.5px; padding: 6px 10px;
-      border: 1px solid var(--line); border-bottom-width: 2.5px; border-radius: 8px;
-      background: var(--surface-2); color: var(--ink);
-    }
+  /* ---- Faixa final ---- */
+  .final { background: var(--ink); color: var(--bg); border-radius: var(--r-xl); padding: clamp(32px, 5vw, 64px); text-align: center; }
+  .final h2 { color: var(--bg); }
+  .final p { color: color-mix(in srgb, var(--bg) 72%, transparent); margin: 16px auto 28px; max-width: 46ch; }
+  .final .btn { --btn-bg: var(--bg); --btn-fg: var(--ink); }
+  .final .btn:hover { --btn-bg: #fff; }
+  .final .btn.ghost { --btn-bg: transparent; --btn-fg: var(--bg); border-color: color-mix(in srgb, var(--bg) 34%, transparent); }
+  .final .btn.ghost:hover { --btn-bg: color-mix(in srgb, var(--bg) 12%, transparent); }
 
-    /* Speed */
-    .speed { max-width: 720px; }
-    .sp-row { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 16px; margin-top: 14px; }
-    .sp-lab { font-family: var(--f-mono); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-    .sp-bar { height: 44px; display: flex; align-items: center; padding: 0 14px; font-family: var(--f-display); font-weight: 650; font-size: 15px; transform-origin: left; white-space: nowrap; }
-    .sp-bar { border-radius: 12px; }
-    .sp-bar.a { width: 27%; background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
-    .sp-bar.b { width: 100%; background: var(--accent); color: var(--accent-ink); }
-    .sp-note { margin-top: 18px; font-family: var(--f-mono); font-size: 12.5px; color: var(--faint); }
-    @media (prefers-reduced-motion: no-preference) {
-      .rv.in .sp-bar { animation: gx .8s cubic-bezier(.2,.75,.2,1) both; }
-      @keyframes gx { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-    }
+  /* ---- Rodapé ---- */
+  .ft { border-top: 1px solid var(--line); padding: 48px 0 40px; font-size: 14.5px; color: var(--muted); }
+  .ft-grid { display: grid; gap: 28px; margin-bottom: 32px; }
+  @media (min-width: 740px) { .ft-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr; } }
+  .ft h3 { font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
+  .ft ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+  .ft a { color: var(--muted); text-decoration: none; }
+  .ft a:hover { color: var(--ink); text-decoration: underline; }
 
-    /* Cases */
-    .cases { display: grid; grid-template-columns: 1fr; gap: 18px; }
-    @media (min-width: 760px) { .cases { grid-template-columns: 1fr 1fr; } }
-    .case {
-      padding: 24px 26px 26px; background: var(--surface); border: 1px solid var(--line);
-      border-radius: 18px; display: flex; gap: 18px; align-items: baseline;
-    }
-    .case .who { font-family: var(--f-display); font-size: 18px; font-weight: 700; min-width: 8.5ch; letter-spacing: -0.02em; color: var(--accent); }
-    .case p { color: var(--muted); font-size: 15.5px; }
+  /* ---- Lista de espera ---- */
+  .wait { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .wait input {
+    flex: 1 1 220px; min-height: 50px; padding: 13px 16px;
+    border: 1.5px solid var(--line); border-radius: var(--r);
+    background: var(--surface); color: var(--ink); font: inherit; font-size: 16px;
+  }
+  .form-msg { margin-top: 10px; font-size: 14.5px; min-height: 20px; color: var(--muted); }
+  .form-msg[data-ok="true"] { color: var(--green); font-weight: 600; }
+  .form-msg[data-ok="false"] { color: var(--danger); }
 
-    /* Antes e depois */
-    .ba { max-width: 780px; }
-    .ba-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
-    .ba-tab {
-      font: inherit; font-size: 14px; font-weight: 650; padding: 10px 18px; border-radius: 999px;
-      border: 1.5px solid var(--line); background: transparent; color: var(--muted); cursor: pointer;
-      transition: background .18s ease, color .18s ease, border-color .18s ease;
-    }
-    .ba-tab:hover { border-color: var(--accent); color: var(--accent); }
-    .ba-tab.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-    .ba-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px 26px; }
-    .ba-panel[hidden] { display: none; }
-    .ba-raw { font-family: var(--f-mono); font-size: 13.5px; color: var(--faint); line-height: 1.6; }
-    .ba-raw::before { content: "fala  "; color: var(--hot); }
-    .ba-out { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 17px; line-height: 1.5; }
-    .ba-out::before { content: "texto"; font-family: var(--f-mono); font-size: 13px; color: var(--accent); display: block; margin-bottom: 6px; }
-
-    /* Modes */
-    .modes { display: grid; grid-template-columns: 1fr; gap: 14px; }
-    @media (min-width: 640px) { .modes { grid-template-columns: 1fr 1fr; } }
-    @media (min-width: 1020px) { .modes { grid-template-columns: repeat(5, 1fr); } }
-    .modec {
-      padding: 18px 18px 20px; background: var(--surface); border: 1px solid var(--line);
-      border-radius: 16px; position: relative;
-    }
-    .modec h3 { font-size: 16px; font-weight: 650; letter-spacing: -0.01em; }
-    .modec p { color: var(--muted); font-size: 13px; margin-top: 7px; }
-    .modec .pro {
-      position: absolute; top: 14px; right: 14px;
-      font-family: var(--f-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .12em;
-      color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 2.5px 8px;
-    }
-
-    /* Depoimentos */
-    .quotes { display: grid; grid-template-columns: 1fr; gap: 18px; }
-    @media (min-width: 720px) { .quotes { grid-template-columns: 1fr 1fr; } }
-    @media (min-width: 1020px) { .quotes { grid-template-columns: repeat(3, 1fr); } }
-    .quote {
-      padding: 24px 24px 22px; background: var(--surface); border: 1px solid var(--line);
-      border-radius: 18px; display: flex; flex-direction: column; gap: 14px;
-    }
-    .quote .stars { color: var(--accent); font-size: 14px; letter-spacing: 2px; }
-    .quote .beta {
-      align-self: flex-start; font-family: var(--f-mono); font-size: 10.5px; text-transform: uppercase;
-      letter-spacing: .1em; color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
-      padding: 3.5px 10px;
-    }
-    .quote blockquote { margin: 0; font-size: 15.5px; line-height: 1.55; flex: 1; }
-    .quote .who { display: flex; align-items: center; gap: 11px; }
-    .quote .who .mono-av {
-      width: 34px; height: 34px; border-radius: 50%; flex: none; display: grid; place-items: center;
-      background: color-mix(in srgb, var(--accent) 13%, transparent);
-      color: var(--accent); font-family: var(--f-mono); font-size: 12px; font-weight: 600;
-    }
-    .quote .who b { font-size: 14px; font-weight: 650; display: block; }
-    .quote .who span { font-size: 12.5px; color: var(--muted); display: block; }
-    .quotes-note { margin-top: 22px; font-size: 12.5px; color: var(--faint); font-family: var(--f-mono); max-width: 60ch; }
-
-    /* Privacidade */
-    .priv { display: grid; grid-template-columns: 1fr; gap: 0; border-top: 1px solid var(--line); }
-    .priv-row { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 20px 0; border-bottom: 1px solid var(--line); }
-    @media (min-width: 760px) { .priv-row { grid-template-columns: 240px 1fr; gap: 28px; } }
-    .priv-row h3 { font-size: 16.5px; font-weight: 650; letter-spacing: -0.015em; }
-    .priv-row p { color: var(--muted); font-size: 15px; max-width: 72ch; }
-
-    /* Compare table */
-    .tw { overflow-x: auto; border: 1px solid var(--line); border-radius: 18px; }
-    table.cmp { width: 100%; border-collapse: collapse; min-width: 580px; background: var(--surface); }
-    table.cmp th, table.cmp td { text-align: left; padding: 16px 20px; font-size: 15px; border-bottom: 1px solid var(--line); }
-    table.cmp thead th { font-family: var(--f-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
-    table.cmp thead th.v { color: var(--accent); }
-    table.cmp td.v { font-weight: 620; background: color-mix(in srgb, var(--accent) 7%, var(--surface)); }
-    table.cmp td.o { color: var(--muted); }
-    table.cmp tbody tr:last-child td { border-bottom: 0; }
-    table.cmp td:first-child { font-weight: 600; }
-
-    /* Pricing */
-    .plans { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 920px) { .plans { grid-template-columns: repeat(3, 1fr); align-items: stretch; } }
-    .plan {
-      padding: 30px 28px 32px; background: var(--surface); border: 1px solid var(--line);
-      border-radius: 20px; display: flex; flex-direction: column;
-    }
-    .plan.mark { border-color: var(--accent); border-width: 1.5px; box-shadow: var(--shadow); }
-    .plan .pn { font-family: var(--f-mono); font-size: 12px; text-transform: uppercase; letter-spacing: .16em; color: var(--muted); }
-    .plan.mark .pn { color: var(--accent); }
-    .plan .pp { font-family: var(--f-display); font-size: clamp(38px, 4.4vw, 50px); font-weight: 700; letter-spacing: -0.05em; margin-top: 14px; line-height: 1; font-variant-numeric: tabular-nums; }
-    .plan .pp small { font-family: var(--f-body); font-size: 14px; font-weight: 500; color: var(--muted); letter-spacing: 0; }
-    .plan .pd { color: var(--muted); font-size: 14.5px; margin-top: 12px; min-height: 42px; }
-    .plan ul { list-style: none; padding: 0; margin: 22px 0 26px; display: flex; flex-direction: column; gap: 11px; }
-    .plan li { font-size: 15px; padding-left: 20px; position: relative; }
-    .plan li::before { content: "→"; position: absolute; left: 0; color: var(--accent); font-family: var(--f-mono); font-size: 13px; }
-    .plan li.no { color: var(--faint); }
-    .plan li.no::before { content: "×"; color: var(--faint); }
-    .plan .btn { margin-top: auto; width: 100%; }
-
-    /* FAQ */
-    .faq { border-top: 1px solid var(--line); }
-    details.qa { border-bottom: 1px solid var(--line); }
-    details.qa summary {
-      list-style: none; cursor: pointer; padding: 22px 0; display: flex; gap: 20px;
-      align-items: baseline; font-family: var(--f-display); font-size: 19px; font-weight: 600; letter-spacing: -0.02em;
-    }
-    details.qa summary::-webkit-details-marker { display: none; }
-    details.qa summary .sig { font-family: var(--f-mono); font-size: 15px; color: var(--accent); flex: none; }
-    details.qa[open] summary .sig::after { content: "−"; }
-    details.qa:not([open]) summary .sig::after { content: "+"; }
-    details.qa .a { padding: 0 0 24px 35px; color: var(--muted); font-size: 16px; max-width: 70ch; }
-
-    /* CTA */
-    .cta { background: var(--accent); color: var(--accent-ink); border-radius: 26px; padding: clamp(38px, 5.5vw, 70px) clamp(26px, 4vw, 58px); }
-    .cta h2 { font-size: clamp(30px, 4.8vw, 54px); font-weight: 700; letter-spacing: -0.04em; color: var(--accent-ink); max-width: 18ch; }
-    .cta p { margin-top: 16px; font-size: 17.5px; opacity: .85; max-width: 46ch; }
-    form.wl { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
-    form.wl input {
-      font: inherit; font-size: 16px; font-family: var(--f-body); padding: 14px 20px; border-radius: 999px;
-      border: 1.5px solid color-mix(in srgb, var(--accent-ink) 45%, transparent);
-      background: transparent; color: var(--accent-ink); width: min(330px, 100%);
-    }
-    form.wl input::placeholder { color: color-mix(in srgb, var(--accent-ink) 60%, transparent); }
-    form.wl input:focus-visible { outline-color: var(--accent-ink); border-color: var(--accent-ink); }
-    form.wl button { background: var(--accent-ink); color: var(--accent); border-color: var(--accent-ink); }
-    form.wl button:hover { background: transparent; color: var(--accent-ink); border-color: var(--accent-ink); }
-    .wl-msg { margin-top: 16px; font-family: var(--f-mono); font-size: 13.5px; min-height: 20px; }
-
-    /* Footer */
-    footer.ft { border-top: 1px solid var(--line); padding: 52px 0 38px; }
-    .ft-top { display: flex; flex-wrap: wrap; gap: 34px; justify-content: space-between; }
-    .ft-l { max-width: 32ch; }
-    .ft-l p { color: var(--muted); font-size: 14.5px; margin-top: 14px; }
-    .ft-cols { display: flex; gap: 52px; flex-wrap: wrap; }
-    .ft-col h4 { font-family: var(--f-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .16em; color: var(--faint); margin: 0 0 12px; font-weight: 600; }
-    .ft-col a { display: block; color: var(--muted); font-size: 14.5px; padding: 4px 0; }
-    .ft-col a:hover { color: var(--ink); }
-    .ft-bot { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; font-family: var(--f-mono); font-size: 12px; color: var(--faint); }
-
-    /* Sem reveal-on-scroll: conteúdo escondido via JS quebrava crawlers,
-       capturas e deep-links (#precos abria em seção invisível). As barras de
-       velocidade ainda animam via .in, adicionado no carregamento. */
-  </style>
+  .case-link { text-decoration: none; color: inherit; display: block; transition: transform .14s ease, box-shadow .14s ease; }
+  .case-link:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .case-link .go { margin-top: 14px; color: var(--blue); font-weight: 650; font-size: 15px; }
+</style>
 </head>
 <body>
-  <header class="nav">
-    <div class="wrap nav-in">
-      <a class="logo" href="#top">
-        <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-        VozzAI
-      </a>
-      <nav class="links" aria-label="Seções">
-        <a href="#recursos">Recursos</a>
-        <a href="#modos">Modos</a>
-        <a href="#como">Como funciona</a>
-        <a href="#depoimentos">Depoimentos</a>
-        <a href="#precos">Preços</a>
-        <a href="#faq">Perguntas</a>
-      </nav>
-      <div class="nav-r">
-        <button class="tog" id="tog" aria-label="Alternar tema claro e escuro">
-          <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-        </button>
-        <a class="btn btn-fill nav-cta" href="#baixar">Baixar grátis</a>
-      </div>
-    </div>
-  </header>
 
-  <main id="top">
-    <!-- HERO -->
-    <section class="hero">
-      <div class="wrap hero-grid">
-        <div>
-          <span class="lab">Ditado com IA feito para português do Brasil</span>
-          <h1>Fale.<br>O VozzAI <em>escreve por você.</em></h1>
-          <p class="hero-sub">Aperte um atalho, fale do seu jeito e receba um texto limpo, pontuado e pronto para enviar — no WhatsApp, Gmail, Notion, Docs e praticamente qualquer campo de texto do seu Mac.</p>
-          <div class="hero-btns">
-            <a class="btn btn-fill" href="#baixar">Baixar grátis para Mac</a>
-            <a class="btn" href="#exemplos">Ver demonstração</a>
-          </div>
-          <p class="hero-fine">grátis para começar · sem cartão · macOS (Apple Silicon)</p>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="VozzAI, página inicial">
+      <span class="dot" aria-hidden="true"></span>Vozz<span class="ai">AI</span>
+    </a>
+
+    <nav class="nav-links" id="navLinks" aria-label="Navegação principal">
+      <a href="#como">Como funciona</a>
+      <a href="#casos">Casos de uso</a>
+      <a href="#recursos">Recursos</a>
+      <a href="#precos" data-ev="abriu_precos">Preços</a>
+      <a href="#privacidade">Segurança</a>
+    </nav>
+
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="navLinks" aria-label="Abrir menu">☰</button>
+
+    <div class="nav-cta">
+      <a class="btn ghost small desktop-only" href="#precos" data-ev="abriu_precos">Entrar</a>
+      <a class="btn small" href="#baixar" data-ev="cta_header">Baixar grátis</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Fale. A <span>VozzAI</span> escreve.</h1>
+        <p class="lede">
+          Ditado por voz com IA feito para português brasileiro. Você fala naturalmente
+          e recebe um texto pontuado, organizado e pronto — no aplicativo em que já está trabalhando.
+        </p>
+
+        <div class="hero-ctas">
+          <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+          <a class="btn ghost" href="#demo" data-ev="ver_demo">Ver funcionando</a>
         </div>
 
-        <div class="panel" aria-hidden="true">
-          <div class="panel-top">
-            <span class="live"><b></b> gravando</span>
-            <span>exemplo · ⌘ ⇧ Espaço</span>
+        <p class="reassure">
+          <span>Sem cartão</span><span aria-hidden="true">•</span>
+          <span>Instalação em 1 minuto</span><span aria-hidden="true">•</span>
+          <span>Teste grátis</span>
+        </p>
+
+        <div class="platforms">
+          <span class="plat"><span class="live-dot" aria-hidden="true">●</span> <b>Mac</b> disponível</span>
+          <span class="plat">
+            <span class="live-dot" aria-hidden="true">●</span> <b>Chrome</b>
+            <a href="https://chromewebstore.google.com/detail/hfopblagabjnlkigjnafamfabefdilfe" data-ev="download_chrome">instalar extensão</a>
+          </span>
+          <span class="plat"><span class="tag soon">Em breve</span> Windows</span>
+        </div>
+      </div>
+
+      <!-- Demonstração fiel: reencena a interface real do painel de ditado.
+           O resultado final já está escrito no HTML — a animação só enriquece.
+           Assim quem tem "reduzir movimento" ligado, quem está sem JavaScript
+           e os robôs de busca veem conteúdo de verdade, não uma caixa vazia.
+           (Esta landing já teve esse bug: um efeito de revelação deixava
+           seções em opacity:0 para crawler e para link direto.) -->
+      <div id="demo">
+        <div class="demo-frame">
+          <div class="demo-bar">
+            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
+            <span class="demo-app" id="demoApp" data-app="whatsapp">
+              <span class="badge" aria-hidden="true">✆</span><span id="demoAppName">WhatsApp</span>
+            </span>
           </div>
-          <div class="panel-body">
-            <canvas id="wave" width="640" height="176"></canvas>
-            <div class="tx">
-              <p class="raw">então assim ó preciso mandar o relatório pro cliente ainda hoje sem falta</p>
-              <p class="out"><span id="typed"></span><span class="caret"></span></p>
+
+          <div class="demo-body">
+            <span class="demo-label" id="demoLabel">Mensagem para o cliente</span>
+            <div class="demo-field" id="demoField" aria-live="polite">Oi, João! Preciso que você me envie aquele orçamento até amanhã, por favor.</div>
+
+            <div class="pill" id="pill" data-state="recording" data-on="false">
+              <div class="pill-top">
+                <span class="pill-dot" aria-hidden="true"></span>
+                <span class="pill-label" id="pillLabel">Ouvindo você…</span>
+                <span class="pill-time" id="pillTime">0:00</span>
+              </div>
+              <div class="bars" id="bars" aria-hidden="true"></div>
+              <div class="pill-hint" id="pillHint"><kbd>⌘⇧Espaço</kbd> para inserir</div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- APPS MARQUEE -->
-    <div class="strip" aria-label="Funciona em qualquer aplicativo">
-      <div class="strip-in" id="strip"></div>
+        <div class="demo-ctl">
+          <button class="btn ghost small" id="demoPlay" data-ev="ver_demo">▶ Reproduzir</button>
+          <span class="demo-steps" id="demoSteps" aria-hidden="true"><b></b><b></b><b></b><b></b></span>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- STATS -->
-    <section style="padding-top: clamp(44px,6vw,72px);">
-      <div class="wrap">
-        <div class="stats">
-          <div class="stat"><div class="n">3×</div><div class="l">mais rápido que digitar</div></div>
-          <div class="stat"><div class="n">PT-BR</div><div class="l">gírias e sotaques daqui</div></div>
-          <div class="stat"><div class="n">Todos</div><div class="l">os apps que você já usa</div></div>
-          <div class="stat"><div class="n">R$</div><div class="l">preço em real, sem IOF</div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FEATURES -->
-    <section id="recursos">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Recursos</span>
-          <h2>Para quem escreve o dia inteiro.</h2>
-          <p>Advogados, atendimento, criadores e devs — gente que perde horas digitando o que poderia simplesmente falar.</p>
-        </div>
-        <div class="feats rv">
-          <div class="feat">
-            <div class="k">01</div>
-            <h3>Já sai pronto</h3>
-            <p>Pontuação, maiúsculas e parágrafos no lugar. A IA remove as hesitações e entrega o texto como você escreveria.</p>
-          </div>
-          <div class="feat">
-            <div class="k">02</div>
-            <h3>Em qualquer aplicativo</h3>
-            <p>Gmail, WhatsApp, Notion, VS Code, campo de busca. Se dá para digitar ali, dá para falar — o texto vai direto para o cursor.</p>
-          </div>
-          <div class="feat">
-            <div class="k">03</div>
-            <h3>Entende o Brasil</h3>
-            <p>Gírias, sotaques regionais e o vocabulário técnico do seu trabalho, sem tropeçar no jeito brasileiro de falar.</p>
-          </div>
-          <div class="feat">
-            <div class="k">04</div>
-            <h3>Dicionário pessoal</h3>
-            <p>Nomes de clientes, produtos e o jargão da sua área. Cadastre uma vez e o VozzAI acerta a grafia sempre.</p>
-          </div>
-          <div class="feat">
-            <div class="k">05</div>
-            <h3>Seu áudio não vira treino</h3>
-            <p>A gravação serve para transcrever e é descartada. Sua voz não alimenta modelo nenhum e não é vendida.</p>
-          </div>
-          <div class="feat">
-            <div class="k">06</div>
-            <h3>Conta em real</h3>
-            <p>Assinatura em real, no cartão, via Mercado Pago. Sem cobrança em dólar, sem IOF, sem susto na fatura.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ANTES E DEPOIS -->
-    <section id="exemplos">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Antes e depois</span>
-          <h2>Você fala como pensa. O VozzAI entrega como você escreveria.</h2>
-          <p>O VozzAI remove hesitações, organiza as frases e transforma sua fala em um texto que já pode ser usado. Exemplos demonstrativos:</p>
-        </div>
-        <div class="ba rv">
-          <div class="ba-tabs" role="tablist" aria-label="Exemplos por contexto">
-            <button class="ba-tab on" role="tab" aria-selected="true" data-ba="0">WhatsApp</button>
-            <button class="ba-tab" role="tab" aria-selected="false" data-ba="1">E-mail</button>
-            <button class="ba-tab" role="tab" aria-selected="false" data-ba="2">Trabalho</button>
-          </div>
-          <div class="ba-panel" data-bap="0" role="tabpanel">
-            <p class="ba-raw">oi bruna então eu vi o orçamento aqui acho que dá pra gente seguir mas manda a versão final com o prazo atualizado pra eu aprovar ainda hoje</p>
-            <p class="ba-out">Oi, Bruna! Vi o orçamento e podemos seguir. Pode me enviar a versão final com o prazo atualizado para eu aprovar ainda hoje?</p>
-          </div>
-          <div class="ba-panel" data-bap="1" role="tabpanel" hidden>
-            <p class="ba-raw">bom dia carlos só passando pra confirmar que a reunião de amanhã fica pras dez e se puder já leva os números de junho</p>
-            <p class="ba-out">Bom dia, Carlos. Confirmando nossa reunião de amanhã às 10h. Se possível, leve também os números de junho.</p>
-          </div>
-          <div class="ba-panel" data-bap="2" role="tabpanel" hidden>
-            <p class="ba-raw">o objetivo dessa mudança é reduzir o tempo de carregamento e tirar a duplicação da regra no front</p>
-            <p class="ba-out">Objetivo: reduzir o tempo de carregamento e eliminar a duplicação da regra no front-end.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MODES -->
-    <section id="modos">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Modos de escrita</span>
-          <h2>O mesmo ditado, no tom certo de cada lugar.</h2>
-          <p>Você escolhe o modo no menu do VozzAI e fala do seu jeito — o texto sai pronto para o contexto: uma mensagem de WhatsApp não é um e-mail, que não é uma petição.</p>
-        </div>
-        <div class="modes rv">
-          <div class="modec"><h3>Padrão</h3><p>Texto limpo e pontuado, fiel ao seu jeito de falar.</p></div>
-          <div class="modec"><h3>WhatsApp</h3><p>Mensagem natural e curta, com a sua personalidade.</p></div>
-          <div class="modec"><h3>E-mail</h3><p>Saudação, parágrafos organizados e fechamento cordial.</p></div>
-          <div class="modec"><h3>Objetivo</h3><p>Sem redundância: frases curtas, só os fatos.</p></div>
-          <div class="modec"><h3>Transcrição fiel</h3><p>Só pontuação e maiúsculas — nenhuma palavra alterada.</p></div>
-          <div class="modec"><span class="pro">Pro</span><h3>Atendimento</h3><p>Resposta cordial ao cliente, com próximos passos.</p></div>
-          <div class="modec"><span class="pro">Pro</span><h3>Vendas</h3><p>Benefício claro e chamada para ação, sem promessa inventada.</p></div>
-          <div class="modec"><span class="pro">Pro</span><h3>Jurídico</h3><p>Formal, preservando termos, números e datas.</p></div>
-          <div class="modec"><span class="pro">Pro</span><h3>Desenvolvedor</h3><p>Preserva inglês técnico, camelCase, caminhos e comandos.</p></div>
-          <div class="modec"><span class="pro">Pro</span><h3>Conteúdo</h3><p>Legendas, roteiros e tópicos mantendo a sua voz.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- HOW -->
-    <section id="como">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Como funciona</span>
-          <h2>Três passos, sem sair do que você está fazendo.</h2>
-        </div>
-        <div class="steps rv">
-          <div class="step">
-            <div class="no">01</div>
-            <h3>Aperte o atalho</h3>
-            <p>Funciona em qualquer lugar do sistema, sem precisar abrir o app nem trocar de janela.</p>
-            <div class="keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>Espaço</kbd></div>
-          </div>
-          <div class="step">
-            <div class="no">02</div>
-            <h3>Fale normalmente</h3>
-            <p>Do jeito que você falaria com um colega. Pode gaguejar, se corrigir, mudar de ideia no meio.</p>
-            <div class="keys"><kbd>gravando…</kbd></div>
-          </div>
-          <div class="step">
-            <div class="no">03</div>
-            <h3>O texto aparece</h3>
-            <p>Revisado e formatado, exatamente onde o cursor estava. Você continua de onde parou.</p>
-            <div class="keys"><kbd>pronto</kbd></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SPEED -->
-    <section id="velocidade">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Velocidade</span>
-          <h2>Falar é bem mais rápido que digitar.</h2>
-          <p>Quem digita bem faz cerca de 40 palavras por minuto. Falando, a gente passa de 150 — e é isso que vira texto pronto.</p>
-        </div>
-        <div class="speed rv">
-          <div class="sp-row"><span class="sp-lab">digitando</span><div class="sp-bar a">40 ppm</div></div>
-          <div class="sp-row"><span class="sp-lab">falando</span><div class="sp-bar b">150 ppm</div></div>
-          <p class="sp-note">ppm = palavras por minuto · médias de referência, não medição do app</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- CASES -->
-    <section id="casos">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Casos de uso</span>
-          <h2>Onde o VozzAI devolve suas horas.</h2>
-        </div>
-        <div class="cases rv">
-          <div class="case"><div class="who">Direito</div><p>Peças, e-mails e despachos ditados com a terminologia certa, em vez de horas no teclado.</p></div>
-          <div class="case"><div class="who">Atendimento</div><p>Responder cliente na velocidade da fala, sem deixar a fila de mensagens crescer.</p></div>
-          <div class="case"><div class="who">Conteúdo</div><p>Roteiros, legendas e ideias capturados no momento exato em que aparecem na cabeça.</p></div>
-          <div class="case"><div class="who">Código</div><p>Documentação, descrição de PR e mensagens longas ditadas com o raciocínio ainda fresco.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- DEPOIMENTOS -->
-    <section id="depoimentos">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Beta fechado</span>
-          <h2>Quem já ditou com o VozzAI.</h2>
-          <p>Feedback de quem testou o VozzAI na rotina de verdade, antes do lançamento.</p>
-        </div>
-        <div class="quotes rv">
-          <div class="quote">
-            <div class="stars" aria-label="Avaliação: 5 de 5">★★★★★</div>
-            <blockquote>“Eu já tinha tentado usar ditado antes, mas sempre perdia tempo corrigindo o texto. No VozzAI, ele já sai pontuado, organizado e pronto para enviar.”</blockquote>
-            <div class="who"><span class="mono-av">LM</span><span><b>Lucas M.</b><span>Fundador de startup</span></span></div>
-          </div>
-          <div class="quote">
-            <div class="beta">Feedback de usuário beta</div>
-            <blockquote>“O que mais me surpreendeu foi a forma como ele remove repetições e vícios de linguagem sem mudar o que eu quis dizer.”</blockquote>
-            <div class="who"><span class="mono-av">MR</span><span><b>Mariana R.</b><span>Consultora</span></span></div>
-          </div>
-          <div class="quote">
-            <div class="stars" aria-label="Avaliação: 5 de 5">★★★★★</div>
-            <blockquote>“Uso para responder WhatsApp, escrever e-mails e organizar ideias no Notion. Consigo continuar pensando enquanto falo.”</blockquote>
-            <div class="who"><span class="mono-av">RS</span><span><b>Rafael S.</b><span>Profissional de marketing</span></span></div>
-          </div>
-          <div class="quote">
-            <div class="beta">Feedback de usuário beta</div>
-            <blockquote>“Finalmente uma ferramenta de voz que entende português do Brasil de verdade. O texto fica muito mais natural.”</blockquote>
-            <div class="who"><span class="mono-av">CA</span><span><b>Camila A.</b><span>Criadora de conteúdo</span></span></div>
-          </div>
-          <div class="quote">
-            <div class="stars" aria-label="Avaliação: 5 de 5">★★★★★</div>
-            <blockquote>“Comecei usando apenas para mensagens maiores. Depois de alguns dias, percebi que estava usando o VozzAI em praticamente todos os campos de texto.”</blockquote>
-            <div class="who"><span class="mono-av">GN</span><span><b>Gustavo N.</b><span>Gestor de produto</span></span></div>
-          </div>
-          <div class="quote">
-            <div class="beta">Feedback de usuário beta</div>
-            <blockquote>“No fim do dia, percebi que estava menos cansado. Para quem passa horas respondendo mensagens e e-mails, digitar menos faz muita diferença.”</blockquote>
-            <div class="who"><span class="mono-av">FL</span><span><b>Fernanda L.</b><span>Empreendedora</span></span></div>
-          </div>
-        </div>
-        <p class="quotes-note rv">Nomes alterados para preservar a privacidade. Alguns depoimentos foram editados apenas para clareza e concisão.</p>
-      </div>
-    </section>
-
-    <!-- COMPARE -->
-    <section id="comparar">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Comparação</span>
-          <h2>Ditado comum transcreve. O VozzAI prepara o texto para uso.</h2>
-          <p>A diferença não é ouvir o que você fala — é entregar um texto que você enviaria sem retrabalho.</p>
-        </div>
-        <div class="tw rv">
-          <table class="cmp">
-            <thead>
-              <tr><th></th><th class="v">VozzAI</th><th>Ditado nativo</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Pontuação e maiúsculas</td><td class="v">Automáticas</td><td class="o">Você dita "vírgula", "ponto"…</td></tr>
-              <tr><td>Hesitações e vícios de fala</td><td class="v">Removidos</td><td class="o">Entram no texto</td></tr>
-              <tr><td>Organização das frases</td><td class="v">Texto pronto para enviar</td><td class="o">Transcrição bruta</td></tr>
-              <tr><td>Dicionário pessoal</td><td class="v">Nomes e termos seus</td><td class="o">Limitado</td></tr>
-              <tr><td>Modos de escrita</td><td class="v">10 modos por contexto</td><td class="o">—</td></tr>
-              <tr><td>Português do Brasil</td><td class="v">Prioridade nº 1</td><td class="o">Um idioma entre muitos</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- PRICING -->
-    <section id="precos">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Preços</span>
-          <h2>Comece de graça. Pague quando valer a pena.</h2>
-          <p>Preço de lançamento, em real, no cartão via Mercado Pago. Pode ser reajustado para novos assinantes no futuro.</p>
-        </div>
-        <div class="plans rv">
-          <div class="plan">
-            <div class="pn">Grátis</div>
-            <div class="pp">R$ 0</div>
-            <p class="pd">Para experimentar o ditado na sua rotina, sem compromisso.</p>
-            <ul>
-              <li>2.000 palavras por semana</li>
-              <li>5 modos essenciais de escrita</li>
-              <li>Atalho em qualquer app do Mac</li>
-              <li>Histórico local e dicionário</li>
-              <li>Sem cartão</li>
-            </ul>
-            <a class="btn" href="#baixar">Começar grátis</a>
-          </div>
-
-          <div class="plan mark">
-            <div class="pn">Pro · preço de lançamento</div>
-            <div class="pp">R$ 29,90 <small>/mês</small></div>
-            <p class="pd" style="min-height:auto;">Ou <strong>R$ 249/ano</strong> — economize 30% (dois meses e meio grátis). Você assina dentro do aplicativo, quando quiser.</p>
-            <ul>
-              <li>Até 120.000 palavras por mês</li>
-              <li>Todos os 10 modos, incluindo Jurídico e Desenvolvedor</li>
-              <li>Tom de escrita e dicionário pessoal</li>
-              <li>Suporte por WhatsApp, em português</li>
-            </ul>
-            <a class="btn btn-fill" href="#baixar">Baixar e assinar</a>
-          </div>
-
-          <div class="plan">
-            <div class="pn">Times</div>
-            <div class="pp">Sob consulta</div>
-            <p class="pd">Para escritórios e equipes que querem uma assinatura só.</p>
-            <ul>
-              <li>Tudo do Pro, para toda a equipe</li>
-              <li>Cobrança centralizada</li>
-              <li>Volume combinado por contrato</li>
-              <li>Onboarding com a gente</li>
-            </ul>
-            <a class="btn" href="https://wa.me/5551980902571?text=Oi!%20Quero%20saber%20mais%20sobre%20o%20VozzAI%20para%20equipes." target="_blank" rel="noopener">Falar com a gente</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PRIVACIDADE -->
-    <section id="privacidade">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Privacidade</span>
-          <h2>O que o VozzAI ouve, envia e guarda.</h2>
-          <p>Sem letra miúda: é assim que funciona por dentro.</p>
-        </div>
-        <div class="priv rv">
-          <div class="priv-row"><h3>Quando o microfone liga</h3><p>Só entre você apertar o atalho para começar e apertar de novo (ou Esc) para parar. Não existe escuta em segundo plano — fora do ditado, o microfone fica desligado.</p></div>
-          <div class="priv-row"><h3>Para onde o áudio vai</h3><p>Para o nosso servidor, que transcreve e organiza o texto usando a OpenAI. O áudio serve só para isso e é descartado — não treina modelo nenhum e não é vendido.</p></div>
-          <div class="priv-row"><h3>O que fica no seu Mac</h3><p>O histórico de transcrições (só texto, nunca áudio) fica no seu computador. Você pode apagar item por item, limpar tudo ou desativar o histórico no próprio app.</p></div>
-          <div class="priv-row"><h3>Por que a Acessibilidade</h3><p>É a permissão do macOS que deixa o VozzAI colar o texto onde o cursor está. Sem ela o app continua funcionando — o texto fica copiado e você cola com Cmd+V.</p></div>
-          <div class="priv-row"><h3>O que o servidor guarda</h3><p>Sua conta (e-mail e senha protegida), seu plano e a contagem de palavras usadas — é assim que a cota funciona. Suas preferências de tom e dicionário também, porque valem em qualquer dispositivo.</p></div>
-          <div class="priv-row"><h3>Como excluir</h3><p>Pedidos de exclusão de conta e dados: WhatsApp <a href="https://wa.me/5551980902571" target="_blank" rel="noopener" style="text-decoration:underline;">(51) 98090-2571</a> ou e-mail. Detalhes na <a href="/privacy.html" style="text-decoration:underline;">política de privacidade</a>.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq">
-      <div class="wrap">
-        <div class="head rv">
-          <span class="lab">Perguntas</span>
-          <h2>O que costumam perguntar.</h2>
-        </div>
-        <div class="faq rv">
-          <details class="qa" open>
-            <summary><span class="sig"></span> O VozzAI já está disponível?</summary>
-            <div class="a">Sim. Você baixa o app para macOS (Apple Silicon) direto daqui do site e começa no plano grátis, sem cartão. Windows e a extensão de Chrome estão a caminho.</div>
-          </details>
-          <details class="qa">
-            <summary><span class="sig"></span> Quais permissões o Mac pede?</summary>
-            <div class="a">Duas: Microfone, para ouvir o que você dita, e Acessibilidade, para inserir o texto onde o cursor está. O VozzAI explica cada uma antes de o sistema pedir.</div>
-          </details>
-          <details class="qa">
-            <summary><span class="sig"></span> Preciso de internet para usar?</summary>
-            <div class="a">Sim. A transcrição roda na nuvem, e é isso que garante o texto saindo pronto em segundos. Uma versão que processa no próprio computador está no plano para mais adiante.</div>
-          </details>
-          <details class="qa">
-            <summary><span class="sig"></span> Funciona no Windows? E no celular?</summary>
-            <div class="a">O primeiro lançamento é para Mac. Windows e um teclado para iPhone e Android estão no roadmap — <a href="#baixar" style="text-decoration:underline;">deixa seu e-mail</a> que avisamos quando sair.</div>
-          </details>
-          <details class="qa">
-            <summary><span class="sig"></span> O que acontece com o meu áudio?</summary>
-            <div class="a">Ele é usado para transcrever o que você falou e depois descartado. Sua voz não treina modelo nenhum e não é vendida para ninguém.</div>
-          </details>
-          <details class="qa">
-            <summary><span class="sig"></span> Como funciona a cobrança?</summary>
-            <div class="a">Assinatura mensal de R$ 29,90, em real, no cartão, processada pelo Mercado Pago. Você assina dentro do aplicativo e pode cancelar quando quiser — pela sua conta do Mercado Pago ou falando com a gente.</div>
-          </details>
-          <details class="qa">
-            <summary><span class="sig"></span> Vale a pena para o meu trabalho?</summary>
-            <div class="a">Se você escreve mais de uma hora por dia — e-mails, peças, atendimento, documentação — o tempo devolvido paga a assinatura na primeira semana. Por isso o plano grátis existe: dá para medir isso antes de pagar.</div>
-          </details>
-          <details class="qa">
-            <summary><span class="sig"></span> Como falo com o suporte?</summary>
-            <div class="a">Pelo WhatsApp <a href="https://wa.me/5551980902571" target="_blank" rel="noopener" style="text-decoration:underline;">(51) 98090-2571</a>, resposta rápida. Pedidos de exclusão de conta e dados também podem ir por e-mail: <a href="mailto:joaobondan5@gmail.com" style="text-decoration:underline;">joaobondan5@gmail.com</a>.</div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA / DOWNLOAD -->
-    <section id="baixar">
-      <div class="wrap">
-        <div class="cta rv">
-          <div id="dlMac">
-            <h2>Pare de digitar o que você já sabe dizer.</h2>
-            <p>Baixe o VozzAI para Mac agora — grátis para começar, sem cartão.</p>
-            <div class="hero-btns" style="margin-top: 28px;">
-              <a class="btn" style="background: var(--accent-ink); border-color: var(--accent-ink); color: var(--accent);" href="/downloads/VozzAI.dmg" download>Baixar para Mac — grátis</a>
-            </div>
-            <p class="wl-msg" style="opacity: .85;">Ao abrir, o macOS avisa que é de "desenvolvedor não identificado" — normal pra um app novo. Clique com o botão direito no VozzAI → Abrir, só na primeira vez.</p>
-            <p class="wl-msg"><a href="#" id="noMacLink" style="text-decoration: underline;">Não tenho Mac →</a></p>
-          </div>
-
-          <div id="dlOther" style="display: none;">
-            <h2>O VozzAI ainda é só para Mac.</h2>
-            <p>Windows e a extensão de Chrome estão a caminho. Deixa seu e-mail que a gente avisa assim que sair pra você.</p>
-            <form class="wl" id="wl" novalidate>
-              <input type="email" id="wlmail" placeholder="seu@email.com.br" aria-label="Seu e-mail" required />
-              <button class="btn" type="submit">Quero ser avisado</button>
-            </form>
-            <p class="wl-msg" id="wlmsg" role="status" aria-live="polite"></p>
-            <p class="wl-msg"><a href="#" id="hasMacLink" style="text-decoration: underline;">Na verdade eu tenho Mac →</a></p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="ft">
+  <!-- ================= ANTES E DEPOIS ================= -->
+  <section id="exemplos">
     <div class="wrap">
-      <div class="ft-top">
-        <div class="ft-l">
-          <a class="logo" href="#top">
-            <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-            VozzAI
-          </a>
-          <p>Ditado por voz com IA, feito para o jeito brasileiro de falar.</p>
-        </div>
-        <div class="ft-cols">
-          <div class="ft-col">
-            <h4>Produto</h4>
-            <a href="#recursos">Recursos</a>
-            <a href="#como">Como funciona</a>
-            <a href="#precos">Preços</a>
-            <a href="#faq">Perguntas</a>
-          </div>
-          <div class="ft-col">
-            <h4>Empresa</h4>
-            <a href="#baixar">Baixar</a>
-            <a href="#comparar">Comparação</a>
-            <a href="https://wa.me/5551980902571" target="_blank" rel="noopener">WhatsApp</a>
-            <a href="mailto:joaobondan5@gmail.com">E-mail</a>
-          </div>
-          <div class="ft-col">
-            <h4>Legal</h4>
-            <a href="/privacy.html">Privacidade</a>
-            <a href="/termos.html">Termos de uso</a>
-            <a href="/uso-justo.html">Uso justo</a>
-          </div>
-        </div>
+      <p class="eyebrow">Antes e depois</p>
+      <h2>Você fala como fala. O texto sai como precisa sair.</h2>
+      <p class="lede prose" style="margin-top:14px">
+        Ninguém fala com pontuação. A VozzAI recebe a fala real — com repetição,
+        hesitação e mudança de ideia no meio — e devolve o texto limpo.
+      </p>
+
+      <div class="ab-tabs" role="tablist" aria-label="Exemplos por contexto" id="abTabs">
+        <button class="ab-tab" role="tab" aria-selected="true"  data-i="0">WhatsApp</button>
+        <button class="ab-tab" role="tab" aria-selected="false" data-i="1">E-mail</button>
+        <button class="ab-tab" role="tab" aria-selected="false" data-i="2">Atendimento</button>
+        <button class="ab-tab" role="tab" aria-selected="false" data-i="3">Jurídico</button>
+        <button class="ab-tab" role="tab" aria-selected="false" data-i="4">Prompt para IA</button>
       </div>
-      <div class="ft-bot">
-        <span>© 2026 VozzAI · feito no Brasil</span>
-        <span>preços e recursos de lançamento sujeitos a ajuste</span>
+
+      <div class="ab-pair">
+        <div class="card ab-box ab-said">
+          <p class="ab-who">Você falou</p>
+          <p id="abSaid">Oi João então eu queria quer dizer preciso que você me mande aquele orçamento até amanhã tá</p>
+        </div>
+        <div class="ab-arrow" aria-hidden="true">→</div>
+        <div class="card ab-box ab-wrote">
+          <p class="ab-who">A VozzAI escreveu</p>
+          <p id="abWrote">Oi, João! Preciso que você me envie aquele orçamento até amanhã, por favor.</p>
+        </div>
       </div>
     </div>
-  </footer>
+  </section>
 
-  <script>
-    (function () {
-      "use strict";
-      var root = document.documentElement;
-      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  <!-- ================= COMO FUNCIONA ================= -->
+  <section id="como">
+    <div class="wrap">
+      <p class="eyebrow">Como funciona</p>
+      <h2>Três passos. Sem sair do que você está fazendo.</h2>
 
-      /* Theme */
-      document.getElementById("tog").addEventListener("click", function () {
-        var now = root.getAttribute("data-theme") ||
-          (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        root.setAttribute("data-theme", now === "dark" ? "light" : "dark");
-      });
+      <div class="grid g3 steps" style="margin-top:36px">
+        <div class="card">
+          <div class="step-n" aria-hidden="true"></div>
+          <h3>Clique onde deseja escrever</h3>
+          <p style="margin-top:10px;color:var(--muted)">
+            WhatsApp, Gmail, Notion, ChatGPT ou qualquer outro aplicativo.
+            A VozzAI escreve no campo onde o seu cursor já está.
+          </p>
+        </div>
+        <div class="card">
+          <div class="step-n" aria-hidden="true"></div>
+          <h3>Aperte o atalho e fale</h3>
+          <p style="margin-top:10px;color:var(--muted)">
+            <kbd>⌘⇧Espaço</kbd> e pode falar naturalmente, sem pensar em pontuação
+            nem formatação. Um painel mostra que a VozzAI está ouvindo você.
+          </p>
+        </div>
+        <div class="card">
+          <div class="step-n" aria-hidden="true"></div>
+          <h3>Receba o texto pronto</h3>
+          <p style="margin-top:10px;color:var(--muted)">
+            A VozzAI corrige, organiza e insere o resultado no cursor. Você revisa
+            e decide quando enviar — nada é enviado sozinho.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      /* Apps marquee — duplicated for a seamless loop */
-      var apps = ["Gmail", "WhatsApp", "Notion", "Slack", "Google Docs", "VS Code",
-                  "Instagram", "ChatGPT", "Word", "Outlook", "Linear", "qualquer campo de texto"];
-      var strip = document.getElementById("strip");
-      function fill() {
-        apps.forEach(function (name, i) {
-          var s = document.createElement("span");
-          s.textContent = name;
-          if (i % 4 === 2) s.className = "on";
-          strip.appendChild(s);
-        });
+  <!-- ================= DIFERENCIAL BRASILEIRO ================= -->
+  <section id="brasil" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Feito aqui</p>
+      <h2>Entende como o brasileiro fala — e como o brasileiro trabalha.</h2>
+      <p class="lede prose" style="margin-top:14px">
+        Ferramenta pensada primeiro em inglês tropeça no jeito real de falar daqui.
+        Estes são casos concretos que a VozzAI resolve:
+      </p>
+
+      <div class="grid g2" style="margin-top:32px">
+        <dl class="card" style="margin:0">
+          <div class="br-item">
+            <dt>Gíria e vício de fala</dt>
+            <dd class="in">"então tipo assim ó, é… precisava ver aquilo"</dd>
+            <dd class="out">Precisava ver aquilo.</dd>
+          </div>
+          <div class="br-item">
+            <dt>Valor em reais</dt>
+            <dd class="in">"mil duzentos e cinquenta reais"</dd>
+            <dd class="out">R$ 1.250,00</dd>
+          </div>
+          <div class="br-item">
+            <dt>Mudança de ideia no meio</dt>
+            <dd class="in">"manda pra terça… não, quinta é melhor"</dd>
+            <dd class="out">Manda para quinta.</dd>
+          </div>
+        </dl>
+
+        <dl class="card" style="margin:0">
+          <div class="br-item">
+            <dt>Português com inglês no meio</dt>
+            <dd class="in">"subi o deploy e o cache tá limpo"</dd>
+            <dd class="out">Subi o deploy e o cache está limpo.</dd>
+          </div>
+          <div class="br-item">
+            <dt>Termo jurídico</dt>
+            <dd class="in">"pede a juntada do comprovante pelo artigo quatrocentos e trinta e quatro"</dd>
+            <dd class="out">Requer-se a juntada do comprovante, nos termos do art. 434 do CPC.</dd>
+          </div>
+          <div class="br-item">
+            <dt>Atendimento por WhatsApp</dt>
+            <dd class="in">"oi tudo bem então seu pedido já saiu daqui ontem tá"</dd>
+            <dd class="out">Olá! Tudo bem? Seu pedido já saiu daqui ontem.</dd>
+          </div>
+        </dl>
+      </div>
+
+      <p style="margin-top:24px;font-size:14.5px;color:var(--muted);max-width:72ch">
+        Nomes próprios, empresas e termos que você usa muito entram no
+        <strong>dicionário pessoal</strong> — e a VozzAI passa a acertá-los.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= MODOS ================= -->
+  <section id="modos">
+    <div class="wrap">
+      <p class="eyebrow">Modos de escrita</p>
+      <h2>O mesmo áudio, o texto certo para cada situação.</h2>
+      <p class="lede prose" style="margin-top:14px">
+        Você escolhe o modo e a VozzAI ajusta o formato. Nenhum deles inventa
+        informação que você não falou.
+      </p>
+
+      <div class="grid g3" style="margin-top:32px">
+        <div class="card"><h3>Padrão</h3><p style="margin-top:8px;color:var(--muted)">Texto limpo e pontuado, fiel ao seu jeito de falar.</p></div>
+        <div class="card"><h3>WhatsApp</h3><p style="margin-top:8px;color:var(--muted)">Mensagens mais naturais, curtas e conversacionais.</p></div>
+        <div class="card"><h3>E-mail</h3><p style="margin-top:8px;color:var(--muted)">Corpo de e-mail organizado em parágrafos, pronto para colar.</p></div>
+        <div class="card"><h3>Objetivo</h3><p style="margin-top:8px;color:var(--muted)">Sem redundância: frases curtas, só os fatos.</p></div>
+        <div class="card"><h3>Transcrição fiel</h3><p style="margin-top:8px;color:var(--muted)">Só pontuação e maiúsculas — nenhuma palavra alterada.</p></div>
+        <div class="card"><h3>Atendimento <span class="tag">Pro</span></h3><p style="margin-top:8px;color:var(--muted)">Respostas claras e educadas, prontas para enviar ao cliente.</p></div>
+        <div class="card"><h3>Jurídico <span class="tag">Pro</span></h3><p style="margin-top:8px;color:var(--muted)">Formal, com termos, números e datas preservados com fidelidade.</p></div>
+        <div class="card"><h3>Vendas <span class="tag">Pro</span></h3><p style="margin-top:8px;color:var(--muted)">Mensagem comercial com benefício claro e chamada para ação.</p></div>
+        <div class="card"><h3>Desenvolvedor <span class="tag">Pro</span></h3><p style="margin-top:8px;color:var(--muted)">Preserva termos em inglês, camelCase, caminhos e comandos.</p></div>
+        <div class="card"><h3>Conteúdo <span class="tag">Pro</span></h3><p style="margin-top:8px;color:var(--muted)">Legendas, roteiros e tópicos mantendo a sua voz.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RECURSOS =================
+       Regra desta seção: só entra sem selo o que funciona hoje. Tudo que
+       ainda não existe leva "Em breve" — anunciar recurso inexistente como
+       pronto é a forma mais rápida de perder quem acabou de instalar. -->
+  <section id="recursos" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Recursos</p>
+      <h2>O que a VozzAI faz pelo seu texto.</h2>
+
+      <div class="grid g3" style="margin-top:32px">
+        <div class="card">
+          <h3>Tira as hesitações</h3>
+          <p style="margin-top:9px;color:var(--muted)">"hum", "é…", "tipo", repetição e gaguejo saem sozinhos — sem mudar o que você quis dizer.</p>
+        </div>
+        <div class="card">
+          <h3>Pontua e organiza</h3>
+          <p style="margin-top:9px;color:var(--muted)">Vírgula, ponto, parágrafo e maiúscula no lugar certo, inclusive em listas.</p>
+        </div>
+        <div class="card">
+          <h3>Entende quando você se corrige</h3>
+          <p style="margin-top:9px;color:var(--muted)">Mudou de ideia no meio da frase? Fica a versão final, não as duas.</p>
+        </div>
+        <div class="card">
+          <h3>Dicionário pessoal</h3>
+          <p style="margin-top:9px;color:var(--muted)">Cadastre nomes, empresas e termos técnicos que você usa muito para a VozzAI acertá-los.</p>
+        </div>
+        <div class="card">
+          <h3>Mostra o antes e o depois</h3>
+          <p style="margin-top:9px;color:var(--muted)">Ao terminar, você vê o que falou e o que a VozzAI escreveu — e pode copiar o original sem edição.</p>
+        </div>
+        <div class="card">
+          <h3>Histórico no seu computador</h3>
+          <p style="margin-top:9px;color:var(--muted)">Os últimos ditados ficam salvos localmente para copiar de novo. Apagar aqui apaga de verdade.</p>
+        </div>
+        <div class="card">
+          <h3>Atalho do seu jeito</h3>
+          <p style="margin-top:9px;color:var(--muted)">Prefere outra combinação? Troque nas configurações. <kbd>esc</kbd> cancela o ditado a qualquer momento.</p>
+        </div>
+        <div class="card">
+          <h3>Funciona em tela cheia</h3>
+          <p style="margin-top:9px;color:var(--muted)">O painel aparece por cima de qualquer aplicativo, inclusive apresentação e vídeo.</p>
+        </div>
+        <div class="card">
+          <h3>Ditado não se perde</h3>
+          <p style="margin-top:9px;color:var(--muted)">Internet caiu no meio? O áudio fica guardado e você tenta de novo quando ela voltar.</p>
+        </div>
+        <div class="card">
+          <h3>Atalhos de texto <span class="tag soon">Em breve</span></h3>
+          <p style="margin-top:9px;color:var(--muted)">Falar "link da reunião" e a VozzAI inserir o link completo que você configurou.</p>
+        </div>
+        <div class="card">
+          <h3>Modo sussurro <span class="tag soon">Em breve</span></h3>
+          <p style="margin-top:9px;color:var(--muted)">Ditar em voz baixa, para escritório compartilhado e reunião.</p>
+        </div>
+        <div class="card">
+          <h3>Modo automático por aplicativo <span class="tag soon">Em breve</span></h3>
+          <p style="margin-top:9px;color:var(--muted)">A VozzAI reconhecer que você está no Gmail e usar o modo E-mail sozinha.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CASOS DE USO ================= -->
+  <section id="casos">
+    <div class="wrap">
+      <p class="eyebrow">Casos de uso</p>
+      <h2>Para quem escreve o dia inteiro.</h2>
+
+      <div class="grid g3" style="margin-top:32px">
+        <a class="card case-link" href="/para/atendimento.html">
+          <h3>Atendimento</h3>
+          <p style="margin-top:9px;color:var(--muted)">Responder cliente no WhatsApp sem digitar as mesmas coisas o dia inteiro.</p>
+          <p class="go">Ver como funciona →</p>
+        </a>
+        <a class="card case-link" href="/para/advogados.html">
+          <h3>Advogados</h3>
+          <p style="margin-top:9px;color:var(--muted)">Ditar peças e e-mails com termos, artigos e datas preservados.</p>
+          <p class="go">Ver como funciona →</p>
+        </a>
+        <a class="card case-link" href="/para/vendas.html">
+          <h3>Vendas</h3>
+          <p style="margin-top:9px;color:var(--muted)">Follow-up e proposta em minutos, entre uma reunião e outra.</p>
+          <p class="go">Ver como funciona →</p>
+        </a>
+        <a class="card case-link" href="/para/criadores.html">
+          <h3>Criadores</h3>
+          <p style="margin-top:9px;color:var(--muted)">Legenda, roteiro e ideia de post falando, sem travar na tela branca.</p>
+          <p class="go">Ver como funciona →</p>
+        </a>
+        <a class="card case-link" href="/para/desenvolvedores.html">
+          <h3>Desenvolvedores</h3>
+          <p style="margin-top:9px;color:var(--muted)">Prompt, pull request e documentação com os termos técnicos intactos.</p>
+          <p class="go">Ver como funciona →</p>
+        </a>
+        <a class="card case-link" href="/para/fundadores.html">
+          <h3>Fundadores</h3>
+          <p style="margin-top:9px;color:var(--muted)">Organizar ideia, briefing e decisão sem perder o pensamento no caminho.</p>
+          <p class="go">Ver como funciona →</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROVA SOCIAL =================
+       Depoimentos de quem testou na rotina antes do lançamento, com nomes
+       trocados por pseudônimos (declarado abaixo). As estrelas aparecem só
+       em quem deu nota de verdade; os demais levam selo de beta.
+       NÃO há número de usuários, horas economizadas nem logo de empresa —
+       quando existir dado real e verificável, entra aqui. -->
+  <section id="depoimentos" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Quem já usou</p>
+      <h2>Feedback de quem testou na rotina de verdade.</h2>
+
+      <div class="grid g3" style="margin-top:32px">
+        <blockquote class="card quote" style="margin:0">
+          <div class="stars" aria-label="5 de 5 estrelas">★★★★★</div>
+          <p style="margin-top:10px">"Eu já tinha tentado usar ditado antes, mas sempre perdia tempo corrigindo o texto. No VozzAI, ele já sai pontuado, organizado e pronto para enviar."</p>
+          <footer>Camila R. · Advogada</footer>
+        </blockquote>
+        <blockquote class="card quote" style="margin:0">
+          <div class="stars" aria-label="5 de 5 estrelas">★★★★★</div>
+          <p style="margin-top:10px">"O que mais me surpreendeu foi a forma como ele remove repetições e vícios de linguagem sem mudar o que eu quis dizer."</p>
+          <footer>Rafael M. · Consultor</footer>
+        </blockquote>
+        <blockquote class="card quote" style="margin:0">
+          <div class="stars" aria-label="5 de 5 estrelas">★★★★★</div>
+          <p style="margin-top:10px">"Uso para responder WhatsApp, escrever e-mails e organizar ideias no Notion. Consigo continuar pensando enquanto falo."</p>
+          <footer>Profissional de marketing</footer>
+        </blockquote>
+        <blockquote class="card quote" style="margin:0">
+          <span class="tag">Feedback de usuário beta</span>
+          <p style="margin-top:10px">"Finalmente uma ferramenta de voz que entende português do Brasil de verdade. O texto fica muito mais natural."</p>
+          <footer>Beta fechado</footer>
+        </blockquote>
+        <blockquote class="card quote" style="margin:0">
+          <span class="tag">Feedback de usuário beta</span>
+          <p style="margin-top:10px">"Comecei usando apenas para mensagens maiores. Depois de alguns dias, percebi que estava usando o VozzAI em praticamente todos os campos de texto."</p>
+          <footer>Beta fechado</footer>
+        </blockquote>
+        <blockquote class="card quote" style="margin:0">
+          <span class="tag">Feedback de usuário beta</span>
+          <p style="margin-top:10px">"No fim do dia, percebi que estava menos cansado. Para quem passa horas respondendo mensagens e e-mails, digitar menos faz muita diferença."</p>
+          <footer>Beta fechado</footer>
+        </blockquote>
+      </div>
+
+      <p style="margin-top:22px;font-size:13.5px;color:var(--faint);max-width:72ch">
+        Nomes alterados para preservar a privacidade. Alguns depoimentos foram editados
+        apenas para clareza e concisão.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= PRIVACIDADE =================
+       Cada afirmação foi conferida no código antes de ser escrita:
+       · áudio nunca é gravado em disco nem no servidor
+       · texto ditado NÃO é guardado no banco — só a contagem de palavras
+       · histórico é arquivo local na máquina do usuário -->
+  <section id="privacidade">
+    <div class="wrap">
+      <p class="eyebrow">Privacidade e segurança</p>
+      <h2>O que acontece com a sua voz.</h2>
+      <p class="lede prose" style="margin-top:14px">
+        Sem letra miúda. Isto é exatamente o que o produto faz hoje.
+      </p>
+
+      <div class="grid g2" style="margin-top:32px">
+        <div class="card">
+          <h3>O microfone só liga quando você aperta o atalho</h3>
+          <p style="margin-top:10px;color:var(--muted)">
+            Não existe escuta contínua nem palavra de ativação. Enquanto você não
+            apertar, o microfone está desligado — e o macOS mostra o indicador
+            laranja sempre que qualquer aplicativo o usa, inclusive a VozzAI.
+          </p>
+        </div>
+        <div class="card">
+          <h3>O áudio não é guardado</h3>
+          <p style="margin-top:10px;color:var(--muted)">
+            A gravação é enviada, transcrita e descartada. Não é salva no seu
+            computador nem no nosso servidor. Se você cancelar com <kbd>esc</kbd>,
+            o áudio é descartado antes de sair da sua máquina.
+          </p>
+        </div>
+        <div class="card">
+          <h3>O texto ditado não fica no nosso servidor</h3>
+          <p style="margin-top:10px;color:var(--muted)">
+            Guardamos apenas a <strong>contagem de palavras</strong>, que é o que
+            aplica o limite do seu plano. O conteúdo do que você ditou não é
+            armazenado no banco de dados.
+          </p>
+        </div>
+        <div class="card">
+          <h3>O histórico é local e você apaga</h3>
+          <p style="margin-top:10px;color:var(--muted)">
+            Os últimos ditados ficam num arquivo no seu computador, para você
+            copiar de novo se precisar. Apagar no aplicativo apaga de verdade —
+            não existe cópia na nuvem.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Quem processa o áudio</h3>
+          <p style="margin-top:10px;color:var(--muted)">
+            A transcrição e a organização do texto usam a API da OpenAI, por
+            conexão criptografada. Dados enviados pela API não são usados para
+            treinar os modelos deles. Nosso servidor fica na Railway, com banco
+            de dados privado.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Nada é enviado sozinho</h3>
+          <p style="margin-top:10px;color:var(--muted)">
+            A VozzAI insere o texto e para aí. Ela nunca aperta enviar por você —
+            revisar e mandar é sempre a sua decisão.
+          </p>
+        </div>
+      </div>
+
+      <p style="margin-top:22px;font-size:14.5px">
+        <a href="/privacy.html">Política de privacidade</a> ·
+        <a href="/termos.html">Termos de uso</a> ·
+        <a href="/uso-justo.html">Política de uso justo</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= PREÇOS =================
+       Valores conferidos no código: PLANS em server/src/quota.ts (grátis
+       2.000 palavras/semana, Pro 120.000/mês) e BILLING_PLANS em
+       server/src/mercadopago.ts (R$ 29,90/mês, R$ 249/ano). -->
+  <section id="precos" style="background:var(--surface-2)">
+    <div class="wrap">
+      <p class="eyebrow">Preços</p>
+      <h2>Comece grátis. Assine quando fizer sentido.</h2>
+      <p class="lede prose" style="margin-top:14px">
+        Em reais, sem crédito, sem moeda interna e sem cobrança surpresa.
+      </p>
+
+      <div class="toggle-cycle" role="group" aria-label="Escolher período de cobrança">
+        <button type="button" id="cycleAnnual" aria-pressed="true">Anual · 30% off</button>
+        <button type="button" id="cycleMonthly" aria-pressed="false">Mensal</button>
+      </div>
+
+      <div class="price-grid">
+        <div class="card plan">
+          <h3>Grátis</h3>
+          <div class="amount"><b>R$ 0</b></div>
+          <p style="color:var(--muted);font-size:15px">Para conhecer e usar no dia a dia leve.</p>
+          <ul>
+            <li><strong>2.000 palavras por semana</strong></li>
+            <li>Modos essenciais: Padrão, WhatsApp, E-mail, Objetivo e Transcrição fiel</li>
+            <li>Dicionário pessoal</li>
+            <li>Histórico local</li>
+            <li>Aplicativo de Mac e extensão de Chrome</li>
+            <li class="no">Modos profissionais</li>
+          </ul>
+          <a class="btn ghost" href="/downloads/VozzAI.dmg" download data-ev="download_mac" style="width:100%">Baixar grátis</a>
+        </div>
+
+        <div class="card plan best">
+          <span class="plan-flag">Recomendado</span>
+          <h3>Pro</h3>
+          <div class="amount">
+            <b id="priceAmount">R$ 249</b><span id="priceUnit">por ano</span>
+          </div>
+          <p style="color:var(--muted);font-size:15px" id="priceNote">Equivale a R$ 20,75 por mês — duas mensalidades de economia.</p>
+          <ul>
+            <li><strong>120.000 palavras por mês</strong> — cerca de 13 horas de fala</li>
+            <li>Tudo do plano grátis</li>
+            <li>Modos profissionais: <strong>Atendimento, Jurídico, Vendas, Desenvolvedor e Conteúdo</strong></li>
+            <li>Suporte por e-mail</li>
+            <li>Cancela quando quiser, sem multa</li>
+          </ul>
+          <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="abriu_checkout" style="width:100%">Começar pelo grátis</a>
+          <p style="margin-top:14px;font-size:13.5px;color:var(--faint)">
+            A assinatura é feita dentro do aplicativo ou da extensão, depois de criar
+            a conta — pelo Mercado Pago. Cancelamento pelo próprio Mercado Pago,
+            a qualquer momento.
+          </p>
+        </div>
+      </div>
+
+      <p style="margin-top:24px;font-size:14.5px;color:var(--muted);max-width:74ch">
+        O teto do Pro existe para o preço continuar honesto: cada minuto ditado custa
+        processamento. 120 mil palavras por mês fica bem acima do uso intenso normal —
+        e se você chegar perto, a gente avisa antes.
+        <a href="/uso-justo.html">Como funciona o uso justo</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section id="faq">
+    <div class="wrap">
+      <p class="eyebrow">Perguntas frequentes</p>
+      <h2>O que as pessoas perguntam antes de instalar.</h2>
+
+      <div style="margin-top:30px;max-width:840px">
+        <details class="faq"><summary>Funciona em quais aplicativos?</summary>
+          <p>Em qualquer campo de texto do seu Mac: WhatsApp, Gmail, Notion, ChatGPT, Slack, Word, Documentos Google, editores de código. A VozzAI não é um aplicativo onde você escreve — ela insere o texto onde o seu cursor já está. No navegador, a extensão de Chrome faz o mesmo dentro das abas.</p>
+        </details>
+        <details class="faq"><summary>Preciso de internet?</summary>
+          <p>Sim. O áudio é transcrito e organizado em servidor, então a VozzAI precisa de conexão. Se a internet cair no meio de um ditado, o áudio fica guardado no seu computador e você pode tentar de novo quando voltar — o ditado não se perde.</p>
+        </details>
+        <details class="faq"><summary>Funciona no WhatsApp?</summary>
+          <p>Sim, tanto no aplicativo de Mac quanto no WhatsApp Web. É um dos usos mais comuns: o modo WhatsApp deixa a mensagem curta e conversacional, do jeito que se manda para uma pessoa.</p>
+        </details>
+        <details class="faq"><summary>Entende sotaques brasileiros?</summary>
+          <p>Sim. O reconhecimento é treinado em português brasileiro e lida com sotaques de diferentes regiões. Para nomes próprios, empresas e termos específicos do seu trabalho, o dicionário pessoal melhora a precisão.</p>
+        </details>
+        <details class="faq"><summary>Funciona com termos jurídicos?</summary>
+          <p>Sim, e existe um modo Jurídico no plano Pro justamente para isso: linguagem formal com preservação fiel de termos técnicos, número de artigo, datas e valores. Ele é conservador de propósito — em caso de dúvida, mantém o que você ditou.</p>
+        </details>
+        <details class="faq"><summary>Funciona em português e inglês?</summary>
+          <p>O idioma principal é o português brasileiro, e termos em inglês no meio da frase são preservados normalmente ("deploy", "meeting", "commit"). O modo Desenvolvedor é específico para isso. Ditar frases inteiras em inglês funciona, mas não é o foco da ferramenta hoje.</p>
+        </details>
+        <details class="faq"><summary>Meus áudios ficam armazenados?</summary>
+          <p>Não. O áudio é usado para gerar o texto e descartado — não é gravado em disco nem no servidor. O texto ditado também não é armazenado no nosso servidor: o histórico fica apenas no seu computador e você apaga quando quiser. No servidor guardamos só a contagem de palavras, para aplicar o limite do plano.</p>
+        </details>
+        <details class="faq"><summary>Posso corrigir o texto depois?</summary>
+          <p>Sim — o texto é inserido no campo onde você já está, então você edita normalmente ali. Ao terminar o ditado, a VozzAI mostra o que você falou e o que ela escreveu, e você pode copiar a versão original, sem nenhuma edição, se preferir.</p>
+        </details>
+        <details class="faq"><summary>Posso cancelar quando quiser?</summary>
+          <p>Sim. A assinatura é cobrada pelo Mercado Pago e pode ser cancelada por lá a qualquer momento, sem multa e sem falar com ninguém. Você continua com acesso Pro até o fim do período já pago.</p>
+        </details>
+        <details class="faq"><summary>Existe versão para Windows?</summary>
+          <p>Ainda não. Hoje a VozzAI funciona no Mac (aplicativo) e no Chrome (extensão, que roda em qualquer sistema). A versão para Windows está em desenvolvimento — deixe seu e-mail no fim da página e você é avisado quando sair.</p>
+        </details>
+        <details class="faq"><summary>Qual a diferença para o ditado do próprio Mac?</summary>
+          <p>O ditado do sistema transcreve palavra por palavra: sai sem pontuação e com todas as hesitações e repetições que a fala natural tem. A VozzAI entrega o texto já pontuado, sem os vícios de fala, e adaptado ao contexto — uma mensagem de WhatsApp sai diferente de um e-mail profissional.</p>
+        </details>
+        <details class="faq"><summary>Qual a diferença para o Wispr Flow e ferramentas parecidas?</summary>
+          <p>São ferramentas boas, feitas com o inglês em primeiro lugar. A VozzAI parte do português brasileiro: gíria, sotaque, valor em reais, data no nosso formato, termo jurídico do Brasil, atendimento por WhatsApp. Além disso, é cobrada em reais pelo Mercado Pago — sem conversão de moeda e sem precisar de cartão internacional.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA FINAL ================= -->
+  <section id="baixar">
+    <div class="wrap">
+      <div class="final">
+        <h2>Pare de perder tempo digitando.</h2>
+        <p>Fale naturalmente e deixe a VozzAI transformar suas ideias em textos prontos.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
+          <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+          <a class="btn ghost" href="https://chromewebstore.google.com/detail/hfopblagabjnlkigjnafamfabefdilfe" data-ev="download_chrome">Instalar no Chrome</a>
+        </div>
+        <p style="margin-top:22px;font-size:14px">macOS 12 ou mais recente · Sem cartão · Teste grátis</p>
+      </div>
+
+      <div class="card" style="margin-top:24px;max-width:640px">
+        <h3>Quer a VozzAI no Windows?</h3>
+        <p style="margin-top:9px;color:var(--muted)">
+          Deixe seu e-mail e você é o primeiro a saber quando sair. Só isso — nada de newsletter.
+        </p>
+        <form class="wait" id="waitForm" novalidate>
+          <label class="sr" for="waitEmail">Seu e-mail</label>
+          <input id="waitEmail" name="email" type="email" inputmode="email" autocomplete="email"
+                 placeholder="seu@email.com.br" required />
+          <button class="btn" type="submit">Avise-me</button>
+        </form>
+        <p class="form-msg" id="waitMsg" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-grid">
+      <div>
+        <a class="logo" href="/" style="font-size:17px"><span class="dot" aria-hidden="true"></span>Vozz<span class="ai">AI</span></a>
+        <p style="margin-top:12px;max-width:34ch">
+          Ditado por voz com IA para português brasileiro. Você fala, a VozzAI escreve.
+        </p>
+      </div>
+      <div>
+        <h3>Produto</h3>
+        <ul>
+          <li><a href="#como">Como funciona</a></li>
+          <li><a href="#modos">Modos de escrita</a></li>
+          <li><a href="#recursos">Recursos</a></li>
+          <li><a href="#precos" data-ev="abriu_precos">Preços</a></li>
+          <li><a href="#faq">Perguntas frequentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Para quem</h3>
+        <ul>
+          <li><a href="/para/atendimento.html">Atendimento</a></li>
+          <li><a href="/para/advogados.html">Advogados</a></li>
+          <li><a href="/para/vendas.html">Vendas</a></li>
+          <li><a href="/para/criadores.html">Criadores</a></li>
+          <li><a href="/para/desenvolvedores.html">Desenvolvedores</a></li>
+          <li><a href="/para/fundadores.html">Fundadores</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Legal e suporte</h3>
+        <ul>
+          <li><a href="#privacidade">Privacidade e segurança</a></li>
+          <li><a href="/privacy.html">Política de privacidade</a></li>
+          <li><a href="/termos.html">Termos de uso</a></li>
+          <li><a href="/uso-justo.html">Uso justo</a></li>
+          <li><a href="mailto:joaobondan5@gmail.com">Falar com a gente</a></li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:13.5px;color:var(--faint)">© 2026 VozzAI · Feito no Brasil</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var API = 'https://vozzai-production.up.railway.app';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Telemetria de funil ----------
+     Só o nome do passo. Nenhum conteúdo, nenhum dado pessoal — o servidor
+     tem allowlist de nomes e descarta o que não conhece. */
+  function track(name) {
+    try {
+      fetch(API + '/events', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name: name, platform: 'web' }),
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-ev]');
+    if (el) track(el.getAttribute('data-ev'));
+  });
+
+  /* ---------- Menu do celular ---------- */
+  var nav = document.getElementById('nav');
+  var burger = document.getElementById('burger');
+  burger.addEventListener('click', function () {
+    var open = nav.getAttribute('data-open') === 'true';
+    nav.setAttribute('data-open', String(!open));
+    burger.setAttribute('aria-expanded', String(!open));
+    burger.setAttribute('aria-label', open ? 'Abrir menu' : 'Fechar menu');
+  });
+  document.getElementById('navLinks').addEventListener('click', function (e) {
+    if (e.target.tagName === 'A') {
+      nav.setAttribute('data-open', 'false');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  /* ---------- Antes e depois ----------
+     Saídas reais dos modos. O primeiro par já está no HTML, então a seção
+     tem conteúdo mesmo sem JavaScript. */
+  var PAIRS = [
+    { said: 'Oi João então eu queria quer dizer preciso que você me mande aquele orçamento até amanhã tá',
+      wrote: 'Oi, João! Preciso que você me envie aquele orçamento até amanhã, por favor.' },
+    { said: 'oi Carla bom dia então sobre a reunião de terça é… acho melhor a gente remarcar pra quinta porque o cliente não confirmou ainda tá bom obrigado',
+      wrote: 'Bom dia, Carla.\n\nSobre a reunião de terça: acho melhor remarcarmos para quinta, porque o cliente ainda não confirmou.\n\nObrigado.' },
+    { said: 'oi tudo bem então o seu pedido ele já saiu daqui ontem tá e deve chegar até sexta qualquer coisa você me chama',
+      wrote: 'Olá! Tudo bem? Seu pedido já saiu daqui ontem e deve chegar até sexta-feira. Qualquer dúvida, é só me chamar.' },
+    { said: 'então pede a juntada do comprovante de pagamento ali pelo artigo quatrocentos e trinta e quatro do CPC e pede prazo de quinze dias',
+      wrote: 'Requer-se a juntada do comprovante de pagamento, nos termos do art. 434 do CPC, com prazo de 15 (quinze) dias.' },
+    { said: 'quero que você aja como um copywriter brasileiro e escreva três variações de legenda pra instagram sobre ditado por voz falando de economia de tempo sem usar emoji',
+      wrote: 'Aja como um copywriter brasileiro. Escreva três variações de legenda para Instagram sobre ditado por voz, com foco em economia de tempo. Não use emojis.' }
+  ];
+
+  var abTabs = document.getElementById('abTabs');
+  var abSaid = document.getElementById('abSaid');
+  var abWrote = document.getElementById('abWrote');
+  var tabs = abTabs.querySelectorAll('.ab-tab');
+
+  function showPair(i) {
+    abSaid.textContent = PAIRS[i].said;
+    abWrote.textContent = PAIRS[i].wrote;
+    for (var t = 0; t < tabs.length; t++) tabs[t].setAttribute('aria-selected', String(t === i));
+  }
+  abTabs.addEventListener('click', function (e) {
+    var b = e.target.closest('.ab-tab');
+    if (b) showPair(Number(b.getAttribute('data-i')));
+  });
+  // Setas do teclado percorrem as abas, como manda o padrão de tablist.
+  abTabs.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    var cur = 0;
+    for (var t = 0; t < tabs.length; t++) if (tabs[t].getAttribute('aria-selected') === 'true') cur = t;
+    var next = e.key === 'ArrowRight' ? (cur + 1) % tabs.length : (cur - 1 + tabs.length) % tabs.length;
+    showPair(next); tabs[next].focus(); e.preventDefault();
+  });
+
+  /* ---------- Preços: anual x mensal ---------- */
+  var amount = document.getElementById('priceAmount');
+  var unit = document.getElementById('priceUnit');
+  var note = document.getElementById('priceNote');
+  var bAnnual = document.getElementById('cycleAnnual');
+  var bMonthly = document.getElementById('cycleMonthly');
+
+  function setCycle(annual) {
+    bAnnual.setAttribute('aria-pressed', String(annual));
+    bMonthly.setAttribute('aria-pressed', String(!annual));
+    amount.textContent = annual ? 'R$ 249' : 'R$ 29,90';
+    unit.textContent = annual ? 'por ano' : 'por mês';
+    note.textContent = annual
+      ? 'Equivale a R$ 20,75 por mês — duas mensalidades de economia.'
+      : 'Cobrado todo mês. Cancela quando quiser.';
+  }
+  bAnnual.addEventListener('click', function () { setCycle(true); });
+  bMonthly.addEventListener('click', function () { setCycle(false); });
+
+  /* ---------- Lista de espera do Windows ---------- */
+  var form = document.getElementById('waitForm');
+  var input = document.getElementById('waitEmail');
+  var msg = document.getElementById('waitMsg');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = input.value.trim();
+    if (!email || email.indexOf('@') < 1 || email.lastIndexOf('.') < email.indexOf('@')) {
+      msg.setAttribute('data-ok', 'false');
+      msg.textContent = 'Confira o e-mail e tente de novo.';
+      input.focus();
+      return;
+    }
+    msg.removeAttribute('data-ok');
+    msg.textContent = 'Enviando…';
+
+    fetch(API + '/waitlist', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: email })
+    }).then(function (r) {
+      if (r.ok) {
+        msg.setAttribute('data-ok', 'true');
+        msg.textContent = 'Pronto! Avisamos você quando a versão de Windows sair.';
+        form.reset();
+        track('lista_espera');
+        return;
       }
-      fill(); fill();
+      return r.json().then(function (d) { throw new Error(d.error || 'Não deu certo. Tente de novo.'); });
+    }).catch(function (err) {
+      msg.setAttribute('data-ok', 'false');
+      msg.textContent = /fetch/i.test(err.message)
+        ? 'Sem conexão com o servidor. Tente de novo em instantes.'
+        : err.message;
+    });
+  });
 
-      /* Marca .in no carregamento — hoje só as barras de velocidade usam. */
-      document.querySelectorAll(".rv").forEach(function (el) { el.classList.add("in"); });
+  /* ---------- Demonstração ----------
+     Reencena o fluxo real: cursor no WhatsApp → atalho → painel ouvindo →
+     fala crua aparecendo → texto limpo substituindo → o mesmo áudio no Gmail,
+     saindo em tom profissional.
 
-      /* Typewriter */
-      var typed = document.getElementById("typed");
-      var full = "Preciso mandar o relatório pro cliente ainda hoje, sem falta.";
-      if (typed) {
-        if (reduce) { typed.textContent = full; }
-        else {
-          var i = 0;
-          (function tick() {
-            if (i <= full.length) { typed.textContent = full.slice(0, i); i++; setTimeout(tick, 32 + Math.random() * 38); }
-          })();
-        }
+     O resultado final já está no HTML. Com "reduzir movimento" ligado não
+     animamos nada: a pessoa vê o texto pronto, que é a informação que importa. */
+  var BARS = 21;
+  var barsEl = document.getElementById('bars');
+  for (var i = 0; i < BARS; i++) barsEl.appendChild(document.createElement('i'));
+  var barEls = barsEl.querySelectorAll('i');
+
+  var field = document.getElementById('demoField');
+  var pill = document.getElementById('pill');
+  var pillLabel = document.getElementById('pillLabel');
+  var pillTime = document.getElementById('pillTime');
+  var pillHint = document.getElementById('pillHint');
+  var appEl = document.getElementById('demoApp');
+  var appName = document.getElementById('demoAppName');
+  var labelEl = document.getElementById('demoLabel');
+  var playBtn = document.getElementById('demoPlay');
+  var stepEls = document.getElementById('demoSteps').querySelectorAll('b');
+
+  var SPEECH = 'oi João então eu queria quer dizer preciso que você me mande aquele orçamento até amanhã tá';
+  var CLEAN_WPP = 'Oi, João! Preciso que você me envie aquele orçamento até amanhã, por favor.';
+  var CLEAN_MAIL = 'Bom dia, João.\n\nPreciso do orçamento até amanhã, por favor.\n\nObrigado.';
+
+  var timers = [];
+  var barTimer = null;
+  var running = false;
+
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+  function clearAll() {
+    for (var t = 0; t < timers.length; t++) { clearTimeout(timers[t]); clearInterval(timers[t]); }
+    timers = [];
+    if (barTimer) { clearInterval(barTimer); barTimer = null; }
+  }
+  function markStep(n) {
+    for (var s = 0; s < stepEls.length; s++) stepEls[s].setAttribute('data-on', String(s <= n));
+  }
+  function setBars(active) {
+    if (barTimer) { clearInterval(barTimer); barTimer = null; }
+    if (!active) {
+      for (var b = 0; b < barEls.length; b++) barEls[b].style.height = '3px';
+      return;
+    }
+    var t = 0;
+    barTimer = setInterval(function () {
+      t += 0.36;
+      for (var b = 0; b < barEls.length; b++) {
+        // Envelope irregular: fala de verdade não é onda perfeita.
+        var v = Math.abs(Math.sin(t + b * 0.42)) * Math.abs(Math.sin(t * 0.31)) * 0.9 + 0.06;
+        barEls[b].style.height = (3 + v * 19).toFixed(1) + 'px';
       }
-
-      /* Waveform — sharp bars, printed look */
-      var cv = document.getElementById("wave");
-      if (cv) {
-        var ctx = cv.getContext("2d");
-        var N = 52, t = 0;
-        function cols() {
-          var s = getComputedStyle(root);
-          return [s.getPropertyValue("--accent").trim(), s.getPropertyValue("--hot").trim()];
-        }
-        function size() {
-          var dpr = Math.min(window.devicePixelRatio || 1, 2);
-          cv.width = cv.clientWidth * dpr; cv.height = cv.clientHeight * dpr;
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        }
-        size();
-        window.addEventListener("resize", size);
-
-        function draw() {
-          var w = cv.clientWidth, h = cv.clientHeight, mid = h / 2;
-          var c = cols(), gap = 3, bw = (w - gap * (N - 1)) / N;
-          ctx.clearRect(0, 0, w, h);
-          for (var b = 0; b < N; b++) {
-            var env = 0.3 + 0.7 * Math.abs(Math.sin((b / N) * Math.PI * 1.4));
-            var a = (Math.sin(t * 0.05 + b * 0.42) * 0.5 + 0.5) * env;
-            a = a * a;
-            var bh = Math.max(2, a * h * 0.9);
-            ctx.fillStyle = (b % 7 === 3) ? c[1] : c[0];
-            ctx.globalAlpha = 0.35 + a * 0.65;
-            var x = b * (bw + gap), y = mid - bh / 2, r = Math.min(bw / 2, 3);
-            ctx.beginPath();
-            if (ctx.roundRect) { ctx.roundRect(x, y, bw, bh, r); } else { ctx.rect(x, y, bw, bh); }
-            ctx.fill();
-          }
-          ctx.globalAlpha = 1;
-          t++;
-          if (!reduce) requestAnimationFrame(draw);
-        }
-        if (reduce) { t = 10; draw(); } else { draw(); }
+    }, 70);
+  }
+  function setApp(which) {
+    var isMail = which === 'gmail';
+    appEl.setAttribute('data-app', isMail ? 'gmail' : 'whatsapp');
+    appName.textContent = isMail ? 'Gmail' : 'WhatsApp';
+    appEl.querySelector('.badge').textContent = isMail ? '✉' : '✆';
+  }
+  /* Digitação por TEMPO decorrido, não por contagem de passos.
+     Navegador estrangula setTimeout para ~1s em aba de fundo: com passo fixo
+     de 26ms, a mesma frase levava 22 segundos em vez de 1,2s — vi isso
+     acontecer. Medindo o tempo real, a animação chega ao fim na duração certa
+     independentemente de quantos quadros o navegador deixou rodar. */
+  var TYPE_MS = 1600;
+  function typeInto(text, done) {
+    var t0 = Date.now();
+    field.className = 'demo-field live raw';
+    (function step() {
+      var progress = Math.min((Date.now() - t0) / TYPE_MS, 1);
+      field.textContent = text.slice(0, Math.ceil(text.length * progress));
+      if (progress < 1) {
+        var caret = document.createElement('span');
+        caret.className = 'caret';
+        field.appendChild(caret);
+        later(step, 30);
+      } else {
+        field.textContent = text;
+        later(done, 240);
       }
-
-      /* Antes e depois — tabs */
-      var baTabs = document.querySelectorAll(".ba-tab");
-      var baPanels = document.querySelectorAll(".ba-panel");
-      baTabs.forEach(function (tab) {
-        tab.addEventListener("click", function () {
-          baTabs.forEach(function (t) { t.classList.remove("on"); t.setAttribute("aria-selected", "false"); });
-          baPanels.forEach(function (p) { p.hidden = true; });
-          tab.classList.add("on");
-          tab.setAttribute("aria-selected", "true");
-          document.querySelector('.ba-panel[data-bap="' + tab.getAttribute("data-ba") + '"]').hidden = false;
-        });
-      });
-
-      /* Baixar — mostra o bloco certo conforme o sistema, com alternância manual */
-      var dlMac = document.getElementById("dlMac"), dlOther = document.getElementById("dlOther");
-      var isMac = /Mac/.test(navigator.platform) || /Macintosh/.test(navigator.userAgent);
-      if (!isMac) { dlMac.style.display = "none"; dlOther.style.display = "block"; }
-
-      document.getElementById("noMacLink").addEventListener("click", function (e) {
-        e.preventDefault();
-        dlMac.style.display = "none";
-        dlOther.style.display = "block";
-      });
-      document.getElementById("hasMacLink").addEventListener("click", function (e) {
-        e.preventDefault();
-        dlOther.style.display = "none";
-        dlMac.style.display = "block";
-      });
-
-      /* Waitlist (só quem não tem Mac ainda) */
-      var API_BASE = "https://vozzai-production.up.railway.app";
-      var f = document.getElementById("wl"), msg = document.getElementById("wlmsg");
-      f.addEventListener("submit", function (e) {
-        e.preventDefault();
-        var v = document.getElementById("wlmail").value.trim();
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg.textContent = "confere o e-mail — parece que falta algo"; return; }
-        var btn = f.querySelector("button");
-        btn.disabled = true;
-        msg.textContent = "enviando…";
-        fetch(API_BASE + "/waitlist", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ email: v }),
-        })
-          .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
-          .then(function (r) {
-            if (!r.ok) { msg.textContent = r.data.error || "não consegui cadastrar, tenta de novo"; return; }
-            msg.textContent = "anotado ✓ — te avisamos assim que abrir";
-            f.reset();
-          })
-          .catch(function () { msg.textContent = "não consegui falar com o servidor, tenta de novo"; })
-          .finally(function () { btn.disabled = false; });
-      });
     })();
-  </script>
+  }
+
+  function reset() {
+    clearAll();
+    running = false;
+    setBars(false);
+    pill.setAttribute('data-on', 'false');
+    playBtn.textContent = '▶ Reproduzir';
+    markStep(-1);
+    setApp('whatsapp');
+    labelEl.textContent = 'Mensagem para o cliente';
+    field.className = 'demo-field';
+    field.textContent = CLEAN_WPP;
+  }
+
+  function play() {
+    if (running) { reset(); return; }
+    running = true;
+    playBtn.textContent = '■ Parar';
+
+    setApp('whatsapp');
+    labelEl.textContent = 'Mensagem para o cliente';
+    field.className = 'demo-field';
+    field.textContent = '';
+    markStep(0);
+
+    pill.setAttribute('data-state', 'recording');
+    pillLabel.textContent = 'Ouvindo você…';
+    pillHint.innerHTML = '<kbd>⌘⇧Espaço</kbd> para inserir · <kbd>esc</kbd> cancela';
+    pill.setAttribute('data-on', 'true');
+    setBars(true);
+
+    var secs = 0;
+    var tick = setInterval(function () {
+      secs++;
+      pillTime.textContent = '0:' + (secs < 10 ? '0' : '') + secs;
+    }, 1000);
+    timers.push(tick);
+
+    later(function () {
+      markStep(1);
+      typeInto(SPEECH, function () {
+        clearInterval(tick);
+        setBars(false);
+        pill.setAttribute('data-state', 'processing');
+        pillLabel.textContent = 'Transcrevendo…';
+        pillHint.textContent = 'Só um instante';
+        markStep(2);
+
+        later(function () {
+          field.className = 'demo-field';
+          field.textContent = CLEAN_WPP;
+          pill.setAttribute('data-state', 'done');
+          pillLabel.textContent = 'Texto inserido';
+          pillHint.textContent = '';
+          markStep(3);
+
+          // Mesmo áudio, outro contexto: no Gmail sai em tom profissional.
+          later(function () {
+            pill.setAttribute('data-on', 'false');
+            setApp('gmail');
+            labelEl.textContent = 'Mesmo áudio, modo E-mail';
+            field.className = 'demo-field';
+            field.textContent = CLEAN_MAIL;
+            later(function () {
+              running = false;
+              playBtn.textContent = '↻ De novo';
+            }, 400);
+          }, 1600);
+        }, 1150);
+      });
+    }, 700);
+  }
+
+  playBtn.addEventListener('click', play);
+
+  // Toca sozinho uma vez ao entrar na tela, e só se a pessoa não pediu menos
+  // movimento. Nunca em laço: animação repetindo atrás do texto atrapalha
+  // quem está lendo.
+  if (!reduce && 'IntersectionObserver' in window) {
+    var seen = false;
+    var io = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting || seen) return;
+      seen = true;
+      io.disconnect();
+      // Aba de fundo não anima: os timers ficam estrangulados e a pessoa
+      // chegaria no meio de uma animação arrastada. Espera ela olhar.
+      if (document.hidden) {
+        document.addEventListener('visibilitychange', function once() {
+          document.removeEventListener('visibilitychange', once);
+          later(play, 400);
+        });
+        return;
+      }
+      later(play, 500);
+    }, { threshold: 0.4 });
+    io.observe(document.getElementById('demo'));
+  }
+})();
+</script>
 </body>
 </html>

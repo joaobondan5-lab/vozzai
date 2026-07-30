@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Prioridade reflete intenção de busca, não vaidade: a inicial converte, as
+  páginas de caso de uso capturam busca específica ("ditado por voz para
+  advogado") e as legais existem para consulta. A confirmação de assinatura
+  fica FORA de propósito — não é destino de busca, é passo de fluxo.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.vozzai.com.br/</loc></url>
-  <url><loc>https://www.vozzai.com.br/privacy.html</loc></url>
-  <url><loc>https://www.vozzai.com.br/termos.html</loc></url>
-  <url><loc>https://www.vozzai.com.br/uso-justo.html</loc></url>
+  <url>
+    <loc>https://www.vozzai.com.br/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url><loc>https://www.vozzai.com.br/para/atendimento.html</loc><priority>0.8</priority></url>
+  <url><loc>https://www.vozzai.com.br/para/advogados.html</loc><priority>0.8</priority></url>
+  <url><loc>https://www.vozzai.com.br/para/vendas.html</loc><priority>0.8</priority></url>
+  <url><loc>https://www.vozzai.com.br/para/criadores.html</loc><priority>0.8</priority></url>
+  <url><loc>https://www.vozzai.com.br/para/desenvolvedores.html</loc><priority>0.8</priority></url>
+  <url><loc>https://www.vozzai.com.br/para/fundadores.html</loc><priority>0.8</priority></url>
+
+  <url><loc>https://www.vozzai.com.br/privacy.html</loc><priority>0.4</priority></url>
+  <url><loc>https://www.vozzai.com.br/termos.html</loc><priority>0.3</priority></url>
+  <url><loc>https://www.vozzai.com.br/uso-justo.html</loc><priority>0.3</priority></url>
 </urlset>
