@@ -253,6 +253,73 @@
   .br-item .in { color: var(--muted); font-family: var(--f-mono); font-size: 14px; }
   .br-item .out { color: var(--ink); font-weight: 550; font-size: 16.5px; }
 
+  /* ---- Modos de escrita: lista em duas colunas, não grid de cards ----
+     Dez cards brancos idênticos era o mesmo componente repetido dez vezes —
+     a versão mais óbvia do tique. Uma lista dividida por Grátis/Pro é mais
+     rápida de escanear (a pessoa decide "isso já é meu ou preciso do Pro"
+     numa olhada) e não parece componente de biblioteca. */
+  .mode-cols { display: grid; gap: clamp(28px, 4vw, 52px); margin-top: 36px; }
+  @media (min-width: 780px) { .mode-cols { grid-template-columns: 1fr 1fr; } }
+  .mode-col-h {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 4px;
+  }
+  .mode-col-h::before { content: ""; width: 20px; height: 3px; border-radius: 2px; background: var(--blue); }
+  .mode-cols > div:last-child .mode-col-h::before { background: var(--orange); }
+  .mode-row { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .mode-row:last-child { border-bottom: 0; }
+  .mode-row dt { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; }
+  .mode-row dd { margin: 5px 0 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
+
+  /* ---- Recursos: checklist corrido, sem caixa nenhuma ----
+     Doze cards idênticos escondiam uma distinção que importa: nove recursos
+     JÁ existem, três ainda não. Separar por peso visual em vez de dar o
+     mesmo cartão branco pros dois é mais honesto, não só menos genérico. */
+  .feature-list { margin-top: 32px; max-width: 74ch; }
+  .feature-row { display: flex; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .feature-row:last-child { border-bottom: 0; }
+  .feature-check {
+    flex: none; width: 26px; height: 26px; margin-top: 2px; border-radius: 50%;
+    background: color-mix(in srgb, var(--blue) 14%, transparent); color: var(--blue);
+    display: grid; place-items: center; font-size: 13px; font-weight: 800;
+  }
+  .feature-row h3 { font-size: 17px; }
+  .feature-row p { margin-top: 4px; color: var(--muted); font-size: 15.5px; line-height: 1.55; }
+
+  .soon-block { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--line); }
+  .soon-label {
+    font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 14px;
+  }
+  .soon-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .soon-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 15px; border-radius: 999px; border: 1px solid var(--line);
+    font-size: 14px; font-weight: 600; color: var(--muted);
+  }
+
+  /* ---- Casos de uso: um destaque + lista, não seis cards iguais ---- */
+  .case-featured {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px;
+    margin-top: 32px; padding: clamp(22px, 3vw, 30px);
+    border: 1.5px solid var(--blue); border-left-width: 5px; border-radius: var(--r-lg);
+    text-decoration: none; color: inherit;
+  }
+  .case-featured .tag { background: var(--blue); color: #fff; }
+  .case-featured p { margin-top: 6px; color: var(--muted); max-width: 56ch; }
+  .case-featured .go { margin-left: auto; flex: none; color: var(--blue); font-weight: 700; font-size: 15px; white-space: nowrap; }
+  .case-list { margin-top: 4px; }
+  @media (min-width: 780px) { .case-list { columns: 2; column-gap: 40px; } }
+  .case-row {
+    display: block; padding: 18px 0; border-bottom: 1px solid var(--line);
+    text-decoration: none; color: inherit; break-inside: avoid;
+  }
+  .case-list .case-row:last-child, .case-list .case-row:nth-last-child(2) { border-bottom: 0; }
+  .case-row h3 { font-size: 16.5px; }
+  .case-row p { margin-top: 5px; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
+  .case-row .go { margin-top: 8px; display: inline-block; color: var(--blue); font-weight: 650; font-size: 14px; }
+
   /* ---- Preços ---- */
   .price-grid { display: grid; gap: 18px; align-items: start; }
   @media (min-width: 840px) { .price-grid { grid-template-columns: 1fr 1.12fr; } }
@@ -326,9 +393,7 @@
   .form-msg[data-ok="true"] { color: var(--green); font-weight: 600; }
   .form-msg[data-ok="false"] { color: var(--danger); }
 
-  .case-link { text-decoration: none; color: inherit; display: block; transition: transform .14s ease, box-shadow .14s ease; }
-  .case-link:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-  .case-link .go { margin-top: 14px; color: var(--blue); font-weight: 650; font-size: 15px; }
+  .case-featured:hover { box-shadow: var(--shadow); }
 </style>
 </head>
 <body>
@@ -562,17 +627,27 @@
         informação que você não falou.
       </p>
 
-      <div class="grid g3" style="margin-top:32px">
-        <div class="card"><h3>Padrão</h3><p style="margin-top:8px;color:var(--muted)">Texto limpo e pontuado, fiel ao seu jeito de falar.</p></div>
-        <div class="card"><h3>WhatsApp</h3><p style="margin-top:8px;color:var(--muted)">Mensagens mais naturais, curtas e conversacionais.</p></div>
-        <div class="card"><h3>E-mail</h3><p style="margin-top:8px;color:var(--muted)">Corpo de e-mail organizado em parágrafos, pronto para colar.</p></div>
-        <div class="card"><h3>Objetivo</h3><p style="margin-top:8px;color:var(--muted)">Sem redundância: frases curtas, só os fatos.</p></div>
-        <div class="card"><h3>Transcrição fiel</h3><p style="margin-top:8px;color:var(--muted)">Só pontuação e maiúsculas — nenhuma palavra alterada.</p></div>
-        <div class="card"><h3>Atendimento <span class="tag">Pro</span></h3><p style="margin-top:8px;color:var(--muted)">Respostas claras e educadas, prontas para enviar ao cliente.</p></div>
-        <div class="card"><h3>Jurídico <span class="tag">Pro</span></h3><p style="margin-top:8px;color:var(--muted)">Formal, com termos, números e datas preservados com fidelidade.</p></div>
-        <div class="card"><h3>Vendas <span class="tag">Pro</span></h3><p style="margin-top:8px;color:var(--muted)">Mensagem comercial com benefício claro e chamada para ação.</p></div>
-        <div class="card"><h3>Desenvolvedor <span class="tag">Pro</span></h3><p style="margin-top:8px;color:var(--muted)">Preserva termos em inglês, camelCase, caminhos e comandos.</p></div>
-        <div class="card"><h3>Conteúdo <span class="tag">Pro</span></h3><p style="margin-top:8px;color:var(--muted)">Legendas, roteiros e tópicos mantendo a sua voz.</p></div>
+      <div class="mode-cols">
+        <div>
+          <h3 class="mode-col-h">Grátis</h3>
+          <dl>
+            <div class="mode-row"><dt>Padrão</dt><dd>Texto limpo e pontuado, fiel ao seu jeito de falar.</dd></div>
+            <div class="mode-row"><dt>WhatsApp</dt><dd>Mensagens mais naturais, curtas e conversacionais.</dd></div>
+            <div class="mode-row"><dt>E-mail</dt><dd>Corpo de e-mail organizado em parágrafos, pronto para colar.</dd></div>
+            <div class="mode-row"><dt>Objetivo</dt><dd>Sem redundância: frases curtas, só os fatos.</dd></div>
+            <div class="mode-row"><dt>Transcrição fiel</dt><dd>Só pontuação e maiúsculas — nenhuma palavra alterada.</dd></div>
+          </dl>
+        </div>
+        <div>
+          <h3 class="mode-col-h">Pro</h3>
+          <dl>
+            <div class="mode-row"><dt>Atendimento</dt><dd>Respostas claras e educadas, prontas para enviar ao cliente.</dd></div>
+            <div class="mode-row"><dt>Jurídico</dt><dd>Formal, com termos, números e datas preservados com fidelidade.</dd></div>
+            <div class="mode-row"><dt>Vendas</dt><dd>Mensagem comercial com benefício claro e chamada para ação.</dd></div>
+            <div class="mode-row"><dt>Desenvolvedor</dt><dd>Preserva termos em inglês, camelCase, caminhos e comandos.</dd></div>
+            <div class="mode-row"><dt>Conteúdo</dt><dd>Legendas, roteiros e tópicos mantendo a sua voz.</dd></div>
+          </dl>
+        </div>
       </div>
     </div>
   </section>
@@ -586,54 +661,51 @@
       <p class="eyebrow">Recursos</p>
       <h2>O que a VozzAI faz pelo seu texto.</h2>
 
-      <div class="grid g3" style="margin-top:32px">
-        <div class="card">
-          <h3>Tira as hesitações</h3>
-          <p style="margin-top:9px;color:var(--muted)">"hum", "é…", "tipo", repetição e gaguejo saem sozinhos — sem mudar o que você quis dizer.</p>
+      <div class="feature-list">
+        <div class="feature-row">
+          <span class="feature-check" aria-hidden="true">✓</span>
+          <div><h3>Tira as hesitações</h3><p>"hum", "é…", "tipo", repetição e gaguejo saem sozinhos — sem mudar o que você quis dizer.</p></div>
         </div>
-        <div class="card">
-          <h3>Pontua e organiza</h3>
-          <p style="margin-top:9px;color:var(--muted)">Vírgula, ponto, parágrafo e maiúscula no lugar certo, inclusive em listas.</p>
+        <div class="feature-row">
+          <span class="feature-check" aria-hidden="true">✓</span>
+          <div><h3>Pontua e organiza</h3><p>Vírgula, ponto, parágrafo e maiúscula no lugar certo, inclusive em listas.</p></div>
         </div>
-        <div class="card">
-          <h3>Entende quando você se corrige</h3>
-          <p style="margin-top:9px;color:var(--muted)">Mudou de ideia no meio da frase? Fica a versão final, não as duas.</p>
+        <div class="feature-row">
+          <span class="feature-check" aria-hidden="true">✓</span>
+          <div><h3>Entende quando você se corrige</h3><p>Mudou de ideia no meio da frase? Fica a versão final, não as duas.</p></div>
         </div>
-        <div class="card">
-          <h3>Dicionário pessoal</h3>
-          <p style="margin-top:9px;color:var(--muted)">Cadastre nomes, empresas e termos técnicos que você usa muito para a VozzAI acertá-los.</p>
+        <div class="feature-row">
+          <span class="feature-check" aria-hidden="true">✓</span>
+          <div><h3>Dicionário pessoal</h3><p>Cadastre nomes, empresas e termos técnicos que você usa muito para a VozzAI acertá-los.</p></div>
         </div>
-        <div class="card">
-          <h3>Mostra o antes e o depois</h3>
-          <p style="margin-top:9px;color:var(--muted)">Ao terminar, você vê o que falou e o que a VozzAI escreveu — e pode copiar o original sem edição.</p>
+        <div class="feature-row">
+          <span class="feature-check" aria-hidden="true">✓</span>
+          <div><h3>Mostra o antes e o depois</h3><p>Ao terminar, você vê o que falou e o que a VozzAI escreveu — e pode copiar o original sem edição.</p></div>
         </div>
-        <div class="card">
-          <h3>Histórico no seu computador</h3>
-          <p style="margin-top:9px;color:var(--muted)">Os últimos ditados ficam salvos localmente para copiar de novo. Apagar aqui apaga de verdade.</p>
+        <div class="feature-row">
+          <span class="feature-check" aria-hidden="true">✓</span>
+          <div><h3>Histórico no seu computador</h3><p>Os últimos ditados ficam salvos localmente para copiar de novo. Apagar aqui apaga de verdade.</p></div>
         </div>
-        <div class="card">
-          <h3>Atalho do seu jeito</h3>
-          <p style="margin-top:9px;color:var(--muted)">Prefere outra combinação? Troque nas configurações. <kbd>esc</kbd> cancela o ditado a qualquer momento.</p>
+        <div class="feature-row">
+          <span class="feature-check" aria-hidden="true">✓</span>
+          <div><h3>Atalho do seu jeito</h3><p>Prefere outra combinação? Troque nas configurações. <kbd>esc</kbd> cancela o ditado a qualquer momento.</p></div>
         </div>
-        <div class="card">
-          <h3>Funciona em tela cheia</h3>
-          <p style="margin-top:9px;color:var(--muted)">O painel aparece por cima de qualquer aplicativo, inclusive apresentação e vídeo.</p>
+        <div class="feature-row">
+          <span class="feature-check" aria-hidden="true">✓</span>
+          <div><h3>Funciona em tela cheia</h3><p>O painel aparece por cima de qualquer aplicativo, inclusive apresentação e vídeo.</p></div>
         </div>
-        <div class="card">
-          <h3>Ditado não se perde</h3>
-          <p style="margin-top:9px;color:var(--muted)">Internet caiu no meio? O áudio fica guardado e você tenta de novo quando ela voltar.</p>
+        <div class="feature-row">
+          <span class="feature-check" aria-hidden="true">✓</span>
+          <div><h3>Ditado não se perde</h3><p>Internet caiu no meio? O áudio fica guardado e você tenta de novo quando ela voltar.</p></div>
         </div>
-        <div class="card">
-          <h3>Atalhos de texto <span class="tag soon">Em breve</span></h3>
-          <p style="margin-top:9px;color:var(--muted)">Falar "link da reunião" e a VozzAI inserir o link completo que você configurou.</p>
-        </div>
-        <div class="card">
-          <h3>Modo sussurro <span class="tag soon">Em breve</span></h3>
-          <p style="margin-top:9px;color:var(--muted)">Ditar em voz baixa, para escritório compartilhado e reunião.</p>
-        </div>
-        <div class="card">
-          <h3>Modo automático por aplicativo <span class="tag soon">Em breve</span></h3>
-          <p style="margin-top:9px;color:var(--muted)">A VozzAI reconhecer que você está no Gmail e usar o modo E-mail sozinha.</p>
+      </div>
+
+      <div class="soon-block">
+        <p class="soon-label">Em desenvolvimento</p>
+        <div class="soon-chips">
+          <span class="soon-chip">Atalhos de texto</span>
+          <span class="soon-chip">Modo sussurro</span>
+          <span class="soon-chip">Modo automático por aplicativo</span>
         </div>
       </div>
     </div>
@@ -645,36 +717,40 @@
       <p class="eyebrow">Casos de uso</p>
       <h2>Para quem escreve o dia inteiro.</h2>
 
-      <div class="grid g3" style="margin-top:32px">
-        <a class="card case-link" href="/para/atendimento.html">
+      <a class="case-featured" href="/para/atendimento.html">
+        <span class="tag">Mais comum</span>
+        <div>
           <h3>Atendimento</h3>
-          <p style="margin-top:9px;color:var(--muted)">Responder cliente no WhatsApp sem digitar as mesmas coisas o dia inteiro.</p>
-          <p class="go">Ver como funciona →</p>
-        </a>
-        <a class="card case-link" href="/para/advogados.html">
+          <p>Responder cliente no WhatsApp sem digitar as mesmas coisas o dia inteiro.</p>
+        </div>
+        <span class="go">Ver como funciona →</span>
+      </a>
+
+      <div class="case-list">
+        <a class="case-row" href="/para/advogados.html">
           <h3>Advogados</h3>
-          <p style="margin-top:9px;color:var(--muted)">Ditar peças e e-mails com termos, artigos e datas preservados.</p>
-          <p class="go">Ver como funciona →</p>
+          <p>Ditar peças e e-mails com termos, artigos e datas preservados.</p>
+          <span class="go">Ver como funciona →</span>
         </a>
-        <a class="card case-link" href="/para/vendas.html">
+        <a class="case-row" href="/para/vendas.html">
           <h3>Vendas</h3>
-          <p style="margin-top:9px;color:var(--muted)">Follow-up e proposta em minutos, entre uma reunião e outra.</p>
-          <p class="go">Ver como funciona →</p>
+          <p>Follow-up e proposta em minutos, entre uma reunião e outra.</p>
+          <span class="go">Ver como funciona →</span>
         </a>
-        <a class="card case-link" href="/para/criadores.html">
+        <a class="case-row" href="/para/criadores.html">
           <h3>Criadores</h3>
-          <p style="margin-top:9px;color:var(--muted)">Legenda, roteiro e ideia de post falando, sem travar na tela branca.</p>
-          <p class="go">Ver como funciona →</p>
+          <p>Legenda, roteiro e ideia de post falando, sem travar na tela branca.</p>
+          <span class="go">Ver como funciona →</span>
         </a>
-        <a class="card case-link" href="/para/desenvolvedores.html">
+        <a class="case-row" href="/para/desenvolvedores.html">
           <h3>Desenvolvedores</h3>
-          <p style="margin-top:9px;color:var(--muted)">Prompt, pull request e documentação com os termos técnicos intactos.</p>
-          <p class="go">Ver como funciona →</p>
+          <p>Prompt, pull request e documentação com os termos técnicos intactos.</p>
+          <span class="go">Ver como funciona →</span>
         </a>
-        <a class="card case-link" href="/para/fundadores.html">
+        <a class="case-row" href="/para/fundadores.html">
           <h3>Fundadores</h3>
-          <p style="margin-top:9px;color:var(--muted)">Organizar ideia, briefing e decisão sem perder o pensamento no caminho.</p>
-          <p class="go">Ver como funciona →</p>
+          <p>Organizar ideia, briefing e decisão sem perder o pensamento no caminho.</p>
+          <span class="go">Ver como funciona →</span>
         </a>
       </div>
     </div>
