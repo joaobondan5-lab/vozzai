@@ -205,7 +205,7 @@
   .ab-pair { display: grid; gap: 16px; }
   @media (min-width: 800px) { .ab-pair { grid-template-columns: 1fr auto 1fr; align-items: center; } }
   .ab-arrow { display: grid; place-items: center; color: var(--blue); font-size: 26px; font-weight: 700; }
-  .ab-box h4 {
+  .ab-box .ab-who {
     font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
     color: var(--faint); margin-bottom: 10px;
   }
@@ -288,7 +288,7 @@
   .ft { border-top: 1px solid var(--line); padding: 48px 0 40px; font-size: 14.5px; color: var(--muted); }
   .ft-grid { display: grid; gap: 28px; margin-bottom: 32px; }
   @media (min-width: 740px) { .ft-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr; } }
-  .ft h4 { font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
+  .ft h3 { font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
   .ft ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
   .ft a { color: var(--muted); text-decoration: none; }
   .ft a:hover { color: var(--ink); text-decoration: underline; }
@@ -428,12 +428,12 @@
 
       <div class="ab-pair">
         <div class="card ab-box ab-said">
-          <h4>Você falou</h4>
+          <p class="ab-who">Você falou</p>
           <p id="abSaid">Oi João então eu queria quer dizer preciso que você me mande aquele orçamento até amanhã tá</p>
         </div>
         <div class="ab-arrow" aria-hidden="true">→</div>
         <div class="card ab-box ab-wrote">
-          <h4>A VozzAI escreveu</h4>
+          <p class="ab-who">A VozzAI escreveu</p>
           <p id="abWrote">Oi, João! Preciso que você me envie aquele orçamento até amanhã, por favor.</p>
         </div>
       </div>
@@ -934,7 +934,7 @@
         </p>
       </div>
       <div>
-        <h4>Produto</h4>
+        <h3>Produto</h3>
         <ul>
           <li><a href="#como">Como funciona</a></li>
           <li><a href="#modos">Modos de escrita</a></li>
@@ -944,7 +944,7 @@
         </ul>
       </div>
       <div>
-        <h4>Para quem</h4>
+        <h3>Para quem</h3>
         <ul>
           <li><a href="/para/atendimento.html">Atendimento</a></li>
           <li><a href="/para/advogados.html">Advogados</a></li>
@@ -955,7 +955,7 @@
         </ul>
       </div>
       <div>
-        <h4>Legal e suporte</h4>
+        <h3>Legal e suporte</h3>
         <ul>
           <li><a href="#privacidade">Privacidade e segurança</a></li>
           <li><a href="/privacy.html">Política de privacidade</a></li>
