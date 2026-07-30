@@ -444,7 +444,7 @@
         </p>
 
         <div class="hero-ctas">
-          <a class="btn" href="/downloads/VozzAI.dmg" download data-ev="download_mac">Baixar grátis para Mac</a>
+          <a class="btn" id="heroCta" href="#baixar" data-ev="cta_header">Testar grátis</a>
           <a class="btn ghost" href="#demo" data-ev="ver_demo">Ver funcionando</a>
         </div>
 
@@ -1081,6 +1081,29 @@
 
   var API = 'https://vozzai-production.up.railway.app';
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- CTA principal: adapta pela plataforma detectada ----------
+     A maioria de quem visita a partir do Brasil está no Windows, então o
+     botão principal não pode presumir Mac. Sem JS (ou enquanto isto ainda
+     não rodou), o link cai em #baixar, onde as duas opções reais de hoje
+     — Mac e Chrome — aparecem lado a lado. Com JS, upgrade para 1 clique
+     direto no que já funciona na plataforma da pessoa. */
+  (function adaptHeroCta() {
+    var cta = document.getElementById('heroCta');
+    if (!cta) return;
+    var ua = navigator.userAgent || '';
+    var isMac = /Macintosh|Mac OS X/.test(ua) && !/iPhone|iPad|Android/.test(ua);
+    if (isMac) {
+      cta.textContent = 'Baixar grátis para Mac';
+      cta.href = '/downloads/VozzAI.dmg';
+      cta.setAttribute('download', '');
+      cta.setAttribute('data-ev', 'download_mac');
+    } else {
+      cta.textContent = 'Instalar grátis no Chrome';
+      cta.href = 'https://chromewebstore.google.com/detail/hfopblagabjnlkigjnafamfabefdilfe';
+      cta.setAttribute('data-ev', 'download_chrome');
+    }
+  })();
 
   /* ---------- Telemetria de funil ----------
      Só o nome do passo. Nenhum conteúdo, nenhum dado pessoal — o servidor
