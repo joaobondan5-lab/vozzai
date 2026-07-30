@@ -114,10 +114,18 @@
     }
   }
 
-  /* ---- Hero ---- */
+  /* ---- Hero ----
+     Assimetria deliberada: a coluna de texto é mais estreita que a de
+     demonstração, alinhadas pelo topo em vez de centralizadas — um grid
+     perfeitamente espelhado e centralizado é o layout de hero mais repetido
+     em site gerado por template. O painel entra deslocado pra baixo e com
+     leve rotação, como algo "pousado" na página, não encaixado num slot. */
   .hero { padding: clamp(36px, 5.5vw, 72px) 0 clamp(24px, 4vw, 44px); }
-  .hero-grid { display: grid; gap: clamp(30px, 4vw, 56px); align-items: center; }
-  @media (min-width: 1020px) { .hero-grid { grid-template-columns: 1fr 1.05fr; } }
+  .hero-grid { display: grid; gap: clamp(30px, 4vw, 56px); align-items: start; }
+  @media (min-width: 1020px) {
+    .hero-grid { grid-template-columns: 1fr 1.1fr; }
+    .hero-grid > #demo { margin-top: 44px; }
+  }
   .hero h1 span { color: var(--blue); }
   .hero .lede { margin-top: 18px; max-width: 52ch; }
   .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
@@ -133,19 +141,33 @@
   .plat b { color: var(--ink); font-weight: 650; }
   .live-dot { color: var(--green); font-weight: 700; }
 
-  /* ---- Demonstração ---- */
+  /* ---- Demonstração ----
+     Nada de moldura de "janela de navegador" com três bolinhas — é o clichê
+     mais repetido pra "mostrar o produto" em site gerado por IA. Em vez
+     disso: borda grossa na cor da tinta, sombra forte e deliberada
+     (--shadow-product, não a sombra suave genérica dos cards) e uma leve
+     rotação, pousada na página como um objeto real. Some no celular, onde
+     o espaço não sobra pra excentricidade. */
   .demo-frame {
-    background: var(--surface); border: 1px solid var(--line);
-    border-radius: var(--r-xl); box-shadow: var(--shadow-lg); overflow: hidden;
+    background: var(--surface); border: 2px solid var(--ink);
+    border-radius: var(--r-xl); box-shadow: var(--shadow-product); overflow: hidden;
+    transform: rotate(-1.1deg);
   }
+  @media (max-width: 1019px) { .demo-frame { transform: none; } }
   .demo-bar {
     display: flex; align-items: center; gap: 8px;
     padding: 12px 16px; background: var(--surface-2); border-bottom: 1px solid var(--line);
   }
-  .demo-bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--line); }
   .demo-app {
-    margin-left: 8px; font-size: 13px; font-weight: 650; color: var(--muted);
+    font-size: 13px; font-weight: 650; color: var(--muted);
     display: inline-flex; align-items: center; gap: 7px;
+  }
+  .demo-live {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--faint);
+  }
+  .demo-live i {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--green);
   }
   .demo-app .badge {
     width: 19px; height: 19px; border-radius: 5px; display: grid; place-items: center;
@@ -378,10 +400,10 @@
       <div id="demo">
         <div class="demo-frame">
           <div class="demo-bar">
-            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
             <span class="demo-app" id="demoApp" data-app="whatsapp">
               <span class="badge" aria-hidden="true">✆</span><span id="demoAppName">WhatsApp</span>
             </span>
+            <span class="demo-live"><i aria-hidden="true"></i>DEMONSTRAÇÃO</span>
           </div>
 
           <div class="demo-body">
@@ -476,7 +498,7 @@
   </section>
 
   <!-- ================= DIFERENCIAL BRASILEIRO ================= -->
-  <section id="brasil" style="background:var(--surface-2)">
+  <section id="brasil" class="band-ink">
     <div class="wrap">
       <p class="eyebrow">Feito aqui</p>
       <h2>Entende como o brasileiro fala — e como o brasileiro trabalha.</h2>
