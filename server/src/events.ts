@@ -48,6 +48,21 @@ export const CLIENT_EVENTS = [
   'shortcut_changed',
   'paywall_viewed',
   'upgrade_clicked',
+
+  // Desfazer a última inserção (app de Mac).
+  'undo_ok',
+  'undo_failed',
+
+  // Funil do site. Sem estes nomes aqui, os cliques da landing chegavam ao
+  // /events e eram descartados em silêncio — o funil ficaria cego justamente
+  // na etapa em que a pessoa decide instalar.
+  'cta_header',
+  'ver_demo',
+  'download_mac',
+  'download_chrome',
+  'abriu_precos',
+  'abriu_checkout',
+  'lista_espera',
 ] as const;
 
 export type ClientEventName = (typeof CLIENT_EVENTS)[number];

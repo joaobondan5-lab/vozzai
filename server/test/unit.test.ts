@@ -5,6 +5,7 @@ import { normalizeEmail, hashPassword, verifyPassword } from '../src/auth';
 import { isValidEmail } from '../src/validation';
 import { isValidMpSignature, isMpSignatureCheckEnabled } from '../src/webhookSignature';
 import { clientIp } from '../src/rateLimit';
+import { isValidClientEvent } from '../src/events';
 import { createHmac } from 'node:crypto';
 import { MODES, resolveMode, publicModes, DEFAULT_MODE_ID } from '../src/modes';
 import { cleanup } from '../src/openai';
@@ -353,5 +354,30 @@ describe('clientIp — IP real atrás do proxy', () => {
     const a = clientIp('203.0.113.7', '10.0.0.1');
     const b = clientIp('198.51.100.4', '10.0.0.1');
     expect(a).not.toBe(b);
+  });
+});
+
+describe('allowlist de eventos cobre o funil inteiro', () => {
+  // A landing e o app disparam estes nomes. Sem eles na allowlist, o /events
+  // aceita a requisição e descarta o dado em silêncio — o pior tipo de falha
+  // de telemetria, porque o painel mostra zero e parece que ninguém clicou.
+  it('aceita os eventos do site', () => {
+    for (const name of ['cta_header', 'ver_demo', 'download_mac', 'download_chrome',
+                        'abriu_precos', 'abriu_checkout', 'lista_espera']) {
+      expect(isValidClientEvent(name)).toBe(true);
+    }
+  });
+
+  it('aceita os eventos de desfazer inserção', () => {
+    expect(isValidClientEvent('undo_ok')).toBe(true);
+    expect(isValidClientEvent('undo_failed')).toBe(true);
+  });
+
+  it('continua recusando nome fora da lista', () => {
+    expect(isValidClientEvent('qualquer_coisa_nova')).toBe(false);
+    expect(isValidClientEvent('')).toBe(false);
+    expect(isValidClientEvent(undefined)).toBe(false);
+    // Herdado do protótipo não deve passar (mesma classe de bug dos modos).
+    expect(isValidClientEvent('constructor')).toBe(false);
   });
 });

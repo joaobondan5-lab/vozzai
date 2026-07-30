@@ -34,6 +34,37 @@ export function captureFrontmostApp(): Promise<string | null> {
 }
 
 /**
+ * Desfaz a última inserção apagando exatamente o que a VozzAI colou.
+ *
+ * Colar no campo errado — ou sobre um texto que já tinha conteúdo — é um
+ * acidente comum, e até aqui a pessoa precisava apagar na mão.
+ *
+ * Por que backspace e não Cmd+Z: o histórico de desfazer pertence ao app de
+ * destino. Depois de um paste programático, o Cmd+Z de muitos apps desfaz
+ * mais do que a VozzAI escreveu (ou não desfaz nada). Apagar a contagem exata
+ * de caracteres é previsível: sai o que entrou, nada além.
+ *
+ * O `repeat` roda DENTRO do AppleScript de propósito — um osascript por
+ * caractere levaria minutos num ditado de 400 palavras.
+ */
+export function undoInsertion(charCount: number, targetApp: string | null): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (process.platform !== 'darwin' || charCount <= 0) return resolve(false);
+    // prompt: false — se a permissão não existe, não é hora de pedir.
+    if (!systemPreferences.isTrustedAccessibilityClient(false)) return resolve(false);
+
+    const steps = Math.min(charCount, 5_000); // teto de sanidade
+    const activate = targetApp
+      ? `tell application "System Events" to set frontmost of (first process whose name is "${targetApp.replace(/"/g, '\\"')}") to true\ndelay 0.12\n`
+      : '';
+    const script =
+      `${activate}tell application "System Events" to repeat ${steps} times\nkey code 51\nend repeat`;
+
+    exec(`osascript -e ${JSON.stringify(script)}`, (err) => resolve(!err));
+  });
+}
+
+/**
  * Devolve o foco pro app capturado antes de colar.
  *
  * Passa por "System Events" (`set frontmost`) em vez de `tell application

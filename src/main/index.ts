@@ -25,7 +25,7 @@ import {
   TranscribeResult,
   UsageStatus,
 } from './backend';
-import { pasteAtCursor, captureFrontmostApp, activateApp } from './paste';
+import { pasteAtCursor, captureFrontmostApp, activateApp, undoInsertion } from './paste';
 import { DictationMachine } from './state';
 import { HistoryStore } from './history';
 import { CLIENT_MODES } from './modes';
@@ -45,6 +45,14 @@ let history: HistoryStore;
 let lastTranscription: string | null = null;
 /** Original do último ditado, quando a limpeza mudou alguma coisa. */
 let lastRaw: string | null = null;
+/**
+ * Inserção que ainda pode ser desfeita.
+ *
+ * Zera assim que é usada e a cada ditado novo: a contagem de caracteres só
+ * vale enquanto ninguém digitou nada depois. Oferecer "desfazer" com contagem
+ * velha apagaria texto que a pessoa escreveu — pior que não ter o recurso.
+ */
+let undoable: { chars: number; app: string | null } | null = null;
 /** App em primeiro plano quando o ditado começou — ver captureFrontmostApp(). */
 let dictationTargetApp: string | null = null;
 let capturingTarget = false;
@@ -205,6 +213,12 @@ function updateTray(): void {
       })),
     },
     { type: 'separator' },
+    {
+      label: undoable ? `Desfazer inserção (${undoable.chars} caracteres)` : 'Desfazer inserção',
+      enabled: Boolean(undoable),
+      click: undoLastInsertion,
+    },
+    { type: 'separator' },
     { label: 'Copiar última transcrição', enabled: Boolean(lastTranscription), click: copyLast },
     {
       label: 'Copiar original (sem edição)',
@@ -235,6 +249,9 @@ async function toggleRecording(): Promise<void> {
   if (machine.current === 'idle') {
     if (capturingTarget) return; // atalho apertado 2x rápido demais — ignora o repique
     capturingTarget = true;
+    // Ditado novo invalida o desfazer anterior: a contagem de caracteres só
+    // vale enquanto nada mais foi escrito depois dela.
+    undoable = null;
     // Precisa capturar ANTES de iniciar: mostrar o painel ativa o VozzAI de
     // verdade (ver overlay.ts), o que tira o foco de quem for o app de
     // destino. Sem isso, o Cmd+V do fim tenta colar no próprio VozzAI.
@@ -382,6 +399,12 @@ async function runDictation(audioBase64: string): Promise<void> {
   // vê o que o VozzAI fez por ela — e a única chance de ela perceber, na
   // hora, se a limpeza mudou o sentido de alguma coisa.
   showOverlayDiff(lastRaw, text);
+
+  // Só é desfazível o que de fato entrou no app de destino. Se o texto ficou
+  // na área de transferência, não há nada inserido para apagar — e oferecer
+  // "desfazer" nesse caso apagaria o que a pessoa tinha escrito antes.
+  undoable = pasteResult === 'pasted' ? { chars: text.length, app: dictationTargetApp } : null;
+
   if (pasteResult === 'clipboard-only') {
     // Sinal importante: a transcrição funcionou, mas o texto não entrou no
     // app de destino. É o tipo de falha que o usuário sente e não reporta.
@@ -421,6 +444,22 @@ function warnAboutQuota(usage: UsageStatus): void {
     `Você já usou ${percent}% das palavras ${janela} (restam ${usage.remaining.toLocaleString('pt-BR')}). ` +
       'Dá para acompanhar e assinar o Pro nas Configurações.',
     openSettings,
+  );
+}
+
+async function undoLastInsertion(): Promise<void> {
+  const pending = undoable;
+  if (!pending) return;
+  undoable = null; // uma vez só: depois disso a contagem não vale mais
+  updateTray();
+
+  const ok = await undoInsertion(pending.chars, pending.app);
+  trackEvent(config.authToken, ok ? 'undo_ok' : 'undo_failed');
+  notify(
+    'VozzAI',
+    ok
+      ? 'Inserção desfeita. O texto continua em "Copiar última transcrição".'
+      : 'Não consegui desfazer daqui. Use Cmd+Z no aplicativo.',
   );
 }
 
