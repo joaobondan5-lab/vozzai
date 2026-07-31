@@ -174,6 +174,30 @@ export const MODES: Record<string, Mode> = {
     apps: ['VS Code', 'Claude Code', 'Slack'],
     proOnly: true,
   },
+  orcamento: {
+    ...V,
+    id: 'orcamento',
+    name: 'Orçamento',
+    description: 'Proposta em itens, valores e prazo — pronta para mandar ao cliente.',
+    instruction:
+      'Organize o ditado como um ORÇAMENTO pronto para enviar ao cliente, em texto simples — sem tabela, ' +
+      'sem markdown, sem asterisco —, com um item por linha. Depois dos itens, escreva APENAS as ' +
+      'informações que a pessoa realmente ditou, uma por linha: total, prazo de entrega, forma de ' +
+      'pagamento, validade da proposta e observações. Se ela não ditou prazo, não existe linha de prazo; ' +
+      'o mesmo vale para pagamento, validade e qualquer outra condição — orçamento com condição inventada ' +
+      'vira compromisso que a pessoa não assumiu. ' +
+      'ARITMÉTICA, e este é o ponto mais sensível deste modo: só calcule o total quando a pessoa deixar ' +
+      'explícito que o valor é POR UNIDADE — disse "cada", "por vídeo", "a unidade", "por peça" ou ' +
+      'equivalente. Se ela disse quantidade e valor sem deixar claro se aquele valor é unitário ou total ' +
+      '(por exemplo "30 vídeos, 500 reais"), NÃO multiplique, NÃO adivinhe e NÃO escreva linha de total: ' +
+      'repita exatamente como foi dito. Chutar aqui manda o preço errado para o cliente, que é o pior ' +
+      'estrago possível neste modo. ' +
+      'Escreva valores no padrão brasileiro (R$ 1.250,00) apenas para números que foram ditados; nunca ' +
+      'arredonde, converta moeda nem complete centavos que não foram falados.',
+    example: 'Edição de vídeo — 30 unidades — R$ 500,00 cada\nTotal: R$ 15.000,00\nPrazo de entrega: 20 dias',
+    apps: ['WhatsApp', 'Gmail'],
+    proOnly: true,
+  },
   conteudo: {
     ...V,
     id: 'conteudo',

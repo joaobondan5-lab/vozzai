@@ -19,5 +19,6 @@ export const CLIENT_MODES: ClientMode[] = [
   { id: 'vendas', name: 'Vendas', proOnly: true },
   { id: 'juridico', name: 'Jurídico', proOnly: true },
   { id: 'dev', name: 'Desenvolvedor', proOnly: true },
+  { id: 'orcamento', name: 'Orçamento', proOnly: true },
   { id: 'conteudo', name: 'Conteúdo', proOnly: true },
 ];

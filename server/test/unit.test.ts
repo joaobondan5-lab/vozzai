@@ -113,7 +113,23 @@ describe('VozzAI Modes', () => {
     const free = Object.values(MODES).filter((m) => !m.proOnly).map((m) => m.id);
     const pro = Object.values(MODES).filter((m) => m.proOnly).map((m) => m.id);
     expect(free).toEqual(expect.arrayContaining(['padrao', 'whatsapp', 'email', 'objetivo', 'fiel']));
-    expect(pro).toEqual(expect.arrayContaining(['atendimento', 'vendas', 'juridico', 'dev', 'conteudo']));
+    expect(pro).toEqual(
+      expect.arrayContaining(['atendimento', 'vendas', 'juridico', 'dev', 'conteudo', 'orcamento'])
+    );
+  });
+
+  // O modo Orçamento é o único que lida com preço, e o erro caro dele é
+  // silencioso: "30 vídeos, 500 reais" pode ser R$ 500 no total ou R$ 500 por
+  // vídeo (R$ 15.000). Se o modelo escolher sozinho, manda o preço errado pro
+  // cliente e ninguém percebe até a cobrança. A instrução precisa proibir o
+  // chute explicitamente — este teste existe pra alguém não "simplificar" essa
+  // regra depois sem entender por que ela está lá.
+  it('Orçamento proíbe multiplicar valor quando o ditado é ambíguo', () => {
+    const { instruction } = MODES.orcamento;
+    expect(instruction).toContain('NÃO multiplique');
+    expect(instruction).toMatch(/cada|por unidade|unitário/i);
+    // e não pode inventar condição comercial que a pessoa não falou
+    expect(instruction).toMatch(/prazo/i);
   });
 
   it('sem modo (ou vazio) cai no Padrão', () => {
