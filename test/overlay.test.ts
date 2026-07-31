@@ -60,6 +60,16 @@ describe('painel flutuante (overlay)', () => {
     expect(code).toContain('visibleOnFullScreen: true');
   });
 
+  // `loadFile` é assíncrono: no primeiro ditado a mensagem chega antes de a
+  // página existir para ouvir. O estado já tinha sido perdido assim uma vez
+  // (o painel abria em branco); o modo entra na mesma fila pelo mesmo motivo.
+  it('guarda o modo para reenviar quando a página terminar de carregar', () => {
+    expect(code).toContain('pendingMode');
+    expect(code).toContain("channel === 'overlay-mode'");
+    // e precisa mesmo ser reenviado no did-finish-load, não só guardado
+    expect(code).toMatch(/did-finish-load[\s\S]*pendingMode = null/);
+  });
+
   it('centraliza na tela descontando a própria altura', () => {
     // Sem descontar a altura, o painel "desce" quando cresce para mostrar o
     // antes → depois, e deixa de ficar centrado justamente na hora em que

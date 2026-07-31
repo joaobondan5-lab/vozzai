@@ -29,7 +29,14 @@ import { pasteAtCursor, captureFrontmostApp, activateApp, undoInsertion } from '
 import { DictationMachine } from './state';
 import { HistoryStore } from './history';
 import { CLIENT_MODES } from './modes';
-import { initOverlay, syncOverlay, setOverlayLevel, showOverlayDiff, destroyOverlay } from './overlay';
+import {
+  initOverlay,
+  syncOverlay,
+  setOverlayLevel,
+  setOverlayMode,
+  showOverlayDiff,
+  destroyOverlay,
+} from './overlay';
 
 let config: VozzaConfig;
 let recorderWindow: BrowserWindow | null = null;
@@ -160,6 +167,30 @@ function prettyShortcut(): string {
     .replace(/\+/g, ' ');
 }
 
+/** Nome legível do modo em vigor — cai no id se for um modo que o cliente não conhece. */
+function currentModeName(): string {
+  return CLIENT_MODES.find((m) => m.id === config.mode)?.name || config.mode;
+}
+
+/**
+ * Ponto único de troca de modo.
+ *
+ * A bandeja e a tela de Configurações mexem na MESMA preferência. Quando cada
+ * uma salvava por conta própria, a outra continuava exibindo o valor velho até
+ * ser reaberta — e quem trocasse pela janela via a bandeja discordar dela.
+ * Tudo que precisa saber da troca é notificado aqui, em vez de em cada
+ * chamador.
+ */
+function applyMode(id: string): void {
+  if (!CLIENT_MODES.some((m) => m.id === id)) return;
+  config = saveConfig({ mode: id });
+  trackEvent(config.authToken, 'mode_changed', { mode: id });
+  updateTray();
+  setOverlayMode(currentModeName());
+  // A janela pode nem estar aberta: o `?.` cobre isso sem exigir checagem.
+  settingsWindow?.webContents.send('mode-changed', id);
+}
+
 function statusLine(): string {
   if (!config.authToken) return 'Sem conta — abra Configurações';
   switch (machine.current) {
@@ -205,11 +236,7 @@ function updateTray(): void {
         label: m.proOnly ? `${m.name} · Pro` : m.name,
         type: 'radio' as const,
         checked: config.mode === m.id,
-        click: () => {
-          config = saveConfig({ mode: m.id });
-          trackEvent(config.authToken, 'mode_changed', { mode: m.id });
-          updateTray();
-        },
+        click: () => applyMode(m.id),
       })),
     },
     { type: 'separator' },
@@ -252,14 +279,19 @@ async function toggleRecording(): Promise<void> {
     // Ditado novo invalida o desfazer anterior: a contagem de caracteres só
     // vale enquanto nada mais foi escrito depois dela.
     undoable = null;
-    // Precisa capturar ANTES de iniciar: mostrar o painel ativa o VozzAI de
-    // verdade (ver overlay.ts), o que tira o foco de quem for o app de
-    // destino. Sem isso, o Cmd+V do fim tenta colar no próprio VozzAI.
+    // Capturado ANTES de iniciar porque é aqui que o app de destino ainda é,
+    // com certeza, o que a pessoa estava usando. O painel em si não tira mais
+    // o foco de ninguém (ver overlay.ts), mas quem recebe o Cmd+V no fim
+    // continua sendo este app — e entre o início e o fim do ditado ela pode
+    // ter clicado em outro lugar.
     dictationTargetApp = await captureFrontmostApp();
     capturingTarget = false;
     if (machine.current !== 'idle') return; // mudou de estado enquanto capturava (ex.: cancelado)
 
     if (!machine.to('recording')) return;
+    // Antes de gravar: o painel já sobe dizendo com que modo vai escrever,
+    // enquanto ainda dá tempo de cancelar no esc.
+    setOverlayMode(currentModeName());
     trackEvent(config.authToken, 'dictation_started', { mode: config.mode });
     recorderWindow.webContents.send('start-recording');
     maxDurationTimer = setTimeout(() => {
@@ -544,6 +576,11 @@ app.whenReady().then(() => {
       shortcut: config.shortcut,
       prettyShortcut: prettyShortcut(),
       historyEnabled: config.historyEnabled,
+      // O modo é preferência LOCAL (fica no config.json), diferente de tom e
+      // dicionário, que moram no servidor. Vai no `base` de propósito: quem
+      // ainda não conectou a conta também escolhe modo.
+      mode: config.mode,
+      modes: CLIENT_MODES,
     };
     if (!config.authToken) return { ...base, loggedIn: false };
     const me = await fetchMe(config.authToken);
@@ -589,6 +626,15 @@ app.whenReady().then(() => {
 
   ipcMain.handle('set-preferences', async (_event, partial: { tone?: string; dictionary?: string }) => {
     return updatePreferences(config.authToken, partial);
+  });
+
+  // Separado do set-preferences porque o destino é outro: modo é local e vale
+  // na hora; tom e dicionário vão para o servidor e podem falhar por rede.
+  // Juntar os dois faria a troca de modo depender de uma chamada HTTP.
+  ipcMain.handle('set-mode', (_event, id: string) => {
+    if (!CLIENT_MODES.some((m) => m.id === id)) return { ok: false, error: 'Modo desconhecido.' };
+    applyMode(id);
+    return { ok: true, mode: id, name: currentModeName() };
   });
 
   ipcMain.handle('set-shortcut', (_event, accelerator: string) => {

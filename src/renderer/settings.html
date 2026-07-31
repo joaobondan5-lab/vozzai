@@ -102,6 +102,12 @@
     <section class="card">
       <h1>Escrita</h1>
       <p class="hint">Como o VozzAI prepara o texto que você dita.</p>
+      <label for="mode">Modo de escrita</label>
+      <select id="mode"></select>
+      <p class="hint" id="modeHint">
+        Vale para todo ditado até você trocar — e também aparece no menu 🎙️.
+        O painel mostra o modo enquanto você fala.
+      </p>
       <label for="tone">Tom</label>
       <select id="tone">
         <option value="informal">Informal — do jeito que você fala</option>
@@ -145,8 +151,31 @@
     const subscribeAnnualBtn = document.getElementById('subscribeAnnual');
     const subscribeMonthlyBtn = document.getElementById('subscribeMonthly');
     const subMsgEl = document.getElementById('subMsg');
+    // `modeSelect`, e não `mode`: já existe um `mode` logo abaixo, que é o
+    // estado do formulário de entrar/criar conta. Nomes iguais aqui trocariam
+    // silenciosamente o login pelo modo de escrita.
+    const modeSelect = document.getElementById('mode');
+    const modeHint = document.getElementById('modeHint');
+    const MODE_HINT_DEFAULT = modeHint.textContent;
+    let modeHintTimer = null;
 
     let mode = 'login';
+
+    /** Popula o seletor de modos com o catálogo que veio do processo principal. */
+    function fillModes(cfg) {
+      const modes = cfg.modes || [];
+      if (modeSelect.options.length !== modes.length) {
+        modeSelect.innerHTML = '';
+        for (const m of modes) {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          // textContent: o rótulo é dado, não marcação.
+          opt.textContent = m.proOnly ? `${m.name} · Pro` : m.name;
+          modeSelect.appendChild(opt);
+        }
+      }
+      modeSelect.value = cfg.mode || 'padrao';
+    }
 
     function renderLoggedOut() {
       dot.classList.remove('ok');
@@ -173,6 +202,7 @@
         bar.className = ratio >= 0.95 ? 'hot' : ratio >= 0.7 ? 'warn' : '';
       }
 
+      fillModes(cfg);
       document.getElementById('tone').value = cfg.tone || 'informal';
       document.getElementById('dictionary').value = cfg.dictionary || '';
       document.getElementById('shortcutField').value = cfg.prettyShortcut || '';
@@ -234,6 +264,32 @@
     });
 
     /* Tom + dicionário */
+    // O modo salva sozinho, sem passar pelo "Salvar escrita": ele é preferência
+    // local e vale na hora, igual ao radio da bandeja. Tom e dicionário vão
+    // para o servidor e por isso continuam com botão — o que pode falhar por
+    // rede não deve valer só porque a pessoa mexeu no campo.
+    modeSelect.addEventListener('change', async () => {
+      const result = await api.setMode(modeSelect.value);
+      clearTimeout(modeHintTimer);
+      if (!result || !result.ok) {
+        modeHint.style.color = 'var(--danger)';
+        modeHint.textContent = (result && result.error) || 'Não consegui trocar o modo.';
+        return;
+      }
+      modeHint.style.color = 'var(--brand)';
+      modeHint.textContent = `✓ Agora é ${result.name} — vale já no próximo ditado.`;
+      modeHintTimer = setTimeout(() => {
+        modeHint.style.color = '';
+        modeHint.textContent = MODE_HINT_DEFAULT;
+      }, 2600);
+    });
+
+    // Trocou pela bandeja com esta janela aberta: o seletor acompanha, senão a
+    // janela mostraria um modo que não é mais o que está valendo.
+    api.onModeChanged((id) => {
+      modeSelect.value = id;
+    });
+
     document.getElementById('savePrefs').addEventListener('click', async () => {
       const prefsMsg = document.getElementById('prefsMsg');
       prefsMsg.style.color = 'var(--muted)';

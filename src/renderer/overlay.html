@@ -36,7 +36,24 @@
   .done       .dot { background: #32d74b; animation: none; }
   @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.82); } }
 
-  .label { font-size: 13px; font-weight: 590; letter-spacing: -.01em; flex: 1; }
+  /* min-width:0 + ellipsis: numa disputa por espaço quem encolhe é este
+     rótulo, não o modo. "Ouvindo você…" a pessoa já deduz pelo ponto que
+     pulsa; o modo é a informação que ela não tem de outro jeito. */
+  .label { font-size: 13px; font-weight: 590; letter-spacing: -.01em;
+           flex: 1; min-width: 0; overflow: hidden;
+           text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Modo de escrita em vigor. Discreto de propósito: é contexto, não alarme —
+     mas some junto com o painel, então nunca fica desatualizado na tela. */
+  .mode { flex: none; max-width: 118px; overflow: hidden;
+          text-overflow: ellipsis; white-space: nowrap;
+          padding: 3px 8px; border-radius: 7px;
+          background: rgba(255,255,255,.10);
+          border: 1px solid rgba(255,255,255,.08);
+          font-size: 10.5px; font-weight: 600; letter-spacing: .005em;
+          color: rgba(255,255,255,.78); }
+  .mode:empty { display: none; } /* antes do 1º modo chegar, não deixa buraco */
+  .done .mode, .processing .mode, .inserting .mode { opacity: .55; }
   .timer { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55);
            font-variant-numeric: tabular-nums; }
   .done .timer, .processing .timer, .inserting .timer { opacity: .5; }
@@ -88,6 +105,7 @@
     <div class="top">
       <span class="dot"></span>
       <span class="label" id="label">Ouvindo você…</span>
+      <span class="mode" id="mode"></span>
       <span class="timer" id="timer">0:00</span>
     </div>
     <div class="bars" id="bars"></div>
@@ -181,6 +199,12 @@
     history.push(level);
     history.shift();
     renderBars();
+  });
+
+  // textContent também aqui: o nome vem do catálogo de modos, mas tratar
+  // qualquer coisa vinda por IPC como texto é a regra que não abre exceção.
+  window.vozzaOverlay.onMode((name) => {
+    document.getElementById('mode').textContent = name || '';
   });
 
   // textContent, nunca innerHTML: é texto ditado por uma pessoa, e ele passa

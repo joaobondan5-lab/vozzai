@@ -33,7 +33,14 @@ import { DictationState } from './state';
  *    ou seja, a ativação nunca foi necessária para ele ser composto.
  */
 
-const WIDTH = 296;
+/**
+ * 330 e não 296: com o modo de escrita na primeira linha, os nomes mais longos
+ * do catálogo ("E-mail profissional", "Transcrição fiel") espremiam o rótulo a
+ * ponto de sobrar "Ouvind…". Medido com captura real nos dois extremos —
+ * "WhatsApp" e "E-mail profissional" — 330 acomoda rótulo, modo e cronômetro
+ * inteiros, e o painel continua discreto.
+ */
+const WIDTH = 330;
 const HEIGHT = 104;
 /** Altura quando mostra o "antes → depois", que precisa de duas linhas de texto. */
 const HEIGHT_DIFF = 214;
@@ -59,12 +66,16 @@ let hideTimer: NodeJS.Timeout | null = null;
  */
 let ready = false;
 let pendingState: string | null = null;
+let pendingMode: string | null = null;
 let pendingDiff: { raw: string; final: string } | null = null;
 
 function send(channel: string, payload: unknown): void {
   if (!win) return;
   if (!ready) {
+    // Estado e modo são os dois que não podem se perder: o painel abriria
+    // sem dizer o que está acontecendo nem com que modo vai escrever.
     if (channel === 'overlay-state') pendingState = String(payload);
+    if (channel === 'overlay-mode') pendingMode = String(payload);
     return; // nível de áudio atrasado não interessa; estado, sim
   }
   win.webContents.send(channel, payload);
@@ -109,6 +120,10 @@ function create(): BrowserWindow {
     if (pendingState) {
       w.webContents.send('overlay-state', pendingState);
       pendingState = null;
+    }
+    if (pendingMode) {
+      w.webContents.send('overlay-mode', pendingMode);
+      pendingMode = null;
     }
   });
 
@@ -179,6 +194,20 @@ export function syncOverlay(state: DictationState): void {
     win.showInactive(); // ver (1): mostrar SEM tomar o foco
   }
   send('overlay-state', state);
+}
+
+/**
+ * Nome do modo de escrita em vigor, exibido no painel.
+ *
+ * O modo decide o que acontece com o que a pessoa falou — WhatsApp encurta,
+ * Jurídico formaliza, Transcrição fiel não mexe em nada. Até aqui ele só
+ * aparecia num submenu da bandeja, então dava para ditar a semana inteira no
+ * modo errado sem perceber. Mostrar no painel é o único momento em que a
+ * pessoa está olhando e ainda dá tempo de cancelar com esc.
+ */
+export function setOverlayMode(name: string): void {
+  if (!win) win = create();
+  send('overlay-mode', name);
 }
 
 /** Volume do microfone (0…1) — é o que prova que ele está captando a pessoa. */
