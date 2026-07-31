@@ -69,8 +69,28 @@ let pendingState: string | null = null;
 let pendingMode: string | null = null;
 let pendingDiff: { raw: string; final: string } | null = null;
 
+/**
+ * A janela — ou null se ela não existe MAIS.
+ *
+ * `win?.metodo()` protege só de null, e um BrowserWindow destruído continua
+ * sendo um objeto: qualquer método dele lança "Object has been destroyed".
+ * Isso derrubou o app com diálogo de erro no rosto do usuário. O caminho: ao
+ * sair, o Electron destrói as janelas ANTES do 'will-quit', que é onde
+ * destroyOverlay() zera esta variável — e o medidor de volume, que dispara
+ * várias vezes por segundo enquanto grava, chega nesse intervalo.
+ *
+ * Toda leitura de `win` passa por aqui justamente porque a versão anterior
+ * tinha a checagem certa (`if (!win)`) em todo lugar e ainda assim quebrava:
+ * o problema nunca foi esquecer de checar, foi checar a coisa errada.
+ */
+function alive(): BrowserWindow | null {
+  if (win && win.isDestroyed()) win = null;
+  return win;
+}
+
 function send(channel: string, payload: unknown): void {
-  if (!win) return;
+  const w = alive();
+  if (!w) return;
   if (!ready) {
     // Estado e modo são os dois que não podem se perder: o painel abriria
     // sem dizer o que está acontecendo nem com que modo vai escrever.
@@ -78,7 +98,9 @@ function send(channel: string, payload: unknown): void {
     if (channel === 'overlay-mode') pendingMode = String(payload);
     return; // nível de áudio atrasado não interessa; estado, sim
   }
-  win.webContents.send(channel, payload);
+  // O webContents pode morrer antes da janela em desligamento.
+  if (w.webContents.isDestroyed()) return;
+  w.webContents.send(channel, payload);
 }
 
 function create(): BrowserWindow {
@@ -116,6 +138,9 @@ function create(): BrowserWindow {
   w.setIgnoreMouseEvents(true); // ver (2)
 
   w.webContents.once('did-finish-load', () => {
+    // A janela pode ter morrido entre o loadFile e o fim do carregamento —
+    // fechar o app logo depois de abrir é suficiente para cair aqui.
+    if (w.isDestroyed() || w.webContents.isDestroyed()) return;
     ready = true;
     if (pendingState) {
       w.webContents.send('overlay-state', pendingState);
@@ -137,7 +162,7 @@ function create(): BrowserWindow {
  * decide se a pessoa continua usando ou desiste.
  */
 export function initOverlay(): void {
-  if (!win) win = create();
+  if (!alive()) win = create();
 }
 
 /** Centraliza na tela, no monitor onde o cursor está — não no monitor principal. */
@@ -160,21 +185,23 @@ function reposition(w: BrowserWindow, height = HEIGHT): void {
  */
 export function syncOverlay(state: DictationState): void {
   if (state === 'idle') {
-    if (!win) return;
+    const w = alive();
+    if (!w) return;
     if (hideTimer) clearTimeout(hideTimer);
 
     if (pendingDiff) {
       // Cresce e mostra o antes → depois. Fica mais tempo porque agora há o
       // que ler; sem isso, piscaria antes de qualquer um enxergar.
-      reposition(win, HEIGHT_DIFF);
+      reposition(w, HEIGHT_DIFF);
       send('overlay-diff', pendingDiff);
       pendingDiff = null;
-      hideTimer = setTimeout(() => win?.hide(), DIFF_MS);
+      // O timer dispara segundos depois: a janela pode não existir mais lá.
+      hideTimer = setTimeout(() => alive()?.hide(), DIFF_MS);
       return;
     }
 
     send('overlay-state', 'done');
-    hideTimer = setTimeout(() => win?.hide(), 500);
+    hideTimer = setTimeout(() => alive()?.hide(), 500);
     return;
   }
 
@@ -182,16 +209,17 @@ export function syncOverlay(state: DictationState): void {
     clearTimeout(hideTimer);
     hideTimer = null;
   }
-  if (!win) win = create();
-  if (!win.isVisible()) {
+  if (!alive()) win = create();
+  const w = win as BrowserWindow;
+  if (!w.isVisible()) {
     // NÃO ativar o app aqui. A versão anterior chamava app.focus({steal:true})
     // neste ponto por acreditar que sem isso o painel não seria composto pelo
     // WindowServer. Era o que tirava a pessoa do app onde ela estava
     // escrevendo — e, como o VozzAI não tem janela regular, o que aparecia no
     // lugar era a área de trabalho. Com type:'panel' (ver item 4 do
     // cabeçalho) a exibição não depende de ativação nenhuma.
-    reposition(win); // a cada ditado: a pessoa pode ter trocado de monitor
-    win.showInactive(); // ver (1): mostrar SEM tomar o foco
+    reposition(w); // a cada ditado: a pessoa pode ter trocado de monitor
+    w.showInactive(); // ver (1): mostrar SEM tomar o foco
   }
   send('overlay-state', state);
 }
@@ -206,13 +234,20 @@ export function syncOverlay(state: DictationState): void {
  * pessoa está olhando e ainda dá tempo de cancelar com esc.
  */
 export function setOverlayMode(name: string): void {
-  if (!win) win = create();
+  if (!alive()) win = create();
   send('overlay-mode', name);
 }
 
-/** Volume do microfone (0…1) — é o que prova que ele está captando a pessoa. */
+/**
+ * Volume do microfone (0…1) — é o que prova que ele está captando a pessoa.
+ *
+ * Dispara muitas vezes por segundo durante a gravação, o que fez desta a
+ * função mais exposta do módulo: era exatamente aqui que o app quebrava ao
+ * ser fechado no meio de um ditado (ver alive()).
+ */
 export function setOverlayLevel(level: number): void {
-  if (win?.isVisible()) send('overlay-level', level);
+  const w = alive();
+  if (w && w.isVisible()) send('overlay-level', level);
 }
 
 /**
@@ -232,8 +267,14 @@ export function showOverlayDiff(raw: string | null, final: string): void {
 
 export function destroyOverlay(): void {
   if (hideTimer) clearTimeout(hideTimer);
-  win?.destroy();
+  hideTimer = null;
+  // alive() em vez de win?.destroy(): no 'will-quit' o Electron normalmente já
+  // destruiu a janela, e destruir de novo lançaria dentro do próprio
+  // desligamento — que é o pior lugar para uma exceção aparecer.
+  alive()?.destroy();
   win = null;
   ready = false;
   pendingState = null;
+  pendingMode = null;
+  pendingDiff = null;
 }

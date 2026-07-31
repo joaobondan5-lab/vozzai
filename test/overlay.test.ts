@@ -70,6 +70,19 @@ describe('painel flutuante (overlay)', () => {
     expect(code).toMatch(/did-finish-load[\s\S]*pendingMode = null/);
   });
 
+  // Crash real, com diálogo de erro na cara do usuário:
+  // "TypeError: Object has been destroyed at setOverlayLevel".
+  // `win?.metodo()` protege só de null; um BrowserWindow destruído continua
+  // sendo objeto e lança em qualquer método. Ao sair, o Electron destrói as
+  // janelas antes do 'will-quit' (onde a variável é zerada), e o medidor de
+  // volume — várias chamadas por segundo — cai nesse intervalo.
+  it('trata janela destruída como ausente, não confia em `win?.`', () => {
+    expect(code).toContain('isDestroyed()');
+    // nenhum acesso solto: tudo passa pelo acessor que checa destruição
+    expect(code).not.toMatch(/win\?\./);
+    expect(code).not.toMatch(/\bif \(!win\)/);
+  });
+
   it('centraliza na tela descontando a própria altura', () => {
     // Sem descontar a altura, o painel "desce" quando cresce para mostrar o
     // antes → depois, e deixa de ficar centrado justamente na hora em que
