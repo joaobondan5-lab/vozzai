@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import { DictationState } from './state';
 
@@ -22,6 +22,15 @@ import { DictationState } from './state';
  * 3. Nível 'screen-saver' + `visibleOnFullScreen` — ditado em app de tela
  *    cheia (Keynote, vídeo, Xcode) é caso comum; sem isso o painel some
  *    justamente quando a pessoa mais precisa da confirmação.
+ * 4. `type: 'panel'` no macOS — vira um NSPanel "não ativador"
+ *    (NSWindowStyleMaskNonactivatingPanel), que é a peça que permite
+ *    aparecer sobre os outros apps SEM trazer o VozzAI para primeiro plano.
+ *    Antes disso o código chamava `app.focus({steal:true})` a cada ditado,
+ *    e era isso que tirava a pessoa do app onde ela estava escrevendo —
+ *    como o VozzAI não tem janela regular, o que aparecia era a área de
+ *    trabalho. Medido: com `type:'panel'` e sem `app.focus`, o painel
+ *    aparece na captura real de tela (screencapture, não capturePage) —
+ *    ou seja, a ativação nunca foi necessária para ele ser composto.
  */
 
 const WIDTH = 296;
@@ -29,17 +38,14 @@ const HEIGHT = 104;
 /** Altura quando mostra o "antes → depois", que precisa de duas linhas de texto. */
 const HEIGHT_DIFF = 214;
 /**
- * Posição vertical como fração da tela usável, medida do topo.
+ * O painel fica centralizado na tela, na horizontal e na vertical.
  *
- * A primeira versão ancorava no rodapé, perto do Dock — e um teste real
- * mostrou o problema: numa fala curta (poucos segundos), o painel aparece e
- * some numa área que a pessoa raramente olha enquanto digita. Ficou
- * praticamente invisível na prática, mesmo renderizando certinho (confirmado
- * por captura da própria janela). Perto do topo, abaixo da barra de menu, é
- * a mesma faixa onde o macOS mostra os próprios avisos (volume, Não
- * Perturbe) — o lugar que o olho já verifica por hábito.
+ * Histórico: a primeira versão ancorava no rodapé, perto do Dock, e sumia da
+ * atenção; a segunda subiu para perto do topo (14% da altura), na faixa onde
+ * o macOS mostra os próprios avisos. Nenhuma das duas resolveu — o retorno do
+ * uso real foi que o painel precisa estar no centro, onde o olho já está
+ * enquanto a pessoa escreve, e não numa borda.
  */
-const TOP_FRACTION = 0.14;
 /** Quanto o antes → depois fica na tela. Tempo de ler sem virar estorvo. */
 const DIFF_MS = 5_200;
 
@@ -80,6 +86,9 @@ function create(): BrowserWindow {
     skipTaskbar: true,
     focusable: false, // ver (1) no cabeçalho
     alwaysOnTop: true,
+    // ver (4): só existe no macOS; em outra plataforma o valor é ignorado,
+    // mas mandar só onde vale deixa a intenção explícita.
+    ...(process.platform === 'darwin' ? { type: 'panel' } : {}),
     webPreferences: {
       preload: path.join(__dirname, '../renderer/overlay-preload.js'),
       contextIsolation: true,
@@ -88,9 +97,9 @@ function create(): BrowserWindow {
   });
 
   // 'screen-saver' é o nível mais alto do macOS — precisa dele pra cobrir
-  // app em tela cheia (ver item 3 do cabeçalho). Não exige nada de especial;
-  // quem impedia a janela de aparecer era a falta de ativação do processo
-  // (ver o app.focus() em syncOverlay(), que é a causa raiz de verdade).
+  // app em tela cheia (ver item 3 do cabeçalho). Junto com o type:'panel'
+  // do construtor, é o que basta para o painel ser composto por cima de
+  // tudo sem que o VozzAI precise virar o app ativo.
   w.setAlwaysOnTop(true, 'screen-saver');
   w.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   w.setIgnoreMouseEvents(true); // ver (2)
@@ -116,13 +125,15 @@ export function initOverlay(): void {
   if (!win) win = create();
 }
 
-/** Centraliza no topo, no monitor onde o cursor está — não no monitor principal. */
+/** Centraliza na tela, no monitor onde o cursor está — não no monitor principal. */
 function reposition(w: BrowserWindow, height = HEIGHT): void {
   const display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
   const { x, y, width, height: areaHeight } = display.workArea;
   w.setBounds({
     x: Math.round(x + (width - WIDTH) / 2),
-    y: Math.round(y + areaHeight * TOP_FRACTION),
+    // Desconta a própria altura para o centro do painel bater com o centro da
+    // tela — inclusive quando ele cresce para mostrar o antes → depois.
+    y: Math.round(y + (areaHeight - height) / 2),
     width: WIDTH,
     height,
   });
@@ -158,17 +169,12 @@ export function syncOverlay(state: DictationState): void {
   }
   if (!win) win = create();
   if (!win.isVisible()) {
-    // Sem isto, o painel simplesmente não aparece na tela real — mesmo
-    // relatando `isVisible()=true` e bounds corretos. Comprovado por captura
-    // real da tela (não capturePage(), que só prova que o Chromium desenhou,
-    // não que o WindowServer compôs): um app menu-bar-only (sem janela
-    // regular própria) perde a ativação assim que outro app fica em primeiro
-    // plano por um tempo — testado e confirmado: funcionava logo após abrir,
-    // falhava de novo minutos depois, com o usuário trabalhando em outro app.
-    // Por isso a chamada mora AQUI, a cada exibição, e não só na subida do
-    // app. app.focus({steal:true}) força a ativação sem abrir nada visível —
-    // diferente de app.dock.show(), não muda a política do Dock.
-    app.focus({ steal: true });
+    // NÃO ativar o app aqui. A versão anterior chamava app.focus({steal:true})
+    // neste ponto por acreditar que sem isso o painel não seria composto pelo
+    // WindowServer. Era o que tirava a pessoa do app onde ela estava
+    // escrevendo — e, como o VozzAI não tem janela regular, o que aparecia no
+    // lugar era a área de trabalho. Com type:'panel' (ver item 4 do
+    // cabeçalho) a exibição não depende de ativação nenhuma.
     reposition(win); // a cada ditado: a pessoa pode ter trocado de monitor
     win.showInactive(); // ver (1): mostrar SEM tomar o foco
   }
